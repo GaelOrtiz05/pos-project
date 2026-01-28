@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/Users/gaelo/Code/projects/my_project/build",
-  "command": "/usr/bin/c++ -Dbackend_EXPORTS -isystem /opt/homebrew/include -isystem /opt/homebrew/opt/python@3.14/Frameworks/Python.framework/Versions/3.14/include/python3.14  -arch arm64 -fPIC -fvisibility=hidden -flto -o CMakeFiles/backend.dir/logic.cpp.o -c /Users/gaelo/Code/projects/my_project/logic.cpp",
-  "file": "/Users/gaelo/Code/projects/my_project/logic.cpp",
-  "output": "CMakeFiles/backend.dir/logic.cpp.o"
-}
-]
