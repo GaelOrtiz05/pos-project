@@ -129,29 +129,29 @@ backend/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/build
 .PHONY : backend/fast
 
-gateway.o: gateway.cpp.o
-.PHONY : gateway.o
+logic.o: logic.cpp.o
+.PHONY : logic.o
 
 # target to build an object file
-gateway.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/gateway.cpp.o
-.PHONY : gateway.cpp.o
+logic.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/logic.cpp.o
+.PHONY : logic.cpp.o
 
-gateway.i: gateway.cpp.i
-.PHONY : gateway.i
+logic.i: logic.cpp.i
+.PHONY : logic.i
 
 # target to preprocess a source file
-gateway.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/gateway.cpp.i
-.PHONY : gateway.cpp.i
+logic.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/logic.cpp.i
+.PHONY : logic.cpp.i
 
-gateway.s: gateway.cpp.s
-.PHONY : gateway.s
+logic.s: logic.cpp.s
+.PHONY : logic.s
 
 # target to generate assembly for a file
-gateway.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/gateway.cpp.s
-.PHONY : gateway.cpp.s
+logic.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/logic.cpp.s
+.PHONY : logic.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... backend"
-	@echo "... gateway.o"
-	@echo "... gateway.i"
-	@echo "... gateway.s"
+	@echo "... logic.o"
+	@echo "... logic.i"
+	@echo "... logic.s"
 .PHONY : help
 
 

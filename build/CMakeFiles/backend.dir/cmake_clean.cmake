@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/backend.dir/gateway.cpp.o"
-  "CMakeFiles/backend.dir/gateway.cpp.o.d"
+  "CMakeFiles/backend.dir/logic.cpp.o"
+  "CMakeFiles/backend.dir/logic.cpp.o.d"
   "backend.cpython-314-darwin.so"
   "backend.pdb"
 )

@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/gaelo/Code/projects/my_project/gateway.cpp" "CMakeFiles/backend.dir/gateway.cpp.o" "gcc" "CMakeFiles/backend.dir/gateway.cpp.o.d"
+  "/Users/gaelo/Code/projects/my_project/logic.cpp" "CMakeFiles/backend.dir/logic.cpp.o" "gcc" "CMakeFiles/backend.dir/logic.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
