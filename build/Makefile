@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named fast_logic
+# Target rules for targets named backend
 
 # Build rule for target.
-fast_logic: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fast_logic
-.PHONY : fast_logic
+backend: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 backend
+.PHONY : backend
 
 # fast build rule for target.
-fast_logic/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fast_logic.dir/build.make CMakeFiles/fast_logic.dir/build
-.PHONY : fast_logic/fast
+backend/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/build
+.PHONY : backend/fast
 
 gateway.o: gateway.cpp.o
 .PHONY : gateway.o
 
 # target to build an object file
 gateway.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fast_logic.dir/build.make CMakeFiles/fast_logic.dir/gateway.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/gateway.cpp.o
 .PHONY : gateway.cpp.o
 
 gateway.i: gateway.cpp.i
@@ -142,7 +142,7 @@ gateway.i: gateway.cpp.i
 
 # target to preprocess a source file
 gateway.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fast_logic.dir/build.make CMakeFiles/fast_logic.dir/gateway.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/gateway.cpp.i
 .PHONY : gateway.cpp.i
 
 gateway.s: gateway.cpp.s
@@ -150,7 +150,7 @@ gateway.s: gateway.cpp.s
 
 # target to generate assembly for a file
 gateway.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fast_logic.dir/build.make CMakeFiles/fast_logic.dir/gateway.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/backend.dir/build.make CMakeFiles/backend.dir/gateway.cpp.s
 .PHONY : gateway.cpp.s
 
 # Help Target
@@ -161,7 +161,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... fast_logic"
+	@echo "... backend"
 	@echo "... gateway.o"
 	@echo "... gateway.i"
 	@echo "... gateway.s"
