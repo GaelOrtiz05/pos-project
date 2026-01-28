@@ -1,0 +1,1 @@
+/usr/bin/c++  -arch arm64 -bundle -Wl,-headerpad_max_install_names -Xlinker -undefined -Xlinker dynamic_lookup -flto -o fast_logic.cpython-314-darwin.so CMakeFiles/fast_logic.dir/gateway.cpp.o

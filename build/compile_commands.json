@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/gaelo/Code/projects/my_project/build",
+  "command": "/usr/bin/c++ -Dfast_logic_EXPORTS -isystem /opt/homebrew/include -isystem /opt/homebrew/opt/python@3.14/Frameworks/Python.framework/Versions/3.14/include/python3.14  -arch arm64 -fPIC -fvisibility=hidden -flto -o CMakeFiles/fast_logic.dir/gateway.cpp.o -c /Users/gaelo/Code/projects/my_project/gateway.cpp",
+  "file": "/Users/gaelo/Code/projects/my_project/gateway.cpp",
+  "output": "CMakeFiles/fast_logic.dir/gateway.cpp.o"
+}
+]
