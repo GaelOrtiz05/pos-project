@@ -5,6 +5,8 @@
 // #include <pybind11/stl.h>
 
 // pybind11:: becomes py::
+// useful for python module declaration
+
 namespace py = pybind11;
 
 struct Item {
@@ -15,7 +17,7 @@ struct Item {
 class POS {
 private:
   std::vector<Item> cart;
-  const double SALES_TAX = 1.83;
+  const double SALES_TAX = 1.08;
 
 public:
   void addItem(std::string name, double price) {
@@ -36,7 +38,8 @@ public:
 // creates a python module named backend
 PYBIND11_MODULE(backend, handle) {
   py::class_<POS>(handle, "POS")
-      // must expose each constructor and functions
+      // must expose each constructor and functions so that it is accessible in
+      // main.py
       .def(py::init<>()) // Constructor
       .def("addItem", &POS::addItem)
       .def("getTotal", &POS::getTotal)
