@@ -3,6 +3,7 @@ import sys
 
 from PySide6.QtWidgets import QMainWindow, QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QShortcut, QKeySequence
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(script_dir, "build"))
@@ -13,6 +14,12 @@ import backend
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        
+        # Keyboard Shorcuts
+        # Standard keys found in link below
+        # https://doc.qt.io/qtforpython-6/PySide6/QtGui/QKeySequence.html#PySide6.QtGui.QKeySequence.StandardKey
+        self.shortcut_close = QShortcut(QKeySequence.StandardKey.Close, self)
+        self.shortcut_close.activated.connect(self.close)
 
         # Initialize C++ POS class from backend module and save it to self.pos
         self.pos = backend.POS()
