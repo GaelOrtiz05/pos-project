@@ -17,7 +17,6 @@ source venv/bin/activate
 Install PySide6 (The GUI Library)
 ```
 pip install PySide6
-
 ```
 You will have to activate the virtual environment everytime you reopen the terminal to run it properly.
 
