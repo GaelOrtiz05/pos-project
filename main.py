@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.shortcut_close.activated.connect(self.close)
 
         # Initialize C++ POS class from backend module and save it to self.pos
-        self.pos = backend.POS()
+        self.logic = backend.POS()
         # Set Window Title
         self.setWindowTitle("POS")
         self.resize(800, 600)
@@ -34,13 +34,13 @@ class MainWindow(QMainWindow):
 
         # Declaring a text label that contains the total price
         # self.label_status = QLabel("Ready to Order")
-        self.label_total = QLabel(f"Total: ${self.pos.getTotal():.2f}")
+        self.label_total = QLabel(f"Total: ${self.logic.getTotal():.2f}")
 
         # Toolbar at bottom of window
         self.statusBar().showMessage("Fast Food Menu:")
 
         # Add the previously declared text label to the screen at row 0 column 1
-        layout.addWidget(self.label_total, 0 , 1, Qt.AlignTop)
+        layout.addWidget(self.label_total, 0 , 1, Qt.AlignmentFlag.AlignTop)
 
         # Declaring button for salad
         self.btn_salad = QPushButton("Salad ($8.00)")
@@ -56,9 +56,9 @@ class MainWindow(QMainWindow):
 
     def button_clicked(self, name, price):
         # Uses the c++ function addItem to calculate the price
-        self.pos.addItem(name, price)
+        self.logic.addItem(name, price)
         # Uses the c++ function getTotal to fetch price
-        self.label_total.setText(f"Total: ${self.pos.getTotal():.2f}")
+        self.label_total.setText(f"Total: ${self.logic.getTotal():.2f}")
 
 
 # Don't really know what this does :)
