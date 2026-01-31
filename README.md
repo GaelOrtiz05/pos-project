@@ -1,6 +1,6 @@
 In a terminal run:
 ```
-  git clone https://github.com/GaelOrtiz05/pos-project.git
+  git clone --recurse-submodules https://github.com/GaelOrtiz05/pos-project.git
   cd pos-project
 ```
 Create a python virtual environment:
