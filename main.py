@@ -6,9 +6,13 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(script_dir, "build"))
+sys.path.append(os.path.join(script_dir, "build", "debug"))
 
-# imports backend module from logic.cpp
+if sys.platform in ["darwin", "linux"]:
+    sys.path.append(os.path.join(script_dir, "build"))
+else:
+    sys.path.append(os.path.join(script_dir, "build", "Debug"))
+
 import backend
 
 class MainWindow(QMainWindow):

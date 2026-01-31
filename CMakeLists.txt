@@ -4,9 +4,8 @@ project(POS)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(PYBIND11_FINDPYTHON ON)
+add_subdirectory(pybind11)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
-find_package(pybind11 REQUIRED)
 
 pybind11_add_module(backend logic.cpp)
