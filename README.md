@@ -5,7 +5,7 @@ In a terminal run:
 ```
 Create a python virtual environment:
 ```
-python3 -m venv venv
+python -m venv venv
 ```
 Activate virtual environment:
 ```
@@ -24,11 +24,11 @@ After you are sure you are in the venv, run:
 ```
 mkdir build
 cd build
-cmake ..
-make
-python ../main.py
 
+# Macos
 # one line: requries you to be in build/
-cmake .. && make && python3 ../main.py
-```
+cmake .. && make && python ../main.py
 
+# Windows
+cmake .. && cmake --build && python ../main.py
+```
