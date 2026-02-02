@@ -9,12 +9,12 @@ Prerequisites (WINDOWS):
 
 How to download prerequisites (WINDOWS):
 
-Run these one by one in Admin Powershell to download them:
+Run these one by one in an Admin Powershell to download them:
 ```
 // Run this first to install latest version of Powershell 7
 winget install -e --id Microsoft.PowerShell
 
-// Then run these in Powershell 7
+// Then run these in Powershell 7 (Adminstrator Mode)
 winget install -e --id Python.Python.3.14
 winget install -e --id Git.Git
 winget install -e --id Kitware.CMake
