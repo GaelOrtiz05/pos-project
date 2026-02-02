@@ -16,14 +16,12 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(script_dir, "build", "debug"))
+build_path = os.path.join(os.path.dirname(__file__), "build")
 
-# Adjusts build paths depending on os
-if sys.platform in ["darwin", "linux"]:
-    sys.path.append(os.path.join(script_dir, "build"))
+if sys.platform == "win32":
+    sys.path.append(os.path.join(build_path, "Debug"))
 else:
-    sys.path.append(os.path.join(script_dir, "build", "Debug"))
+    sys.path.append(build_path)
 
 import backend
 
