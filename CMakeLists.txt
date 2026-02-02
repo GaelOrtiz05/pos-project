@@ -1,8 +1,9 @@
 # Don't really know what any of this means but it works
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 project(POS)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(PYBIND11_FINDPYTHON NEW)
 
 add_subdirectory(pybind11)
 
