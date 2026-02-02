@@ -23,6 +23,7 @@ public:
   void addItem(std::string name, double price) {
     cart.push_back({name, price});
   }
+
   void clear() { cart.clear(); }
 
   double getTotal() {

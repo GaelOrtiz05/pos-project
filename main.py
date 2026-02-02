@@ -1,13 +1,25 @@
 import os
 import sys
 
-from PySide6.QtWidgets import QMainWindow, QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout
+from PySide6.QtWidgets import (
+    QMainWindow,
+    QLineEdit,
+    QGridLayout,
+    QApplication,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
+
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(script_dir, "build", "debug"))
 
+# Adjusts build paths depending on os
 if sys.platform in ["darwin", "linux"]:
     sys.path.append(os.path.join(script_dir, "build"))
 else:
@@ -27,6 +39,7 @@ class MainWindow(QMainWindow):
 
         # Initialize C++ POS class from backend module and save it to self.pos
         self.logic = backend.POS()
+        
         # Set Window Title
         self.setWindowTitle("POS")
         self.resize(800, 600)
@@ -58,6 +71,17 @@ class MainWindow(QMainWindow):
         self.btn_patty_melt.clicked.connect(lambda: self.button_clicked("Patty Melt", 5.49))
         layout.addWidget(self.btn_patty_melt, 0, 3)
 
+        # Clear Button
+        self.btn_clear = QPushButton("Clear")
+        self.btn_clear.clicked.connect(lambda: self.button_clicked_clear())
+        layout.addWidget(self.btn_clear, 0,4)
+
+
+    def button_clicked_clear(self):
+        ## Uses the c++ function clear to clear cart
+        self.logic.clear()
+        self.label_total.setText(f"Total: ${self.logic.getTotal():.2f}")
+
     def button_clicked(self, name, price):
         # Uses the c++ function addItem to calculate the price
         self.logic.addItem(name, price)
@@ -65,7 +89,6 @@ class MainWindow(QMainWindow):
         self.label_total.setText(f"Total: ${self.logic.getTotal():.2f}")
 
 
-# Don't really know what this does :)
 if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
