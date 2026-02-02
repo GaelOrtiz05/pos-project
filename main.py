@@ -50,20 +50,19 @@ class MainWindow(QMainWindow):
         layout = QGridLayout(central) 
 
         # Declaring a text label that contains the total price
-        # self.label_status = QLabel("Ready to Order")
         self.label_total = QLabel(f"Total: ${self.logic.getTotal():.2f}")
-
+        
         # Toolbar at bottom of window
         self.statusBar().showMessage("Fast Food Menu:")
 
-        # Add the previously declared text label to the screen at row 0 column 1
-        layout.addWidget(self.label_total, 0 , 1, Qt.AlignmentFlag.AlignTop)
+        # Add the previously declared text label to the screen
+        layout.addWidget(self.label_total, 0 , 0, Qt.AlignmentFlag.AlignTop)
 
         # Declaring button for salad
         self.btn_salad = QPushButton("Salad ($8.00)")
         # Lambda waits for a click and then runs the button_clicked helper function
         self.btn_salad.clicked.connect(lambda: self.button_clicked("Salad", 8.00))
-        # Place the button on the screen at row 0 column 2
+        # Place the button on the screen
         layout.addWidget(self.btn_salad, 0,2)
 
         # Same thing
