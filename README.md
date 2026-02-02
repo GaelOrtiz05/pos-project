@@ -81,12 +81,11 @@ If you wish to exit the venv run `deactivate`
 After you are sure you are in the venv, run:
 ```
 mkdir build
-cd build
 
-# one line: requries you to be in build/
+# One line: requires you to be in project root
 # Macos
-cmake .. && make && python ../main.py
+cmake -S . -B build && cmake --build build && python3 main.py
 
 # Windows
-cmake .. && cmake --build && python ../main.py
+cmake -S . -B build && cmake --build build --config Debug && python main.py
 ```
