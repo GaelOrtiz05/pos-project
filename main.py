@@ -57,34 +57,33 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.label_total, 0 , 0, Qt.AlignmentFlag.AlignTop)
 
         # Declaring button for salad
-        self.btn_salad = QPushButton("Salad ($8.00)")
+        self.button_salad = QPushButton("Salad ($8.00)")
         # Lambda waits for a click and then runs the button_clicked helper function
-        self.btn_salad.clicked.connect(lambda: self.button_clicked("Salad", 8.00))
+        self.button_salad.clicked.connect(lambda: self.menu_button_event_handler("Salad", 8.00))
         # Place the button on the screen
-        layout.addWidget(self.btn_salad, 0,2)
+        layout.addWidget(self.button_salad, 0,2)
 
         # Same thing
-        self.btn_patty_melt = QPushButton("Patty Melt ($5.49)")
-        self.btn_patty_melt.clicked.connect(lambda: self.button_clicked("Patty Melt", 5.49))
-        layout.addWidget(self.btn_patty_melt, 0, 3)
+        self.button_patty_melt = QPushButton("Patty Melt ($5.49)")
+        self.button_patty_melt.clicked.connect(lambda: self.menu_button_event_handler("Patty Melt", 5.49))
+        layout.addWidget(self.button_patty_melt, 0, 3)
 
         # Clear Button
-        self.btn_clear = QPushButton("Clear")
-        self.btn_clear.clicked.connect(lambda: self.button_clicked_clear())
-        layout.addWidget(self.btn_clear, 0,4)
+        self.button_clear = QPushButton("Clear")
+        self.button_clear.clicked.connect(lambda: self.clear_button_event_handler())
+        layout.addWidget(self.button_clear, 0,4)
 
 
-    def button_clicked_clear(self):
+    def clear_button_event_handler(self):
         ## Uses the c++ function clear to clear cart
         self.logic.clear()
         self.label_total.setText(f"Total: ${self.logic.getTotal():.2f}")
 
-    def button_clicked(self, name, price):
+    def menu_button_event_handler(self, name, price):
         # Uses the c++ function addItem to calculate the price
         self.logic.addItem(name, price)
         # Uses the c++ function getTotal to fetch price
         self.label_total.setText(f"Total: ${self.logic.getTotal():.2f}")
-
 
 if __name__ == "__main__":
     app = QApplication([])
