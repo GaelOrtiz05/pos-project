@@ -4,7 +4,7 @@
 
 int main() {
   POS myPOS;
-  myPOS.initialize();
+  myPOS.initializeMenu();
   myPOS.display();
   myPOS.clear();
   myPOS.display();

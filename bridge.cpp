@@ -11,5 +11,6 @@ PYBIND11_MODULE(backend, handle) {
       .def(py::init<>()) // Constructor
       .def("addItem", &POS::addItem)
       .def("getTotal", &POS::getTotal)
-      .def("clear", &POS::clear);
+      .def("clear", &POS::clear)
+      .def("initializeMenu", &POS::initializeMenu);
 }

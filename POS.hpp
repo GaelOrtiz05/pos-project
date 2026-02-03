@@ -30,8 +30,7 @@ public:
     return total * SALES_TAX;
   }
 
-  // meant for debugging
-  void initialize() {
+  void initializeMenu() {
     std::vector<Item> menu = {{"Salad", 8.00}, {"Patty Melt", 5.49}};
 
     for (const auto &item : menu) {

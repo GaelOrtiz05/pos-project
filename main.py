@@ -15,7 +15,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 
-
 build_path = os.path.join(os.path.dirname(__file__), "build")
 
 if sys.platform == "win32":
@@ -37,7 +36,7 @@ class MainWindow(QMainWindow):
 
         # Initialize C++ POS class from backend module and save it to self.pos
         self.logic = backend.POS()
-        
+
         # Set Window Title
         self.setWindowTitle("POS")
         self.resize(800, 600)
