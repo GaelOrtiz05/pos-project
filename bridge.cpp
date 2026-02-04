@@ -4,7 +4,7 @@
 namespace py = pybind11;
 
 // creates a python module named backend
-PYBIND11_MODULE(backend, handle) {
+PYBIND11_MODULE(pos_backend, handle) {
   py::class_<POS>(handle, "POS")
       // must expose each constructor and functions so that it is accessible in
       // main.py

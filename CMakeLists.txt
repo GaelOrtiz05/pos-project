@@ -9,4 +9,4 @@ add_subdirectory(pybind11)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
-pybind11_add_module(backend bridge.cpp)
+pybind11_add_module(pos_backend bridge.cpp)

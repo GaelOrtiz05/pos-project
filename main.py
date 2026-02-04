@@ -22,7 +22,7 @@ if sys.platform == "win32":
 else:
     sys.path.append(build_path)
 
-import backend
+import pos_backend
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.shortcut_close.activated.connect(self.close)
 
         # Initialize C++ POS class from backend module and save it to self.pos
-        self.logic = backend.POS()
+        self.logic = pos_backend.POS()
 
         # Set Window Title
         self.setWindowTitle("POS")
