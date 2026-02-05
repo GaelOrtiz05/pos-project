@@ -4,8 +4,5 @@
 
 int main() {
   POS myPOS;
-  myPOS.initializeMenu();
-  myPOS.display();
-  myPOS.clear();
-  myPOS.display();
+  myPOS.cppMenu();
 }

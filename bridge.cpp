@@ -12,5 +12,5 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("addItem", &POS::addItem)
       .def("getTotal", &POS::getTotal)
       .def("clear", &POS::clear)
-      .def("initializeMenu", &POS::initializeMenu);
+      .def("initializeMenu", &POS::initializeFromFile);
 }
