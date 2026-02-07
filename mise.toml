@@ -4,7 +4,6 @@ python = "3.14"
 
 [env]
 _.python.venv = { path = "venv", create = true }
-PYTHONPATH = "{{config_root}}/build"
 
 [tasks]
 requirements = "pip install -r requirements.txt"
