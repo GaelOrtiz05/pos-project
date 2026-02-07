@@ -1,58 +1,57 @@
-# How To Run (WINDOWS):
+# Prerequisites:
 
-- Powershell 7
 - Git
-- Mise
+- CMake
+- Powershell 7 (Windows)
 
-How to download prerequisites (WINDOWS):
+# How To Run (WINDOWS):
 
 Run these one by one in an Admin Powershell to download them:
 
-```bash
-// Run this first to install latest version of Powershell 7
-winget install -e --id Microsoft.PowerShell
+## Installing Prerequisites
 
-// Then run these in Powershell 7 (Adminstrator Mode)
+Run these in an administrator Powershell:
+
+```bash
+winget install -e --id Microsoft.PowerShell
 winget install -e --id Git.Git
 winget install -e --id Kitware.CMake
 winget install jdx.mise
 ```
 
-Make sure they are in installed and in your path:
+> [!NOTE]
+> Restart your powershell to add them to your path and verify installation with:
 
 ```bash
 git --version
 cmake --version
+mise --version
 ```
 
-In powershell admin, run:
+## Setting up Mise
+
+In Powershell, run:
 
 ```bash
+
 if (-not (Test-Path $profile)) { New-Item $profile -Force }
+echo '(&mise activate pwsh) | Out-String | Invoke-Expression' >> $PROFILE
 notepad $profile
 ```
 
 This creates a profile if one doesn't exist already, and opens the profile to edit it.
-
-Paste this in the profile:
+Make sure the profile looks like:
 
 ```bash
-if (Get-Command mise -ErrorAction SilentlyContinue) {
     mise activate pwsh | Invoke-Expression
-}
 ```
 
-run `mise reshim` first.
-Then, Press Windows + r, type `sysdm.cpl`, go to the advanced tab, then environment variables.
-Make sure `C:\Users\USER\AppData\Local\mise\shims` is at the top, if there are multiple, delete them and only keep one,
-If this doesn't exist, add the path manually.
-
-restart powershell one last time, and you should be good.
+> [!NOTE]
+> Restart powershell one last time to apply the profile changes
 
 # How To Run (MACOS):
 
-- Brew
-- Mise
+## Installing Prerequisites
 
 Brew is not necessary but it is a linux/macos package manager that makes installation much easier.
 
@@ -68,19 +67,26 @@ Then Run:
 
 ```bash
 brew update
-
 brew install cmake git mise
 ```
 
-depending on if you use bash or zsh, run either:
+## Setting up Mise
+
+Depending on if you use bash or zsh, run either:
 
 ```bash
+# bash
 echo 'eval "$(mise activate bash)"' >> ~/.bashrc
+# zsh
 echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
 ```
 
+# Building
+
 This is same as running something like `python -m venv venv`, but mise creates it automatically and uses them depending on your current directory.
 You don't have to worry about running `source venv/bin/activate` or the equivalent for windows with mise.
+
+You can create specific tasks in mise.toml and you can run them with `mise run`. This make building much cleaner
 
 In a terminal run:
 

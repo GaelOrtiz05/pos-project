@@ -5,7 +5,7 @@ project(POS)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(PYBIND11_FINDPYTHON NEW)
 
-add_subdirectory(libraries/pybind11)
+find_package(pybind11 CONFIG REQUIRED)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 

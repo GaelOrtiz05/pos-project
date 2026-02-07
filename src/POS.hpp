@@ -82,7 +82,6 @@ public:
     menu.clear();
     std::string name;
     double price;
-    char comma;
 
     // only iterates when both the name and price are succesfully ran
     while (std::getline(fileRead, name, ',') && (fileRead >> price)) {
