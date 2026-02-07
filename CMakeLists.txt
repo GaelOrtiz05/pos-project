@@ -5,8 +5,8 @@ project(POS)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(PYBIND11_FINDPYTHON NEW)
 
-add_subdirectory(pybind11)
+add_subdirectory(libraries/pybind11)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
-pybind11_add_module(pos_backend bridge.cpp)
+pybind11_add_module(pos_backend src/bridge.cpp)
