@@ -8,7 +8,5 @@ PYTHONPATH = "{{config_root}}/build"
 
 [tasks]
 requirements = "pip install -r requirements.txt"
-build_test = "cmake -S . -B build -DPython3_EXECUTABLE=$(which python) && cmake --build build && python src/main.py"
-build_macos = "cmake -S . -B build && cmake --build build && python3 src/main.py"
-build_windows = "cmake -S . -B build && cmake --build build --config Debug && python src/main.py"
-
+build_macos = { run = "cmake -S . -B build && cmake --build build && python3 src/main.py", env = { PYTHONPATH = "{{config_root}}/build" } }
+build_windows = { run = "cmake -S . -B build && cmake --build build --config Debug && python src/main.py", env = { PYTHONPATH = "{{config_root}}/build/Debug" } }
