@@ -1,0 +1,12 @@
+[tools]
+cmake = "latest"
+python = "3.14"
+
+[env]
+_.python.venv = { path = "venv", create = true }
+
+[tasks]
+requirements = "pip install -r requirements.txt"
+build_macos = "cmake -S . -B build && cmake --build build && python3 main.py"
+build_windows = "cmake -S . -B build && cmake --build build --config Debug && python main.py"
+
