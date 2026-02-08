@@ -7,5 +7,5 @@ _.python.venv = { path = "venv", create = true }
 
 [tasks]
 requirements = "pip install -r requirements.txt"
-build_macos = { run = "cmake -S . -B build && cmake --build build && python3 src/cpp/main.py", env = { PYTHONPATH = "{{config_root}}/build" } }
-build_windows = { run = "cmake -S . -B build && cmake --build build --config Debug && python src/cpp/main.py", env = { PYTHONPATH = "{{config_root}}/build/Debug" } }
+build_macos = { run = "cmake -S . -B build && cmake --build build && python3 src/python/main.py", env = { PYTHONPATH = "{{config_root}}/build" } }
+build_windows = { run = "cmake -S . -B build && cmake --build build --config Debug && python src/python/main.py", env = { PYTHONPATH = "{{config_root}}/build/Debug" } }
