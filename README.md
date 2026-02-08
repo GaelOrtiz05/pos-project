@@ -143,7 +143,7 @@ mkdir build
 
 # One line: requires you to be in project root
 # Macos
-cmake -S . -B build && cmake --build build && python3 src/python/main.py
+cmake -S . -B build && cmake --build build && python src/python/main.py
 
 # Windows
 cmake -S . -B build && cmake --build build --config Debug && python src/python/main.py
