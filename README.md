@@ -53,7 +53,7 @@ This creates a profile if one doesn't exist already, and opens the profile to ed
 Make sure the profile looks like:
 
 ```bash
-    mise activate pwsh | Invoke-Expression
+(&mise activate pwsh) | Out-String | Invoke-Expression
 ```
 
 > [!NOTE]
