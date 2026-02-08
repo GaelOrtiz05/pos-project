@@ -15,13 +15,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 
-build_path = os.path.join(os.path.dirname(__file__), "build")
-
-if sys.platform == "win32":
-    sys.path.append(os.path.join(build_path, "Debug"))
-else:
-    sys.path.append(build_path)
-
 import pos_backend
 
 class MainWindow(QMainWindow):
