@@ -4,5 +4,5 @@ __pycache__/
 *.so
 .DS_Store
 stubs/
-*.pyd
-*.pdb
+src/python/*.pyd
+src/python/*.pdb
