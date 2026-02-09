@@ -142,11 +142,7 @@ After you are sure you are in the venv, run:
 mkdir build
 
 # One line: requires you to be in project root
-# Macos
 cmake -S . -B build && cmake --build build && python src/python/main.py
-
-# Windows
-cmake -S . -B build && cmake --build build --config Debug && python src/python/main.py
 ```
 
 ## Mise
@@ -161,19 +157,12 @@ Run:
 ```bash
 mise install
 # Macro for pip install -r requirements.txt
-mise run requirements
+mise requirements
 ```
 
-Run on windows:
+Run:
 
 ```bash
-# Macro for cmake -S . -B build && cmake --build build --config Debug && python src/python/main.py
-mise run build_windows
-```
-
-Run on macos:
-
-```bash
-# Macro for cmake -S . -B build && cmake --build build && python3 src/python/main.py
-mise run build_macos
+# Macro for cmake -S . -B build && cmake --build build && python src/python/main.py
+mise build
 ```
