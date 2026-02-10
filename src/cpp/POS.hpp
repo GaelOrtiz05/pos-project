@@ -1,5 +1,6 @@
 #ifndef POS_HPP
 #define POS_HPP
+#include "SQLiteCpp/Database.h"
 #include <fstream>
 #include <iomanip>
 #include <iostream>

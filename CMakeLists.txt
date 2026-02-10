@@ -12,6 +12,8 @@ find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
 pybind11_add_module(pos_backend src/cpp/bridge.cpp)
 
+target_link_libraries(pos_backend PRIVATE SQLiteCpp sqlite3)
+
 set_target_properties(pos_backend PROPERTIES 
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/src/python"
     LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/src/python"
