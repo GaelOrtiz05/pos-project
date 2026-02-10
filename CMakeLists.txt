@@ -6,6 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(PYBIND11_FINDPYTHON NEW)
 
 add_subdirectory(libraries/pybind11)
+add_subdirectory(libraries/SQLiteCpp)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 

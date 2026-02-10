@@ -1,3 +1,6 @@
 [submodule "libraries/pybind11"]
 	path = libraries/pybind11
 	url = https://github.com/pybind/pybind11.git
+[submodule "libraries/SQLiteCpp"]
+	path = libraries/SQLiteCpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
