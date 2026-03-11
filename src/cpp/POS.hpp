@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-// the purpose of this class should be to use db class?
 class POS {
 private:
   Database db;
@@ -33,7 +32,6 @@ public:
     // return total * SALES_TAX;
   }
 
-  // basic display function that iterates through the vector
   void display() {
 
     std::vector<Item> items = db.getItems();

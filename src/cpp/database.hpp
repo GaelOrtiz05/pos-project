@@ -6,8 +6,8 @@
 struct Ingredient {
   int id; // in my head this would be used by sqlite?
   std::string name;
-  bool inStock;  // tracks if it's in stock. Should be greyed out if not
-  bool isInItem; // tracks if it's in a given item.
+  bool inStock;          // tracks if it's in stock. Should be greyed out if not
+  bool isBaseIngredient; // tracks if it's in a base ingredient.
 };
 
 struct Item {
