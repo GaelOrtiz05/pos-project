@@ -7,4 +7,4 @@ _.python.venv = { path = "venv", create = true }
 
 [tasks]
 requirements = "pip install -r requirements.txt"
-build = { run = "cmake -S . -B build && cmake --build build && python3 src/python/main.py", env = { PYTHONPATH = "{{config_root}}/build" } }
+build = { run = "cmake -S . -B build && cmake --build build && python src/python/main.py", env = { PYTHONPATH = "{{config_root}}/build" } }
