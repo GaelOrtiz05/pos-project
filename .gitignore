@@ -6,3 +6,4 @@ __pycache__/
 stubs/
 src/python/*.pyd
 src/python/*.pdb
+*.db
