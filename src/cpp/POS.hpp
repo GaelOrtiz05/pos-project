@@ -74,13 +74,6 @@ public:
       std::string inputName = "";
       double inputPrice = 0;
 
-      std::cout << "\nMENU\n"
-                << "1. Check Inventory\n"
-                << "2. Add To Inventory\n"
-                << "3. Remove From Inventory\n"
-                << "0. Quit\n"
-                << "Input: ";
-
       std::cin >> input;
 
       if (input == 0) {
@@ -88,6 +81,13 @@ public:
       }
 
       switch (input) {
+
+        std::cout << "\nMENU\n"
+                  << "1. Check Inventory\n"
+                  << "2. Add To Inventory\n"
+                  << "3. Remove From Inventory\n"
+                  << "0. Quit\n"
+                  << "Input: ";
       case 1:
         display();
         break;
