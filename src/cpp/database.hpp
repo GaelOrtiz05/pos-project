@@ -2,6 +2,8 @@
 #define DATABASE_HPP
 #include "SQLiteCpp/Database.h"
 #include "SQLiteCpp/SQLiteCpp.h"
+#include <iomanip>
+#include <iostream>
 
 struct Ingredient {
   int id; // in my head this would be used by sqlite?
@@ -24,6 +26,10 @@ private:
   SQLite::Database pos_db;
 
 public:
+  Database()
+      : pos_db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+          // setupDatabase();
+        };
   // add unique item to menu
   void addItem() {}
 
@@ -49,23 +55,6 @@ public:
 
 #endif
 
-// void addItem(std::string name, double price) {
-//   // db.addItem() to add to db
-// }
-//
-// void removeItem(std::string &name) {
-//   // if name == name
-//   // db.removeItem() to remove from db
-// }
-//
-// double getTotal() {
-//   // std::vector<Item> items = db.getItems();
-//   // for loop
-//   // int total += item.price;
-//   // return total * SALES_TAX;
-//
-//   return 0;
-// }
 //
 // void display() {
 //

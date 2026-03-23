@@ -17,7 +17,7 @@ private:
   SQLite::Database db;
 
 public:
-  Login() : db("login.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+  Login() : db("data/login.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
     setupDatabase();
   };
 
@@ -171,10 +171,10 @@ public:
       }
 
       std::cout << "\nMENU\n"
-                << "1. add user\n"
-                << "2. remove user\n"
-                << "3. login\n"
-                << "4. list users \n"
+                << "1. Add user\n"
+                << "2. Remove user\n"
+                << "3. Login\n"
+                << "4. List users \n"
                 << "0. Quit\n"
                 << "Input: ";
 
@@ -183,23 +183,23 @@ public:
       switch (input) {
 
       case 1:
-        std::cout << "username: ";
+        std::cout << "Username: ";
         std::cin >> inputUsername;
-        std::cout << "password: ";
+        std::cout << "Password: ";
         std::cin >> inputPassword;
         login.addUser(inputUsername, inputPassword);
         break;
 
       case 2:
-        std::cout << "username: ";
+        std::cout << "Username: ";
         std::cin >> inputUsername;
         login.removeUser(inputUsername);
         break;
 
       case 3:
-        std::cout << "enter username: ";
+        std::cout << "Username: ";
         std::cin >> inputUsername;
-        std::cout << "enter password: ";
+        std::cout << "Password: ";
         std::cin >> inputPassword;
         login.loginUser(inputUsername, inputPassword);
         break;
@@ -213,7 +213,7 @@ public:
         break;
 
       default:
-        std::cout << "invalid input\n";
+        std::cout << "Invalid Input\n";
       }
     }
   }
