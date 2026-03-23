@@ -4,5 +4,5 @@
 
 int main() {
   POS myPOS;
-  myPOS.cppMenu();
+  myPOS.TopMenu();
 }
