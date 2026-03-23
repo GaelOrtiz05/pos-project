@@ -2,6 +2,7 @@
 #define POS_HPP
 #include "database.hpp"
 #include "login.hpp"
+#include <iomanip>
 #include <iostream>
 #include <string>
 

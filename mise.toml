@@ -5,6 +5,6 @@ python = "3.14"
 [env]
 _.python.venv = { path = "venv", create = true }
 
-[tasks.build]
+[tasks.build_cpp]
 run = "cmake -S . -B build && cmake --build build && ./build/pos_backend"
 
