@@ -12,3 +12,5 @@ run = "git submodule update --init --recursive"
 run = "cmake -S . -B build && cmake --build build && ./build/pos_backend"
 depends = ["setup"]
 
+[tasks.build]
+run = "cmake -S . -B build && cmake --build build && src/python/main.py"
