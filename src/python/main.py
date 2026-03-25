@@ -15,15 +15,17 @@ from PySide6.QtWidgets import (
 )
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QShortcut, QKeySequence
+from PySide6.QtGui import QShortcut, QKeySequence,QKeySequence,QGuiApplication
 
 import pos_backend 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        window_length = 1800
-        window_height = 1200
+        screen = QGuiApplication.primaryScreen()
+        size = screen.availableGeometry()
+        window_length = size.width()
+        window_height = size.height()
         self.setWindowTitle("POS")
         self.resize(window_length, window_height)
         self.show_login_screen()
@@ -82,14 +84,20 @@ class MainWindow(QMainWindow):
         #layout.addWidget(create_new_account_button,3,0,1,2) # Where it is row 3, col 0, takes 1 row and 2 columns
         # create_new_account_button.setStyleSheet("background-color: purple;font-size: 25px;border-radius: 20px;")
 
-        login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input))
+        login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input,layout))
         # login_button.clicked.connect(self.show_home_screen)
         
-    def login_event_handler(self, username, password):
+    def login_event_handler(self, username, password,layout):
         username = username.text()
         password = password.text()
         if self.logic.loginUser(username, password) is True:
             self.show_home_screen()
+        else:
+            error_label = QLabel('Incorrect User or Password')
+            error_label.setFixedSize(300,50)
+            layout.addWidget(error_label,5,0,1,2)
+            error_label.setStyleSheet("background-color: black;font-size: 15px;border-radius: 10px; color: red;")
+            
 
     def show_home_screen(self):
         home_widget = QWidget()
