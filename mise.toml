@@ -6,5 +6,8 @@ python = "3.14"
 _.python.venv = { path = "venv", create = true }
 
 [tasks.build_cpp]
-run = "cmake -S . -B build && cmake --build build && ./build/pos_backend"
+run = "cmake -S . -B build && cmake --build build && ./build/pos_cpp"
 
+[tasks.build_python]
+run = "cmake -S . -B build && cmake --build build && python src/python/main.py"
+# , env = { PYTHONPATH = "{{config_root}}/build" } }

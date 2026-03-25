@@ -1,3 +1,6 @@
+import os
+import sys
+
 from PySide6.QtWidgets import (
     QMainWindow,
     QGridLayout,
@@ -14,6 +17,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 
+import pos_backend 
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,6 +27,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("POS")
         self.resize(window_length, window_height)
         self.show_login_screen()
+
+        self.shortcut_close = QShortcut(QKeySequence.StandardKey.Close, self)
+        self.shortcut_close.activated.connect(self.close)
+
+        self.logic = pos_backend.Login()
 
     def show_login_screen(self):
         # creating a container
@@ -72,8 +81,16 @@ class MainWindow(QMainWindow):
         #create_new_account_button.setFixedSize(300,50)
         #layout.addWidget(create_new_account_button,3,0,1,2) # Where it is row 3, col 0, takes 1 row and 2 columns
         # create_new_account_button.setStyleSheet("background-color: purple;font-size: 25px;border-radius: 20px;")
-        login_button.clicked.connect(self.show_home_screen)
+
+        login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input))
+        # login_button.clicked.connect(self.show_home_screen)
         
+    def login_event_handler(self, username, password):
+        username = username.text()
+        password = password.text()
+        if self.logic.loginUser(username, password) is True:
+            self.show_home_screen()
+
     def show_home_screen(self):
         home_widget = QWidget()
         self.setCentralWidget(home_widget)
