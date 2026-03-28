@@ -4,14 +4,13 @@
 #include "SQLiteCpp/SQLiteCpp.h"
 
 struct Ingredient {
-  int id; // in my head this would be used by sqlite?
-  std::string name;
-  bool inStock;          // tracks if it's in stock. Should be greyed out if not
+  int id;
+  int count;             // tracks if it's in stock. Should be greyed out if not
   bool isBaseIngredient; // tracks if it's in a base ingredient.
 };
 
 struct Item {
-  int id; // in my head this would be used by sqlite?
+  int id;
   std::string name;
   double price;
   std::vector<Ingredient>
@@ -21,13 +20,21 @@ struct Item {
 
 class Database {
 private:
-  SQLite::Database pos_db;
+  SQLite::Database db;
 
 public:
   Database()
-      : pos_db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+      : db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
           // setupDatabase();
         };
+
+  void setupDatabase() {
+    db.exec("CREATE TABLE IF NOT EXISTS items ("
+            "id               INTEGER PRIMARY KEY AUTOINCREMENT"
+            "name             TEXT NOT NULL"
+            "count            INTEGER NOT NULL"
+            "isBaseIngredient INTEGER NOT NULL");
+  }
   // add unique item to menu
   void addItem() {}
 
