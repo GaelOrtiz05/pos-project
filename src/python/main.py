@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
 
         self.logic = pos_backend.Login()
 
-    def show_login_screen(self):
+    def show_login_screen(self): # Login Screen
         # creating a container
         central = QWidget()
         # put the container in the main window
@@ -70,6 +70,7 @@ class MainWindow(QMainWindow):
     
         password_input = QLineEdit()
         password_input.setMaximumSize(150,50)
+        password_input.setEchoMode(QLineEdit.EchoMode.Password) # ***
         layout.addWidget(password_input,3,1)
         password_input.setStyleSheet("background-color: white ; border-radius: 5px; font-size: 25px; color:black")
 
@@ -88,7 +89,7 @@ class MainWindow(QMainWindow):
         login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input,layout))
         # login_button.clicked.connect(self.show_home_screen)
         
-    def login_event_handler(self, username, password,layout):
+    def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
         if self.logic.loginUser(username, password) is True:
@@ -96,11 +97,12 @@ class MainWindow(QMainWindow):
         else:
             error_label = QLabel('Incorrect User or Password')
             error_label.setFixedSize(300,50)
+            error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             layout.addWidget(error_label,5,0,1,2)
-            error_label.setStyleSheet("background-color: black;font-size: 15px;border-radius: 10px; color: red;")
+            error_label.setStyleSheet("background-color: black;font-size: 20px;border-radius: 10px; color: red;")
             
 
-    def show_home_screen(self, current_user):
+    def show_home_screen(self, current_user):  # Main UI
         home_widget = QWidget()
         self.setCentralWidget(home_widget)
         home_widget.setStyleSheet("background-color: black;")
@@ -128,8 +130,8 @@ class MainWindow(QMainWindow):
         top_row.addWidget(drink_button)
         top_row.addWidget(manager_button)
         top_row.addWidget(logout_button)
-        top_row.addStretch()
-
+        top_row.setAlignment(Qt.AlignmentFlag.AlignCenter) # centering the buttons
+        # Disp username
         user_label = QLabel(f"Logged in as: {current_user}")
         user_label.setStyleSheet("""background-color: gray; color: white;font-size: 20px;padding: 8px;border-radius: 10px;""")
         user_label.setFixedHeight(50)
@@ -138,17 +140,17 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(top_row)
 
         combo_row = QHBoxLayout()
-        combo_row.setSpacing(10)
-
+        combo_row.setSpacing(100)
+        #displaying the categories
         for i in range(5):
             combo_button = QPushButton(f"Combo {i+1}")
-            combo_button.setFixedSize(120, 100)
+            combo_button.setFixedSize(200, 100)
             combo_button.setStyleSheet("""
                 QPushButton {background-color: gray;border-radius: 10px;font-size: 18px;color: white;}
                 QPushButton:pressed {background-color: black;}""")
             combo_row.addWidget(combo_button)
 
-        combo_row.addStretch()
+        combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(combo_row)
 
         # Scroll Box - main combo items will be here 
@@ -176,7 +178,7 @@ class MainWindow(QMainWindow):
         manager_button.clicked.connect(self.show_manager_menu) #manager menu
         logout_button.clicked.connect(self.show_login_screen) #logoin screen
 
-    def show_manager_menu(self):
+    def show_manager_menu(self): # Admins
         manager_ui = QWidget()
         self.setCentralWidget(manager_ui)
         manager_ui.setStyleSheet("background-color: black;")
@@ -197,7 +199,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(back_button,2,0)
         back_button.clicked.connect(self.show_home_screen)
 
-    def show_add_employee_screen(self):
+    def show_add_employee_screen(self): # Add employee
         add_ui = QWidget()
         self.setCentralWidget(add_ui)
         add_ui.setStyleSheet("background-color: black;")
@@ -216,7 +218,7 @@ class MainWindow(QMainWindow):
 
         user_input = QLineEdit()
         user_input.setFixedSize(250, 40)
-        user_input.setStyleSheet("font-size: 18px;")
+        user_input.setStyleSheet("font-size: 18px;border-radius: 15px;background-color: white")
 
         # Password
         pass_label = QLabel("Password:")
@@ -225,7 +227,7 @@ class MainWindow(QMainWindow):
         pass_input = QLineEdit()
         pass_input.setEchoMode(QLineEdit.EchoMode.Password)
         pass_input.setFixedSize(250, 40)
-        pass_input.setStyleSheet("font-size: 18px;")
+        pass_input.setStyleSheet("font-size: 18px;border-radius: 15px; background-color: white")
 
         # Submit button
         submit_button = self.create_button('Add-User','green')
