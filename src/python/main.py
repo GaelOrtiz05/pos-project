@@ -164,15 +164,39 @@ class MainWindow(QMainWindow):
 
         for i in range(10):
             for j in range(5):
-                btn = QPushButton(f"Item {i*5+j+1}")
-                btn.setFixedSize(100, 100)
-                btn.setStyleSheet("""
-                    QPushButton {background-color: gray;border-radius: 10px;font-size: 18px;color: white;}
-                    QPushButton:pressed {background-color: black;}""")
+                btn = self.create_button((f"Item {i*5+j+1}"),'gray',150,150)
                 grid.addWidget(btn, i, j)
 
         scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        #main_layout.addWidget(scroll)
+        # Bottom section (items + cart)
+        bottom_row = QHBoxLayout()
+        bottom_row.setSpacing(20)
+
+        # LEFT SIDE (scroll box)
+        bottom_row.addWidget(scroll, 3)  
+
+        # RIGHT SIDE (cart panel)
+        cart_widget = QWidget()
+        cart_layout = QVBoxLayout(cart_widget)
+        cart_widget.setFixedWidth(400) #maybe more?? idk
+        cart_widget.setStyleSheet("background-color: gray; border-radius: 10px;")
+        cart_title = QLabel("Cart")
+        cart_title.setStyleSheet("color: white; font-size: 22px;")
+        cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        cart_layout.addWidget(cart_title)
+
+        # cart items printing w/ price and stuff
+        for i in range(3): # testing the # of items
+            item = QLabel(f"Item {i+1}")
+            item.setStyleSheet("color: white; font-size: 16px;")
+            cart_layout.addWidget(item)
+
+        cart_layout.addStretch()  
+        bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
+
+        # add the scroll and cart to main layout
+        main_layout.addLayout(bottom_row)
 
         #programming the button 
         manager_button.clicked.connect(self.show_manager_menu) #manager menu
