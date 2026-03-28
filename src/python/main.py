@@ -174,13 +174,70 @@ class MainWindow(QMainWindow):
         create_new_account_button.setFixedSize(300,50)
         layout.addWidget(create_new_account_button,0,0) # Where it is row 3, col 0, takes 1 row and 2 columns
         create_new_account_button.setStyleSheet("background-color: purple;font-size: 25px;border-radius: 20px;")
+        create_new_account_button.clicked.connect(self.show_add_employee_screen)
         # View sales button
         view_sales_button = QPushButton('View Sales')
         view_sales_button.setFixedSize(300,50)
         layout.addWidget(view_sales_button,1,0) # Where it is row 3, col 0, takes 1 row and 2 columns
         view_sales_button.setStyleSheet("background-color: gray;font-size: 25px;border-radius: 20px;")
-        # ??? Button
+        # Back Button
+        back_button = self.create_button('Return','red',250,100)
+        layout.addWidget(back_button,2,0)
+        back_button.clicked.connect(self.show_home_screen)
+        
+    def show_add_employee_screen(self):
+        add_ui = QWidget()
+        self.setCentralWidget(add_ui)
+        add_ui.setStyleSheet("background-color: black;")
 
+        layout = QGridLayout(add_ui)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Title
+        title = QLabel("Add Employee")
+        title.setStyleSheet("color: white; font-size: 30px;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Username
+        user_label = QLabel("Username:")
+        user_label.setStyleSheet("color: white; font-size: 20px;")
+
+        user_input = QLineEdit()
+        user_input.setFixedSize(250, 40)
+        user_input.setStyleSheet("font-size: 18px;")
+
+        # Password
+        pass_label = QLabel("Password:")
+        pass_label.setStyleSheet("color: white; font-size: 20px;")
+
+        pass_input = QLineEdit()
+        pass_input.setEchoMode(QLineEdit.EchoMode.Password)
+        pass_input.setFixedSize(250, 40)
+        pass_input.setStyleSheet("font-size: 18px;")
+
+        # Submit button
+        submit_button = self.create_button('Add-User','green')
+
+        # Back button (optional but clutch)
+        back_button = self.create_button('Back','red')
+        back_button.clicked.connect(self.show_manager_menu)
+
+        # Add to layout
+        layout.addWidget(title, 0, 0, 1, 2)
+        layout.addWidget(user_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(user_input, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
+
+        layout.addWidget(pass_label, 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(pass_input, 2, 1, alignment=Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(submit_button, 3, 0, 1, 3)
+        layout.addWidget(back_button, 4, 0, 1, 3)
+
+
+    def create_button(self, text, color="gray", width=300, height=50):
+        btn = QPushButton(text)
+        btn.setFixedSize(width, height)
+        btn.setStyleSheet(f"""QPushButton {{background-color: {color};font-size: 25px;border-radius: 20px;}}QPushButton:pressed {{background-color: black;}}""")
+        return btn
 if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
