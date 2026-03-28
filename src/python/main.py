@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QVBoxLayout,
     QCheckBox,
+    QHBoxLayout
 )
 
 from PySide6.QtCore import Qt
@@ -91,7 +92,7 @@ class MainWindow(QMainWindow):
         username = username.text()
         password = password.text()
         if self.logic.loginUser(username, password) is True:
-            self.show_home_screen()
+            self.show_home_screen(username)
         else:
             error_label = QLabel('Incorrect User or Password')
             error_label.setFixedSize(300,50)
@@ -99,70 +100,81 @@ class MainWindow(QMainWindow):
             error_label.setStyleSheet("background-color: black;font-size: 15px;border-radius: 10px; color: red;")
             
 
-    def show_home_screen(self):
+    def show_home_screen(self, current_user):
         home_widget = QWidget()
         self.setCentralWidget(home_widget)
-        # Declaring the categories
-        layout = QGridLayout(home_widget)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # Adding Buttons
-        All_items = QPushButton('All')
-        Entre_Button = QPushButton("Entres")
-        Sides_Button = QPushButton("Sides")
-        Dessert_Button = QPushButton("Dessert")
-        Drink_Button = QPushButton("Drinks")
-        Manager_Button = QPushButton("Manager")
+        home_widget.setStyleSheet("background-color: black;")
 
-        # Customizing the button
-        All_items.setStyleSheet("QPushButton {background-color: black ; border-radius: 10px; font-size: 25px;}QPushButton:pressed {background-color: gray;}")
-        All_items.setFixedSize(150,50)
-        Entre_Button.setStyleSheet("QPushButton {background-color: black ; border-radius: 10px; font-size: 25px;}QPushButton:pressed {background-color: gray;}")
-        Entre_Button.setFixedSize(150,50)
-        Sides_Button.setStyleSheet("QPushButton {background-color: black ; border-radius: 10px; font-size: 25px;}QPushButton:pressed {background-color: gray;}")
-        Sides_Button.setFixedSize(150,50)
-        Dessert_Button.setStyleSheet("QPushButton {background-color: black ; border-radius: 10px; font-size: 25px;}QPushButton:pressed {background-color: gray;}")
-        Dessert_Button.setFixedSize(150,50)
-        Drink_Button.setStyleSheet("QPushButton {background-color: black ; border-radius: 10px; font-size: 25px;}QPushButton:pressed {background-color: gray;}")
-        Drink_Button.setFixedSize(150,50)
-        Manager_Button.setStyleSheet("QPushButton {background-color: #63130d ; border-radius: 10px; font-size: 25px;}QPushButton:pressed {background-color: gray;}")
-        Manager_Button.setFixedSize(150,50)
-        # Displaying the categories
-        i = 0
-        layout.addWidget(All_items,i,0)
-        layout.addWidget(Entre_Button,i,1)
-        layout.addWidget(Sides_Button,i,2)
-        layout.addWidget(Dessert_Button,i,3)
-        layout.addWidget(Drink_Button,i,4)
-        layout.addWidget(Manager_Button,0,5)
+        main_layout = QVBoxLayout(home_widget)
+        main_layout.setContentsMargins(15, 15, 15, 15)
+        main_layout.setSpacing(15)
 
-        # Main Combo Buttobs
+        # Row for the categories
+        top_row = QHBoxLayout()
+        top_row.setSpacing(10)
+
+        all_items = self.create_button('All', 'black', 150, 50)
+        entre_button = self.create_button('Entre', 'black', 150, 50)
+        sides_button = self.create_button('Sides', 'black', 150, 50)
+        dessert_button = self.create_button('Dessert', 'black', 150, 50)
+        drink_button = self.create_button('Drinks', 'black', 150, 50)
+        manager_button = self.create_button('Manager', 'black', 150, 50)
+        logout_button = self.create_button('Logout', '#540612', 150, 50)
+
+        top_row.addWidget(all_items)
+        top_row.addWidget(entre_button)
+        top_row.addWidget(sides_button)
+        top_row.addWidget(dessert_button)
+        top_row.addWidget(drink_button)
+        top_row.addWidget(manager_button)
+        top_row.addWidget(logout_button)
+        top_row.addStretch()
+
+        user_label = QLabel(f"Logged in as: {current_user}")
+        user_label.setStyleSheet("""background-color: gray; color: white;font-size: 20px;padding: 8px;border-radius: 10px;""")
+        user_label.setFixedHeight(50)
+        top_row.addWidget(user_label)
+
+        main_layout.addLayout(top_row)
+
+        combo_row = QHBoxLayout()
+        combo_row.setSpacing(10)
+
         for i in range(5):
-            combo_button = QPushButton(f"Combo {i}")
-            combo_button.setFixedSize(100,100)
-            combo_button.setStyleSheet("QPushButton {background-color: gray ; border-radius: 5px; font-size: 20px;}QPushButton:pressed {background-color: black;}")
-            layout.addWidget(combo_button,1,i)
+            combo_button = QPushButton(f"Combo {i+1}")
+            combo_button.setFixedSize(120, 100)
+            combo_button.setStyleSheet("""
+                QPushButton {background-color: gray;border-radius: 10px;font-size: 18px;color: white;}
+                QPushButton:pressed {background-color: black;}""")
+            combo_row.addWidget(combo_button)
 
-        # Scrolling options
-        scroll = QScrollArea() # Making scroll area
-        scroll.setWidgetResizable(True)   
-        container = QWidget() # making a container
-        grid = QGridLayout(container) 
+        combo_row.addStretch()
+        main_layout.addLayout(combo_row)
+
+        # Scroll Box - main combo items will be here 
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("background-color: black; border: none;")
+
+        container = QWidget()
+        grid = QGridLayout(container)
+        grid.setSpacing(10)
+
         for i in range(10):
-            for j in range (5):
-                btn = QPushButton(f"Item {i*7+j}")
-                btn.setFixedSize(80,80)
-                btn.setStyleSheet("QPushButton {background-color: gray ; border-radius: 5px; font-size: 20px;}QPushButton:pressed {background-color: black;}")
-                grid.addWidget(btn,i,j)
-
-        #Programming the buttons
-        Manager_Button.clicked.connect(self.show_manager_menu) #manager menu
-
-
+            for j in range(5):
+                btn = QPushButton(f"Item {i*5+j+1}")
+                btn.setFixedSize(100, 100)
+                btn.setStyleSheet("""
+                    QPushButton {background-color: gray;border-radius: 10px;font-size: 18px;color: white;}
+                    QPushButton:pressed {background-color: black;}""")
+                grid.addWidget(btn, i, j)
 
         scroll.setWidget(container)
+        main_layout.addWidget(scroll)
 
-        # Add scroll area to your main layout
-        layout.addWidget(scroll,2,0,1,5)
+        #programming the button 
+        manager_button.clicked.connect(self.show_manager_menu) #manager menu
+        logout_button.clicked.connect(self.show_login_screen) #logoin screen
 
     def show_manager_menu(self):
         manager_ui = QWidget()
@@ -181,10 +193,10 @@ class MainWindow(QMainWindow):
         layout.addWidget(view_sales_button,1,0) # Where it is row 3, col 0, takes 1 row and 2 columns
         view_sales_button.setStyleSheet("background-color: gray;font-size: 25px;border-radius: 20px;")
         # Back Button
-        back_button = self.create_button('Return','red',250,100)
+        back_button = self.create_button('Return','red',300,75)
         layout.addWidget(back_button,2,0)
         back_button.clicked.connect(self.show_home_screen)
-        
+
     def show_add_employee_screen(self):
         add_ui = QWidget()
         self.setCentralWidget(add_ui)
@@ -236,7 +248,7 @@ class MainWindow(QMainWindow):
     def create_button(self, text, color="gray", width=300, height=50):
         btn = QPushButton(text)
         btn.setFixedSize(width, height)
-        btn.setStyleSheet(f"""QPushButton {{background-color: {color};font-size: 25px;border-radius: 20px;}}QPushButton:pressed {{background-color: black;}}""")
+        btn.setStyleSheet(f"""QPushButton {{background-color: {color};font-size: 25px;border-radius: 20px;}}QPushButton:pressed {{background-color: gray;}}""")
         return btn
 if __name__ == "__main__":
     app = QApplication([])
