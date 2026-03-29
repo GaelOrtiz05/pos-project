@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
         password = password.text()
         if self.logic.loginUser(username, password) is True:
             self.current_user = self.logic.getUser(username)
+            self.users = self.logic.getListOfUsers()
             self.show_home_screen()
         else:
             error_label = QLabel('Incorrect User or Password')
@@ -263,8 +264,12 @@ class MainWindow(QMainWindow):
         pass_input.setFixedSize(250, 40)
         pass_input.setStyleSheet("font-size: 18px;border-radius: 15px; background-color: white")
 
+        # Checkbox
+        checkbox = QCheckBox("Admin:")
+
         # Submit button
         submit_button = self.create_button('Add-User','green')
+        submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox.isChecked()))
 
         # Back button (optional but clutch)
         back_button = self.create_button('Back','red')
@@ -274,12 +279,18 @@ class MainWindow(QMainWindow):
         layout.addWidget(title, 0, 0, 1, 2)
         layout.addWidget(user_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(user_input, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-
         layout.addWidget(pass_label, 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(pass_input, 2, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(submit_button, 3, 0, 1, 3)
-        layout.addWidget(back_button, 4, 0, 1, 3)
+        layout.addWidget(checkbox, 3, 1, 1, 2)
+        layout.addWidget(submit_button, 4, 0, 1, 3)
+        layout.addWidget(back_button, 5, 0, 1, 3)
 
+    # added submit event handler
+    # should probably validate input to make sure there are no spaces in username, or password
+    def submit_event_handler(self, username, password, isAdmin):
+        username = username.text()
+        password = password.text()
+        self.logic.addUser(username, password, isAdmin)
 
     def create_button(self, text, color="gray", width=300, height=50):
         btn = QPushButton(text)
