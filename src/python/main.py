@@ -86,14 +86,15 @@ class MainWindow(QMainWindow):
         #layout.addWidget(create_new_account_button,3,0,1,2) # Where it is row 3, col 0, takes 1 row and 2 columns
         # create_new_account_button.setStyleSheet("background-color: purple;font-size: 25px;border-radius: 20px;")
 
-        login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input,layout))
+        login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
         # login_button.clicked.connect(self.show_home_screen)
         
     def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
         if self.logic.loginUser(username, password) is True:
-            self.show_home_screen(username)
+            self.current_user = self.logic.getUser(username)
+            self.show_home_screen()
         else:
             error_label = QLabel('Incorrect User or Password')
             error_label.setFixedSize(300,50)
@@ -102,7 +103,8 @@ class MainWindow(QMainWindow):
             error_label.setStyleSheet("background-color: black;font-size: 20px;border-radius: 10px; color: red;")
             
 
-    def show_home_screen(self, current_user):  # Main UI
+    def show_home_screen(self):  # Main UI
+
         home_widget = QWidget()
         self.setCentralWidget(home_widget)
         home_widget.setStyleSheet("background-color: black;")
@@ -132,7 +134,7 @@ class MainWindow(QMainWindow):
         top_row.addWidget(logout_button)
         top_row.setAlignment(Qt.AlignmentFlag.AlignCenter) # centering the buttons
         # Disp username
-        user_label = QLabel(f"Logged in as: {current_user}")
+        user_label = QLabel(f"Logged in as: {self.current_user.name}")
         user_label.setStyleSheet("""background-color: gray; color: white;font-size: 20px;padding: 8px;border-radius: 10px;""")
         user_label.setFixedHeight(50)
         top_row.addWidget(user_label)
@@ -199,10 +201,18 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(bottom_row)
 
         #programming the button 
-        manager_button.clicked.connect(self.show_manager_menu) #manager menu
         logout_button.clicked.connect(self.show_login_screen) #logoin screen
 
+        manager_button.clicked.connect(lambda: self.manager_event_handler())
+
+    # added event handler
+    def manager_event_handler(self):
+        if self.current_user.isAdmin:
+            self.show_manager_menu()
+        # else:
+
     def show_manager_menu(self): # Admins
+
         manager_ui = QWidget()
         self.setCentralWidget(manager_ui)
         manager_ui.setStyleSheet("background-color: black;")

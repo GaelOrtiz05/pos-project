@@ -1,23 +1,17 @@
 #include "POS.hpp"
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
-// deprecated?
-// creates a python module named backend
-// PYBIND11_MODULE(pos_backend, handle) {
-//   py::class_<POS>(handle, "POS")
-//       // must expose each constructor and functions so that it is accessible
-//       in
-//       // main.py
-//       .def(py::init<>()) // Constructor
-//       .def("addItem", &POS::addItem)
-//       .def("getTotal", &POS::getTotal)
-//       .def("clear", &POS::clear)
-//       .def("initializeMenu", &POS::initializeFromFile);
-// }
-
 PYBIND11_MODULE(pos_backend, handle) {
+
+  py::class_<User>(handle, "User")
+      .def_readonly("id", &User::id)
+      .def_readonly("name", &User::name)
+      .def_readonly("password", &User::password)
+      .def_readonly("isAdmin", &User::isAdmin);
+
   py::class_<Login>(handle, "Login")
       .def(py::init<>())
       .def("addUser", &Login::addUser)
@@ -27,4 +21,6 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("getIsAdmin", &Login::getIsAdmin)
       .def("togglePrivileges", &Login::togglePrivileges)
       .def("getListOfUsers", &Login::getListOfUsers);
+
+  // py::class_<database>(handle, "POS")
 }
