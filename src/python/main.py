@@ -118,12 +118,12 @@ class MainWindow(QMainWindow):
         top_row = QHBoxLayout()
         top_row.setSpacing(10)
 
-        all_items = self.create_button('All', 'black', 150, 50)
-        entre_button = self.create_button('Entre', 'black', 150, 50)
-        sides_button = self.create_button('Sides', 'black', 150, 50)
-        dessert_button = self.create_button('Dessert', 'black', 150, 50)
-        drink_button = self.create_button('Drinks', 'black', 150, 50)
-        manager_button = self.create_button('Manager', 'black', 150, 50)
+        all_items = self.create_button('All', '#2e302f', 150, 50)
+        entre_button = self.create_button('Entre', '#2e302f', 150, 50)
+        sides_button = self.create_button('Sides', '#2e302f', 150, 50)
+        dessert_button = self.create_button('Dessert', '#2e302f', 150, 50)
+        drink_button = self.create_button('Drinks', '#2e302f', 150, 50)
+        manager_button = self.create_button('Manager', '#2e302f', 150, 50)
         logout_button = self.create_button('Logout', '#540612', 150, 50)
 
         top_row.addWidget(all_items)
@@ -136,20 +136,20 @@ class MainWindow(QMainWindow):
         top_row.setAlignment(Qt.AlignmentFlag.AlignCenter) # centering the buttons
         # Disp username
         user_label = QLabel(f"Logged in as: {self.current_user.name}")
-        user_label.setStyleSheet("""background-color: gray; color: white;font-size: 20px;padding: 8px;border-radius: 10px;""")
+        user_label.setStyleSheet("""background-color: #2e302f; color: white;font-size: 20px;padding: 8px;border-radius: 10px;""")
         user_label.setFixedHeight(50)
         top_row.addWidget(user_label)
 
         main_layout.addLayout(top_row)
 
         combo_row = QHBoxLayout()
-        combo_row.setSpacing(100)
+        combo_row.setSpacing(75)
         #displaying the categories
         for i in range(5):
             combo_button = QPushButton(f"Combo {i+1}")
             combo_button.setFixedSize(200, 100)
             combo_button.setStyleSheet("""
-                QPushButton {background-color: gray;border-radius: 10px;font-size: 18px;color: white;}
+                QPushButton {background-color: #2e302f;border-radius: 10px;font-size: 18px;color: white;}
                 QPushButton:pressed {background-color: black;}""")
             combo_row.addWidget(combo_button)
 
@@ -167,7 +167,7 @@ class MainWindow(QMainWindow):
 
         for i in range(10):
             for j in range(5):
-                btn = self.create_button((f"Item {i*5+j+1}"),'gray',150,150)
+                btn = self.create_button((f"Item {i*5+j+1}"),'#2e302f',150,150)
                 grid.addWidget(btn, i, j)
 
         scroll.setWidget(container)
@@ -183,19 +183,22 @@ class MainWindow(QMainWindow):
         cart_widget = QWidget()
         cart_layout = QVBoxLayout(cart_widget)
         cart_widget.setFixedWidth(400) #maybe more?? idk
-        cart_widget.setStyleSheet("background-color: gray; border-radius: 10px;")
+        cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 10px;")
         cart_title = QLabel("Cart")
         cart_title.setStyleSheet("color: white; font-size: 22px;")
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cart_layout.addWidget(cart_title)
-
+  
         # cart items printing w/ price and stuff
         for i in range(3): # testing the # of items
             item = QLabel(f"Item {i+1}")
             item.setStyleSheet("color: white; font-size: 16px;")
             cart_layout.addWidget(item)
 
-        cart_layout.addStretch()  
+        cart_layout.addStretch()  # To place checkout at the bottom
+        checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
+        cart_layout.addWidget(checkout_button)
+
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
 
         # add the scroll and cart to main layout
@@ -222,7 +225,7 @@ class MainWindow(QMainWindow):
         create_new_account_button = QPushButton('Add Employee')
         create_new_account_button.setFixedSize(300,50)
         layout.addWidget(create_new_account_button,0,0) # Where it is row 3, col 0, takes 1 row and 2 columns
-        create_new_account_button.setStyleSheet("background-color: purple;font-size: 25px;border-radius: 20px;")
+        create_new_account_button.setStyleSheet("background-color: gray;font-size: 25px;border-radius: 20px;")
         create_new_account_button.clicked.connect(self.show_add_employee_screen)
         # View sales button
         view_sales_button = QPushButton('View Sales')
@@ -253,7 +256,7 @@ class MainWindow(QMainWindow):
 
         user_input = QLineEdit()
         user_input.setFixedSize(250, 40)
-        user_input.setStyleSheet("font-size: 18px;border-radius: 15px;background-color: white")
+        user_input.setStyleSheet("font-size: 18px;border-radius: 15px;background-color: white; color: black")
 
         # Password
         pass_label = QLabel("Password:")
@@ -266,12 +269,12 @@ class MainWindow(QMainWindow):
 
         # Checkbox
         checkbox = QCheckBox("Admin:")
-
+        checkbox.setStyleSheet("QCheckBox::indicator { width: 20px; height: 20px; }")
         # Submit button
         submit_button = self.create_button('Add-User','green')
         submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox.isChecked()))
 
-        # Back button (optional but clutch)
+        # Back button
         back_button = self.create_button('Back','red')
         back_button.clicked.connect(self.show_manager_menu)
 
