@@ -97,6 +97,7 @@ public:
     SQLite::Statement insert(
         db, "INSERT INTO users (name, password, is_admin) VALUES (?, ?, ?)");
     // id is handeld by AUTOINCREMENT
+
     // binds name
     insert.bind(1, name);
     // binds password
@@ -169,6 +170,37 @@ public:
     return true;
   }
 
+  bool getIsAdmin(const std::string &name) {
+
+    if (searchUser(name) == false) {
+      std::cout << "Username does not exist";
+      return false;
+    }
+
+    SQLite::Statement query(db, "SELECT is_admin FROM users WHERE name = ?");
+
+    query.bind(1, name);
+
+    // we can validate input without searchUser because this is a select query
+    // otherwise, we use searchUser
+    bool userExists = query.executeStep();
+
+    if (!userExists) {
+      std::cout << "Username " << name << " not found.\n";
+      return false;
+    }
+
+    bool isAdmin = query.getColumn(0).getInt();
+
+    if (isAdmin) {
+      std::cout << "User " << name << " is an admin";
+      return true;
+    } else {
+      std::cout << "User " << name << " is not an admin";
+      return false;
+    }
+  }
+
   bool loginUser(const std::string &name, const std::string &password) {
 
     // match name to password
@@ -197,23 +229,39 @@ public:
     }
   }
 
-  void listUsers() {
-    SQLite::Statement query(db, "SELECT * FROM users WHERE id >= 0");
+  User getUser(const std::string &name) {
 
-    // struct not strictly necessary but it looks nicer :)
+    SQLite::Statement query(db, "SELECT * FROM users WHERE name = ?");
+
+    query.bind(1, name);
+
+    // can't return false so throw error if user not found
+    if (!query.executeStep()) {
+      throw std::runtime_error("Username " + name + " not found");
+    }
+
     User user;
 
+    user.id = query.getColumn(0).getInt();
+    user.name = query.getColumn(1).getString();
+    user.password = query.getColumn(2).getString();
+    user.isAdmin = query.getColumn(3).getInt();
+
+    return user;
+  }
+
+  std::vector<User> getListOfUsers() {
+
+    SQLite::Statement query(db, "SELECT name FROM users where id >=0 ");
+
+    std::vector<User> users;
+
     while (query.executeStep()) {
-
-      user.id = query.getColumn(0).getInt();
-      user.name = query.getColumn(1).getString();
-      user.password = query.getColumn(2).getString();
-      user.isAdmin = query.getColumn(3).getInt();
-
-      std::cout << "id: " << user.id << ", username: " << user.name
-                << ", password: " << user.password
-                << ", is_admin: " << user.isAdmin << std::endl;
+      // call getUser with the name fetched by query and add to vector
+      users.push_back(getUser(query.getColumn(0).getString()));
     }
+
+    return users;
   }
 
   void loginMenu() {
@@ -225,18 +273,14 @@ public:
 
     while (running) {
 
-      int input;
-
-      if (input == 0) {
-        break;
-      }
-
       std::cout << "\nMENU\n"
                 << "1. Add user\n"
                 << "2. Remove user\n"
                 << "3. Login\n"
                 << "4. List users \n"
                 << "5. Toggle privileges\n"
+                << "6. Fetch Privileges\n"
+                << "7. Return User\n"
                 << "0. Quit\n"
                 << "Input: ";
 
@@ -244,7 +288,7 @@ public:
 
       switch (input) {
 
-      case 1:
+      case 1: {
         std::cout << "Username: ";
         std::cin >> inputUsername;
         std::cout << "Password: ";
@@ -253,37 +297,58 @@ public:
         std::cin >> inputIsAdmin;
         addUser(inputUsername, inputPassword, inputIsAdmin);
         break;
-
-      case 2:
+      }
+      case 2: {
         std::cout << "Username: ";
         std::cin >> inputUsername;
         removeUser(inputUsername);
         break;
-
-      case 3:
+      }
+      case 3: {
         std::cout << "Username: ";
         std::cin >> inputUsername;
         std::cout << "Password: ";
         std::cin >> inputPassword;
         loginUser(inputUsername, inputPassword);
         break;
-
-      case 4:
-        listUsers();
+      }
+      case 4: {
+        // if you're curious
+        // https://stackoverflow.com/a/12702744
+        std::vector<User> users = getListOfUsers();
+        for (const User &i : users) {
+          std::cout << "username: " << i.name << "\n";
+        }
         break;
-
-      case 5:
+      }
+      case 5: {
         std::cout << "Username: ";
         std::cin >> inputUsername;
         togglePrivileges(inputUsername);
         break;
-
-      case 0:
+      }
+      case 6: {
+        std::cout << "Username: ";
+        std::cin >> inputUsername;
+        getIsAdmin(inputUsername);
+        break;
+      }
+      case 7: {
+        std::cout << "Username: ";
+        std::cin >> inputUsername;
+        User user = getUser(inputUsername);
+        std::cout << "id: " << user.id << " username: " << user.name
+                  << " password: " << user.password
+                  << " is_admin: " << user.isAdmin << "\n";
+        break;
+      }
+      case 0: {
         running = false;
         break;
-
-      default:
+      }
+      default: {
         std::cout << "Invalid Input\n";
+      }
       }
     }
   }

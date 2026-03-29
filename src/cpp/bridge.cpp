@@ -23,5 +23,8 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("addUser", &Login::addUser)
       .def("removeUser", &Login::removeUser)
       .def("loginUser", &Login::loginUser)
-      .def("listUsers", &Login::listUsers);
+      .def("getUser", &Login::getUser)
+      .def("getIsAdmin", &Login::getIsAdmin)
+      .def("togglePrivileges", &Login::togglePrivileges)
+      .def("getListOfUsers", &Login::getListOfUsers);
 }
