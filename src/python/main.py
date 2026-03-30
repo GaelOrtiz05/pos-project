@@ -240,11 +240,8 @@ class MainWindow(QMainWindow):
         pass_label = self.create_label("Password:",'',100,40)
         pass_input = QLineEdit()
         pass_input.setEchoMode(QLineEdit.EchoMode.Password)
-<<<<<<< HEAD
         pass_input.setFixedSize(250, 40)
-=======
         pass_input.setMaximumSize(200, 40)
->>>>>>> 512db19f9dacbe4d707744e949efacb77327585b
         pass_input.setStyleSheet("font-size: 18px;border-radius: 15px; background-color: white; color: black")
 
         # Checkbox

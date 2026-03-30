@@ -34,21 +34,26 @@ public:
             "name                       TEXT NOT NULL"
             "count                      INTEGER NOT NULL"
             "in_item INTEGER            NOT NULL"
+            "combo_id                   INTEGER NOT NULL"
             "category_id                INTEGER NOT NULL"
             "FOREIGN KEY(category_id)   REFERENCES categories(category_id)"
+            "FOREIGN KEY(combo_id)      REFERENCES combos(combo_id)"
             ")");
 
     db.exec("CREATE TABLE IF NOT EXISTS ingredients ("
             "ingredient_id              INTEGER PRIMARY KEY AUTOINCREMENT,"
             "name                       TEXT NOT NULL,"
-            "password                   TEXT NOT NULL,"
-            "is_admin                   INTEGER DEFAULT 0"
             "item_id                    INTEGER NOT NULL"
             "FOREIGN KEY(item_id)       REFERENCES ingredients(item_id)"
             ")");
 
     db.exec("CREATE TABLE IF NOT EXISTS categories ("
             "category_id                INTEGER PRIMARY KEY AUTOINCREMENT"
+            "name                       TEXT NOT NULL"
+            ")");
+
+    db.exec("CREATE TABLE IF NOT EXISTS combos ("
+            "combo_id                   INTEGER PRIMARY KEY AUTOINCREMENT"
             "name                       TEXT NOT NULL"
             ")");
   }
