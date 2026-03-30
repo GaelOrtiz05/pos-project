@@ -14,8 +14,7 @@ struct Item {
   int id;
   std::string name;
   double price;
-  std::vector<Ingredient>
-      ingredients; // each item will have a initialized vector with the base
+  int stock;
 };
 
 class Database {
@@ -32,7 +31,7 @@ public:
     db.exec("CREATE TABLE IF NOT EXISTS items ("
             "item_id                    INTEGER PRIMARY KEY AUTOINCREMENT"
             "name                       TEXT NOT NULL"
-            "count                      INTEGER NOT NULL"
+            "stock                      INTEGER NOT NULL"
             "in_item INTEGER            NOT NULL"
             "combo_id                   INTEGER NOT NULL"
             "category_id                INTEGER NOT NULL"
