@@ -138,11 +138,7 @@ class MainWindow(QMainWindow):
         combo_row.setSpacing(75)
         #displaying the categories
         for i in range(5):
-            combo_button = QPushButton(f"Combo {i+1}")
-            combo_button.setFixedSize(200, 100)
-            combo_button.setStyleSheet("""
-                QPushButton {background-color: #2e302f;border-radius: 10px;font-size: 18px;color: white;}
-                QPushButton:pressed {background-color: black;}""")
+            combo_button = self.create_button(f"Combo {i+1}",'#2e302f',200,100)
             combo_row.addWidget(combo_button)
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -167,17 +163,14 @@ class MainWindow(QMainWindow):
         # Bottom section (items + cart)
         bottom_row = QHBoxLayout()
         bottom_row.setSpacing(20)
-
         # LEFT SIDE (scroll box)
         bottom_row.addWidget(scroll, 3)  
-
         # RIGHT SIDE (cart panel)
         cart_widget = QWidget()
         cart_layout = QVBoxLayout(cart_widget)
         cart_widget.setFixedWidth(400) #maybe more?? idk
         cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 10px;")
-        cart_title = QLabel("Cart")
-        cart_title.setStyleSheet("color: white; font-size: 22px;")
+        cart_title = self.create_label("Cart",'gray',400,50)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cart_layout.addWidget(cart_title)
   
@@ -189,16 +182,13 @@ class MainWindow(QMainWindow):
 
         cart_layout.addStretch()  # To place checkout at the bottom
         checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
-        cart_layout.addWidget(checkout_button)
-
+        # checkout_button.setStyleSheet('font-size: 25px;')
+        cart_layout.addWidget(checkout_button,alignment=Qt.AlignmentFlag.AlignCenter)
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
-
         # add the scroll and cart to main layout
         main_layout.addLayout(bottom_row)
-
         #programming the button 
         logout_button.clicked.connect(self.show_login_screen) #logoin screen
-
         manager_button.clicked.connect(lambda: self.manager_event_handler())
 
     # added event handler
@@ -220,9 +210,12 @@ class MainWindow(QMainWindow):
         # View sales button
         view_sales_button = self.create_button('View Sales','gray',300,50)
         layout.addWidget(view_sales_button,1,0) # Where it is row 3, col 0, takes 1 row and 2 columns
+        # Manager inventory button
+        manage_inventory_button = self.create_button('Manage Inventory','gray',300,50)
+        layout.addWidget(manage_inventory_button,2,0)
         # Back Button
         back_button = self.create_button('Return','red',300,50)
-        layout.addWidget(back_button,2,0)
+        layout.addWidget(back_button,3,0)
         back_button.clicked.connect(self.show_home_screen)
 
     def show_add_employee_screen(self): # Add employee
@@ -234,45 +227,45 @@ class MainWindow(QMainWindow):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Title
-        title = QLabel("Add Employee")
-        title.setStyleSheet("color: white; font-size: 30px;")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title = self.create_label("Add Employee","",400,50)
+        title.setStyleSheet('font-size: 25px')
 
         # Username
-        user_label = QLabel("Username:")
-        user_label.setStyleSheet("color: white; font-size: 20px;")
-
+        user_label = self.create_label("Username:",'',100,40)
         user_input = QLineEdit()
-        user_input.setFixedSize(250, 40)
+        user_input.setMaximumSize(200, 40)
         user_input.setStyleSheet("font-size: 18px;border-radius: 15px;background-color: white; color: black")
 
         # Password
-        pass_label = QLabel("Password:")
-        pass_label.setStyleSheet("color: white; font-size: 20px;")
-
+        pass_label = self.create_label("Password:",'',100,40)
         pass_input = QLineEdit()
         pass_input.setEchoMode(QLineEdit.EchoMode.Password)
+<<<<<<< HEAD
         pass_input.setFixedSize(250, 40)
+=======
+        pass_input.setMaximumSize(200, 40)
+>>>>>>> 512db19f9dacbe4d707744e949efacb77327585b
         pass_input.setStyleSheet("font-size: 18px;border-radius: 15px; background-color: white; color: black")
 
         # Checkbox
         checkbox = QCheckBox("Admin:")
         checkbox.setStyleSheet("QCheckBox::indicator { width: 20px; height: 20px; }")
+
         # Submit button
-        submit_button = self.create_button('Add-User','green')
+        submit_button = self.create_button('Add-User','green',300,50)
         submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox.isChecked()))
 
         # Back button
-        back_button = self.create_button('Back','red')
+        back_button = self.create_button('Back','red',300,50)
         back_button.clicked.connect(self.show_manager_menu)
 
         # Add to layout
-        layout.addWidget(title, 0, 0, 1, 2)
+        layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(user_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(user_input, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(pass_label, 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(pass_input, 2, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(checkbox, 3, 1, 1, 2)
+        layout.addWidget(checkbox, 3, 1, 1, 2,alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(submit_button, 4, 0, 1, 3)
         layout.addWidget(back_button, 5, 0, 1, 3)
 
@@ -283,10 +276,10 @@ class MainWindow(QMainWindow):
         password = password.text()
         self.logic.addUser(username, password, isAdmin)
 
-    def create_button(self, text, color="gray", width=300, height=50):
+    def create_button(self, text, color="gray", width=300, height=50): 
         btn = QPushButton(text)
         btn.setFixedSize(width, height)
-        btn.setStyleSheet(f"""QPushButton {{background-color: {color};font-size: 25px;border-radius: 20px;}}QPushButton:pressed {{background-color: gray;}}""")
+        btn.setStyleSheet(f"QPushButton {{background-color: {color};font-size: 25px;border-radius: 20px;}}QPushButton:pressed {{background-color: gray;}}QPushButton:hover{{ background-color: blue;}}")
         return btn
     
     def create_label(self,text,color = 'gray',width=300,height = 50):
