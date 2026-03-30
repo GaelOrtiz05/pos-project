@@ -12,7 +12,9 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QVBoxLayout,
     QCheckBox,
-    QHBoxLayout
+    QHBoxLayout,
+    QGraphicsDropShadowEffect,
+    
 )
 
 from PySide6.QtCore import Qt
@@ -46,17 +48,11 @@ class MainWindow(QMainWindow):
         layout = QGridLayout(central)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter) # PUTTING EVERYTHING IN THE MIDDLE/CENTER
         # now making a label
-        pos_label = QLabel("Point of Sale System")
+        pos_label = self.create_label('Point of Sale System','black',300,50)
         pos_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        user_label = QLabel("Username")
-        pass_label = QLabel("Password")
-        pos_label.setStyleSheet("background-color: black ; border-radius: 10px; font-size: 25px;")
-        pass_label.setStyleSheet("background-color: black ; border-radius: 10px; font-size: 25px;")
-        user_label.setStyleSheet("background-color: black ; border-radius: 10px; font-size: 25px;")
-        user_label.setMaximumSize(150,50)
-        pass_label.setMaximumSize(150,50)
-        pos_label.setFixedSize(300,50)
-        # user_label.setGeometry(100, 200, 200, 200) # position x,y and then size x,y
+        user_label = self.create_label("Username",'black',150,50)
+        pass_label = self.create_label("Password",'black',150,50)
+  
         layout.addWidget(pos_label,0,0,2,2)
         layout.addWidget(user_label,2,0)
         layout.addWidget(pass_label,3,0)
@@ -67,7 +63,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(user_input,2,1)
         user_input.setStyleSheet("background-color: white ; border-radius: 5px; font-size: 25px;color: black")
 
-    
         password_input = QLineEdit()
         password_input.setMaximumSize(150,50)
         password_input.setEchoMode(QLineEdit.EchoMode.Password) # ***
@@ -76,10 +71,8 @@ class MainWindow(QMainWindow):
 
 
         # QPushButton() = Button
-        login_button = QPushButton('Login')
-        login_button.setFixedSize(300,50)
+        login_button = self.create_button('Login','green',300,50)
         layout.addWidget(login_button,4,0,1,2)
-        login_button.setStyleSheet("background-color: green;font-size: 35px;border-radius: 10px; color: white;")
 
        # create_new_account_button = QPushButton('Add Employee')
         #create_new_account_button.setFixedSize(300,50)
@@ -135,9 +128,8 @@ class MainWindow(QMainWindow):
         top_row.addWidget(logout_button)
         top_row.setAlignment(Qt.AlignmentFlag.AlignCenter) # centering the buttons
         # Disp username
-        user_label = QLabel(f"Logged in as: {self.current_user.name}")
-        user_label.setStyleSheet("""background-color: #2e302f; color: white;font-size: 20px;padding: 8px;border-radius: 10px;""")
-        user_label.setFixedHeight(50)
+        user_label = self.create_label(f"Logged in as: {self.current_user.name}",'#2e302f',50,50)
+        user_label.setMaximumSize(500,50)
         top_row.addWidget(user_label)
 
         main_layout.addLayout(top_row)
@@ -222,18 +214,14 @@ class MainWindow(QMainWindow):
         manager_ui.setStyleSheet("background-color: black;")
         layout = QGridLayout(manager_ui)
         # Add employee Button
-        create_new_account_button = QPushButton('Add Employee')
-        create_new_account_button.setFixedSize(300,50)
+        create_new_account_button = self.create_button('Add Employee','gray',300,50)
         layout.addWidget(create_new_account_button,0,0) # Where it is row 3, col 0, takes 1 row and 2 columns
-        create_new_account_button.setStyleSheet("background-color: gray;font-size: 25px;border-radius: 20px;")
         create_new_account_button.clicked.connect(self.show_add_employee_screen)
         # View sales button
-        view_sales_button = QPushButton('View Sales')
-        view_sales_button.setFixedSize(300,50)
+        view_sales_button = self.create_button('View Sales','gray',300,50)
         layout.addWidget(view_sales_button,1,0) # Where it is row 3, col 0, takes 1 row and 2 columns
-        view_sales_button.setStyleSheet("background-color: gray;font-size: 25px;border-radius: 20px;")
         # Back Button
-        back_button = self.create_button('Return','red',300,75)
+        back_button = self.create_button('Return','red',300,50)
         layout.addWidget(back_button,2,0)
         back_button.clicked.connect(self.show_home_screen)
 
@@ -300,6 +288,14 @@ class MainWindow(QMainWindow):
         btn.setFixedSize(width, height)
         btn.setStyleSheet(f"""QPushButton {{background-color: {color};font-size: 25px;border-radius: 20px;}}QPushButton:pressed {{background-color: gray;}}""")
         return btn
+    
+    def create_label(self,text,color = 'gray',width=300,height = 50):
+        label = QLabel(text)
+        label.setFixedSize(width,height)
+        label.setStyleSheet(f"background-color: {color};font-size: 25px; border-radius: 10px; color: white;")
+        return label
+    
+
 if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
