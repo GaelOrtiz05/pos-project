@@ -5,8 +5,9 @@
 
 struct Ingredient {
   int id;
-  int count;             // tracks if it's in stock. Should be greyed out if not
-  bool isBaseIngredient; // tracks if it's in a base ingredient.
+  std::string name;
+  int count;   // tracks if it's in stock. Should be greyed out if not
+  bool inItem; // tracks if it's in a base ingredient.
 };
 
 struct Item {
@@ -15,7 +16,6 @@ struct Item {
   double price;
   std::vector<Ingredient>
       ingredients; // each item will have a initialized vector with the base
-                   // ingredients. enables customization.
 };
 
 class Database {
@@ -30,10 +30,27 @@ public:
 
   void setupDatabase() {
     db.exec("CREATE TABLE IF NOT EXISTS items ("
-            "id               INTEGER PRIMARY KEY AUTOINCREMENT"
-            "name             TEXT NOT NULL"
-            "count            INTEGER NOT NULL"
-            "isBaseIngredient INTEGER NOT NULL");
+            "item_id                    INTEGER PRIMARY KEY AUTOINCREMENT"
+            "name                       TEXT NOT NULL"
+            "count                      INTEGER NOT NULL"
+            "in_item INTEGER            NOT NULL"
+            "category_id                INTEGER NOT NULL"
+            "FOREIGN KEY(category_id)   REFERENCES categories(category_id)"
+            ")");
+
+    db.exec("CREATE TABLE IF NOT EXISTS ingredients ("
+            "ingredient_id              INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "name                       TEXT NOT NULL,"
+            "password                   TEXT NOT NULL,"
+            "is_admin                   INTEGER DEFAULT 0"
+            "item_id                    INTEGER NOT NULL"
+            "FOREIGN KEY(item_id)       REFERENCES ingredients(item_id)"
+            ")");
+
+    db.exec("CREATE TABLE IF NOT EXISTS categories ("
+            "category_id                INTEGER PRIMARY KEY AUTOINCREMENT"
+            "name                       TEXT NOT NULL"
+            ")");
   }
   // add unique item to menu
   void addItem() {}

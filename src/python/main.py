@@ -253,7 +253,7 @@ class MainWindow(QMainWindow):
         pass_input = QLineEdit()
         pass_input.setEchoMode(QLineEdit.EchoMode.Password)
         pass_input.setFixedSize(250, 40)
-        pass_input.setStyleSheet("font-size: 18px;border-radius: 15px; background-color: white")
+        pass_input.setStyleSheet("font-size: 18px;border-radius: 15px; background-color: white; color: black")
 
         # Checkbox
         checkbox = QCheckBox("Admin:")
