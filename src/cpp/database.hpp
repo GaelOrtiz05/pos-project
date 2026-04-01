@@ -43,6 +43,8 @@ private:
 
 public:
   Database() : db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+    db.exec("PRAGMA foreign_keys = ON");
+
     setupDatabase();
   };
 
@@ -58,10 +60,9 @@ public:
     db.exec("CREATE TABLE IF NOT EXISTS items ("
             "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
             "name                       TEXT NOT NULL,"
-            "price                      INTEGER NOT NULL,"
+            "price                      REAL NOT NULL,"
             "in_stock                   INTEGER DEFAULT 1,"
             "category_id                INTEGER NOT NULL,"
-            "category_name              TEXT NOT NULL"
             "FOREIGN KEY(category_id)   REFERENCES categories(id)"
             ")");
 
@@ -74,11 +75,11 @@ public:
 
     // ingredient and item junction table
     // tracks which items belong to which ingredients and vice versa
-    db.exec("CREATE TABLE IF NOT EXISTS item_ingredients"
+    db.exec("CREATE TABLE IF NOT EXISTS item_ingredients ("
             "item_id                         INTEGER NOT NULL,"
             "ingredient_id                   INTEGER NOT NULL,"
-            "is_removable                    INTEGER DEFAULT 0"
-            "price_change                    INTEGER NOT NULL"
+            "is_removable                    INTEGER DEFAULT 0,"
+            "price_change                    REAL NOT NULL,"
             "PRIMARY KEY (item_id, ingredient_id),"
             "FOREIGN KEY (item_id)           REFERENCES items(id),"
             "FOREIGN KEY (ingredient_id)     REFERENCES ingredients(id)"
@@ -88,11 +89,11 @@ public:
     db.exec("CREATE TABLE IF NOT EXISTS combos ("
             "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
             "name                       TEXT NOT NULL,"
-            "price                      INTEGER NOT NULL"
+            "price                      REAL NOT NULL"
             ")");
 
     // item and combos junction table
-    db.exec("CREATE TABLE IF NOT EXISTS combo_items"
+    db.exec("CREATE TABLE IF NOT EXISTS combo_items ("
             "combo_id                INTEGER NOT NULL,"
             "item_id                 INTEGER NOT NULL,"
             "PRIMARY KEY (combo_id, item_id),"
@@ -198,6 +199,7 @@ public:
       ingredient.id = query.getColumn(0).getInt();
       ingredient.name = query.getColumn(1).getInt();
       ingredient.stock = query.getColumn(2).getInt();
+      ingredients.push_back(ingredient);
     }
 
     return ingredients;
