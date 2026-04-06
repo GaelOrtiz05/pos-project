@@ -40,12 +40,6 @@ struct Combo {
 class Database {
 private:
   SQLite::Database db;
-
-public:
-  Database() : db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
-    setupDatabase();
-  };
-
   void setupDatabase() {
 
     // categories - contains items
@@ -124,6 +118,11 @@ public:
           "ingredients      TEXT NOT NULL); ");
   }
 
+public:
+  Database() : db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+    setupDatabase();
+  };
+
   //sample data
 void addDefaultItems();
 void addDefaultIngredients();
@@ -174,14 +173,14 @@ void addDefaultIngredients();
   // join combo to item (combo_items)
 //   void joinComboItem(int comboId, int itemId) {}
 
-  // get functions
+    // get functions
     std::vector<Item> getItems() {}
-//   std::vector<Item> getItemsByCategory() {}
-//   std::vector<Combo> getCombos() {}
-//   std::vector<Ingredient> getIngredients() {}
-//   std::vector<ItemIngredient> getItemIngredients() {}
+    std::vector<Item> getItemsByCategory() {}
+    std::vector<Combo> getCombos() {}
+    std::vector<Ingredient> getIngredients() {}
+    std::vector<ItemIngredient> getItemIngredients() {}
 
-  // runs once on first launch
+    // runs once on first launch
 //   void MenuInitialization() {
 //     // categories
 //     int categoryMeals = insertCategory("Meals");
