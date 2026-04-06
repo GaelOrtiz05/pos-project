@@ -2,11 +2,11 @@
 #define DATABASE_HPP
 #include "SQLiteCpp/Database.h"
 #include "SQLiteCpp/SQLiteCpp.h"
-//added vvv
+// added vvv
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 //-----------------
-
 
 struct Category {
   int id;
@@ -108,20 +108,24 @@ public:
 
     // also need to work out orders, order_items tables
 
-          //hard-coded sample data -M
-      addDefaultItems();
-      addDefaultIngredients();
+    // hard-coded sample data -M
+    addDefaultItems();
+    addDefaultIngredients();
 
-      //Table to track items added to checkout                     // item             price   ingredients
-      db.exec("CREATE TABLE IF NOT EXISTS checkout("               // Cheeseburger     2.99    "bun,beef,cheese,lettuce,tomato,bun"
-          "item             TEXT NOT NULL,"                        // Cheeseburger     4.99    "bun,beef,cheese,lettuce,tomato,bun"
-          "price            DOUBLE NOT NULL,"                      // Chicken Nuggets  3.99    "chicken"
-          "ingredients      TEXT NOT NULL); ");
+    // Table to track items added to checkout                     // item price
+    // ingredients
+    db.exec(
+        "CREATE TABLE IF NOT EXISTS checkout(" // Cheeseburger     2.99
+                                               // "bun,beef,cheese,lettuce,tomato,bun"
+        "item             TEXT NOT NULL," // Cheeseburger     4.99
+                                          // "bun,beef,cheese,lettuce,tomato,bun"
+        "price            DOUBLE NOT NULL," // Chicken Nuggets  3.99 "chicken"
+        "ingredients      TEXT NOT NULL); ");
   }
 
-  //sample data
-void addDefaultItems();
-void addDefaultIngredients();
+  // sample data
+  void addDefaultItems();
+  void addDefaultIngredients();
 
   // insertion functions
   int insertCategory(const std::string &name) {
@@ -167,7 +171,12 @@ void addDefaultIngredients();
   // ingredient functions
   bool incrementIngredientStock(int ingredientId, int stock) { return true; }
   bool decrementIngredientStock(int ingredientId, int stock) { return true; }
-  bool setIngredientStock(int ingredientId, int stock) { return true; }
+  bool setIngredientStock(int ingredientId, int stock) {
+    SQLite::Statement query(db, "UPDATE ingredients SET stock WHERE id = ?");
+    query.bind(1, ingredientId);
+
+    int changed = query.exec();
+  }
 
   // join functions
 
@@ -314,114 +323,115 @@ void addDefaultIngredients();
     joinIngredientItem(itemBurger, ingredientPickles, true, 0.0);
   }
 
-  //added by M
-// ----------------------------------------------------------------------------------------
-// update ingredient stock. used to either decrement stock on successful
+  // added by M
+  // ----------------------------------------------------------------------------------------
+  // update ingredient stock. used to either decrement stock on successful
   // order, or set to a value to emulate additional stock arriving
-void setIngredientStock(bool increase, const std::string& name, double val = 1) {
-    //Determine whether we are decreasing or increasing
+  void setIngredientStock(bool increase, const std::string &name,
+                          double val = 1) {
+    // Determine whether we are decreasing or increasing
 
-      //increate == true -> increase stock
+    // increate == true -> increase stock
     if (increase) {
-        SQLite::Statement query(db,
-            "UPDATE ingredients SET stock = stock + ? WHERE name = ?");
+      SQLite::Statement query(
+          db, "UPDATE ingredients SET stock = stock + ? WHERE name = ?");
 
-        query.bind(1, val);
-        query.bind(2, name);
-        query.exec();
+      query.bind(1, val);
+      query.bind(2, name);
+      query.exec();
+    } else {
+      SQLite::Statement query(
+          db, "UPDATE ingredients SET stock = stock - ? WHERE name = ?");
+
+      query.bind(1, val);
+      query.bind(2, name);
+      query.exec();
     }
-    else {
-        SQLite::Statement query(db,
-            "UPDATE ingredients SET stock = stock - ? WHERE name = ?");
+  }
 
-        query.bind(1, val);
-        query.bind(2, name);
-        query.exec();
-    }
-}
-
-//Copies items from item table to checkout table when clicked -M
-void addCheckout(const std::string& item) {
-    SQLite::Statement query(db,
-        "INSERT INTO checkout(item,price,ingredients) SELECT name,price,ingredients FROM items WHERE name = ?");
+  // Copies items from item table to checkout table when clicked -M
+  void addCheckout(const std::string &item) {
+    SQLite::Statement query(
+        db, "INSERT INTO checkout(item,price,ingredients) SELECT "
+            "name,price,ingredients FROM items WHERE name = ?");
     query.bind(1, item);
     query.exec();
-    //Copies the item name, price, and ingredient list
-}
+    // Copies the item name, price, and ingredient list
+  }
 
-
-//Reads checkout table and reduces the stock of ingredients in the ingredients table
-  //uses a try/catch and TRANSACTION(sequence of statements) to prevent errors -M
-void purchase() {
+  // Reads checkout table and reduces the stock of ingredients in the
+  // ingredients table uses a try/catch and TRANSACTION(sequence of statements)
+  // to prevent errors -M
+  void purchase() {
     db.exec("BEGIN TRANSACTION");
     try {
-        SQLite::Statement query(db,
-            "SELECT ingredients FROM checkout");
+      SQLite::Statement query(db, "SELECT ingredients FROM checkout");
 
-        while (query.executeStep()) {
-            const char* list = query.getColumn(0).getText();
-            if (!list) continue;
+      while (query.executeStep()) {
+        const char *list = query.getColumn(0).getText();
+        if (!list)
+          continue;
 
-            std::string ingredientList = list;
-            std::cout << ingredientList;
+        std::string ingredientList = list;
+        std::cout << ingredientList;
 
-            std::istringstream input(ingredientList);
-            std::string item;
+        std::istringstream input(ingredientList);
+        std::string item;
 
-            while (std::getline(input, item, ',')) {
-                setIngredientStock(false, item);
-            }
-
+        while (std::getline(input, item, ',')) {
+          setIngredientStock(false, item);
         }
-        db.exec("DELETE FROM checkout;");
-        db.exec("COMMIT");
+      }
+      db.exec("DELETE FROM checkout;");
+      db.exec("COMMIT");
+    } catch (const std::exception &e) {
+      db.exec("ROLLBACK");
+      std::cerr << "Purchase error: " << e.what() << std::endl;
     }
-    catch (const std::exception& e) {
-        db.exec("ROLLBACK");
-        std::cerr << "Purchase error: " << e.what() << std::endl;
-    }
-}
+  }
 };
 
-//SAMPLE HARDCODED DATA FOR TABLES -M
+// SAMPLE HARDCODED DATA FOR TABLES -M
 void Database::addDefaultItems() {
-    db.exec("INSERT into items (name,price,ingredients)"
-        " VALUES('Cheeseburger',2.99,'bun,beef,cheese,lettuce,tomato,bun'); ");
-    db.exec("INSERT into items (name,price,ingredients)"
-        " VALUES('Double Cheeseburger', 4.99,'bun,beef,beef,cheese,lettuce,tomato,bun'); ");
+  db.exec(
+      "INSERT into items (name,price,ingredients)"
+      " VALUES('Cheeseburger',2.99,'bun,beef,cheese,lettuce,tomato,bun'); ");
+  db.exec("INSERT into items (name,price,ingredients)"
+          " VALUES('Double Cheeseburger', "
+          "4.99,'bun,beef,beef,cheese,lettuce,tomato,bun'); ");
 
-    db.exec("INSERT into items (name,price,ingredients)"
-        " VALUES('Chicken Nuggets', 3.99, 'chicken'); ");
-    db.exec("INSERT into items (name,price,ingredients)"
-        " VALUES('Chicken Tenders', 4.99, 'chicken'); ");
+  db.exec("INSERT into items (name,price,ingredients)"
+          " VALUES('Chicken Nuggets', 3.99, 'chicken'); ");
+  db.exec("INSERT into items (name,price,ingredients)"
+          " VALUES('Chicken Tenders', 4.99, 'chicken'); ");
 
-    db.exec("INSERT into items (name,price,ingredients)"
-        " VALUES('Hot Dog', 2.99, 'bun,beef'); ");
+  db.exec("INSERT into items (name,price,ingredients)"
+          " VALUES('Hot Dog', 2.99, 'bun,beef'); ");
 
-    db.exec("INSERT into items (name,price,ingredients)"
-        " VALUES('Medium Drink', 1.99, 'cup'); ");
+  db.exec("INSERT into items (name,price,ingredients)"
+          " VALUES('Medium Drink', 1.99, 'cup'); ");
 }
 void Database::addDefaultIngredients() {
-    db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('bun',10); ");
+  db.exec("INSERT INTO ingredients(name, stock)"
+          " VALUES('bun',10); ");
 
-    db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('beef',10); ");
+  db.exec("INSERT INTO ingredients(name, stock)"
+          " VALUES('beef',10); ");
 
-    db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('chicken',10); ");
+  db.exec("INSERT INTO ingredients(name, stock)"
+          " VALUES('chicken',10); ");
 
-    db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('tomato',10); ");
+  db.exec("INSERT INTO ingredients(name, stock)"
+          " VALUES('tomato',10); ");
 
-    db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('cheese',10); ");
+  db.exec("INSERT INTO ingredients(name, stock)"
+          " VALUES('cheese',10); ");
 
-    db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('lettuce',10); ");
+  db.exec("INSERT INTO ingredients(name, stock)"
+          " VALUES('lettuce',10); ");
 
-    db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('cup',10); ");
+  db.exec("INSERT INTO ingredients(name, stock)"
+          " VALUES('cup',10); ");
 }
 
 #endif
