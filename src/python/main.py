@@ -44,49 +44,45 @@ class MainWindow(QMainWindow):
         self.data = pos_backend.Database()
 
     def show_login_screen(self): # Login Screen
-        # creating a container
-        central = QWidget()
-        # put the container in the main window
-        self.setCentralWidget(central)
-        central.setStyleSheet("background-color: black;") # Chaning the background color
-        # creating a grid layour inside the container
-        layout = QGridLayout(central)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter) # PUTTING EVERYTHING IN THE MIDDLE/CENTER
-        # now making a label
-        pos_label = self.create_label('Point of Sale System','black',300,50)
-        pos_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        user_label = self.create_label("Username",'black',150,50)
-        pass_label = self.create_label("Password",'black',150,50)
-  
-        layout.addWidget(pos_label,0,0,2,2)
-        layout.addWidget(user_label,2,0)
-        layout.addWidget(pass_label,3,0)
-
-        # QLineEdit() = Text Input
-        user_input = QLineEdit()
-        user_input.setMaximumSize(150,50)
-        layout.addWidget(user_input,2,1)
-        user_input.setStyleSheet("background-color: white ; border-radius: 5px; font-size: 25px;color: black")
-
-        password_input = QLineEdit()
-        password_input.setMaximumSize(150,50)
-        password_input.setEchoMode(QLineEdit.EchoMode.Password) # ***
-        layout.addWidget(password_input,3,1)
-        password_input.setStyleSheet("background-color: white ; border-radius: 5px; font-size: 25px; color:black")
-
-
-        # QPushButton() = Button
-        login_button = self.create_button('Login','green',300,50)
-        layout.addWidget(login_button,4,0,1,2)
-
-       # create_new_account_button = QPushButton('Add Employee')
-        #create_new_account_button.setFixedSize(300,50)
-        #layout.addWidget(create_new_account_button,3,0,1,2) # Where it is row 3, col 0, takes 1 row and 2 columns
-        # create_new_account_button.setStyleSheet("background-color: purple;font-size: 25px;border-radius: 20px;")
-
-        login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
-        # login_button.clicked.connect(self.show_home_screen)
+            # creating a container
+            central = QWidget()
+            # put the container in the main window
+            self.setCentralWidget(central)
+            central.setStyleSheet("background-color: black;") # Chaning the background color
+            # creating a grid layour inside the container
+            layout = QGridLayout(central)
+            layout.setAlignment(Qt.AlignmentFlag.AlignCenter) # PUTTING EVERYTHING IN THE MIDDLE/CENTER
+            # now making a label
+            pos_label = self.create_label('Point of Sale System','black',300,50)
+            pos_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            user_label = self.create_label("Username",'black',150,50)
+            pass_label = self.create_label("Password",'black',150,50)
         
+            layout.addWidget(pos_label,0,0,2,2)
+            layout.addWidget(user_label,2,0)
+            layout.addWidget(pass_label,3,0)
+
+            # QLineEdit() = Text Input
+            user_input = QLineEdit()
+            user_input.setMaximumSize(150,50)
+            layout.addWidget(user_input,2,1)
+            user_input.setStyleSheet("background-color: white ; border-radius: 5px; font-size: 25px;color: black")
+
+            password_input = QLineEdit()
+            password_input.setMaximumSize(150,50)
+            password_input.setEchoMode(QLineEdit.EchoMode.Password) # ***
+            layout.addWidget(password_input,3,1)
+            password_input.setStyleSheet("background-color: white ; border-radius: 5px; font-size: 25px; color:black")
+
+
+            # QPushButton() = Button
+            login_button = self.create_button('Login','green',300,50)
+            layout.addWidget(login_button,4,0,1,2)
+            quit_button = self.create_button('Quit','red',300,50)
+            layout.addWidget(quit_button,6,0,1,2)
+
+            login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
+            quit_button.clicked.connect(lambda: self.close_program())            
     def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
@@ -189,26 +185,26 @@ class MainWindow(QMainWindow):
         bottom_row.addWidget(scroll, 3)  
         # RIGHT SIDE (cart panel)
         cart_widget = QWidget()
-        cart_layout = QVBoxLayout(cart_widget)
+        self.cart_layout = QVBoxLayout(cart_widget)
         cart_widget.setFixedWidth(400) #maybe more?? idk
         cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 10px;")
         cart_title = self.create_label("Cart",'gray',400,50)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        cart_layout.addWidget(cart_title)
+        self.cart_layout.addWidget(cart_title)
   
         # cart items printing w/ price and stuff
         for i in range(3): # testing the # of items
             item = QLabel(f"Item {i+1}")
             item.setStyleSheet("color: white; font-size: 16px;")
-            cart_layout.addWidget(item)
+            self.cart_layout.addWidget(item)
 
-        cart_layout.addStretch()  # To place checkout at the bottom
+        self.cart_layout.addStretch()  # To place checkout at the bottom
 
         checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
         # checkout_button.setStyleSheet('font-size: 25px;')
         checkout_button.clicked.connect(lambda: self.data.purchase())
         
-        cart_layout.addWidget(checkout_button,alignment=Qt.AlignmentFlag.AlignCenter)
+        self.cart_layout.addWidget(checkout_button,alignment=Qt.AlignmentFlag.AlignCenter)
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
         # add the scroll and cart to main layout
         main_layout.addLayout(bottom_row)
@@ -310,7 +306,24 @@ class MainWindow(QMainWindow):
         label.setStyleSheet(f"background-color: {color};font-size: 25px; border-radius: 10px; color: white;")
         return label
     
+    def add_to_cart(self): # this function will add the items to screen
+        self.update_cart()
+        pass
+    def update_cart(self): #update cart each time item is added
+        for i in range(self.cart_layout.count()): #clear current cart
+            widget = self.cart_layout.itemAt(i).widget()
+            if widget and widget.text() != "Cart":
+                widget.deleteLater()
+        # putting Items from cart to the screen
+      #  for item in cart:
+      #      label = QLabel(f"{item.name} - ${item.price}")
+      #      label.setStyleSheet("color: white;")
+      #      self.cart_layout.insertWidget(self.cart_layout.count()-1, label)
 
+
+    def close_program(self):
+        QApplication.quit()  
+    
 if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
