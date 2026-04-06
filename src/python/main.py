@@ -1,6 +1,9 @@
+#access files
 import os
+#access environment
 import sys
 
+#Easier access to GUI elements
 from PySide6.QtWidgets import (
     QMainWindow,
     QGridLayout,
@@ -17,6 +20,7 @@ from PySide6.QtWidgets import (
     
 )
 
+#shortcuts, inputs, etc.
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence,QKeySequence,QGuiApplication
 
@@ -37,6 +41,7 @@ class MainWindow(QMainWindow):
         self.shortcut_close.activated.connect(self.close)
 
         self.logic = pos_backend.Login()
+        self.data = pos_backend.Database()
 
     def show_login_screen(self): # Login Screen
         # creating a container
@@ -137,9 +142,20 @@ class MainWindow(QMainWindow):
         combo_row = QHBoxLayout()
         combo_row.setSpacing(75)
         #displaying the categories
-        for i in range(5):
-            combo_button = self.create_button(f"Combo {i+1}",'#2e302f',200,100)
-            combo_row.addWidget(combo_button)
+        
+        #Combo Buttons
+        #--------------------------------------------------------------------
+        combo1_button = self.create_button(f"Cheeseburger Combo",'#2e302f',300,100)
+        combo1_button.clicked.connect(lambda: self.data.addCheckout("Cheeseburger"))
+        combo_row.addWidget(combo1_button) 
+
+        combo2_button = self.create_button(f"Double Cheeseburger Combo",'#2e302f',400,100)
+        combo2_button.clicked.connect(lambda: self.data.addCheckout("Double Cheeseburger"))
+        combo_row.addWidget(combo2_button) 
+
+        combo3_button = self.create_button(f"Chicken Nugget Combo",'#2e302f',300,100)
+        combo3_button.clicked.connect(lambda: self.data.addCheckout("Chicken Nuggets"))
+        combo_row.addWidget(combo3_button) 
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(combo_row)

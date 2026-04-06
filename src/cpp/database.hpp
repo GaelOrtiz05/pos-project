@@ -69,6 +69,7 @@ public:
             "in_stock                   INTEGER DEFAULT 1,"
             "category_id                INTEGER NOT NULL,"
             "FOREIGN KEY(category_id)   REFERENCES categories(id)"
+            "ingredients                TEXT NOT NULL"
             ")");
 
     // ingredients - individual ingredients to track stock
