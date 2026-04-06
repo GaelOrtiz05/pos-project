@@ -22,5 +22,9 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("togglePrivileges", &Login::togglePrivileges)
       .def("getListOfUsers", &Login::getListOfUsers);
 
-  // py::class_<database>(handle, "POS")
+  py::class_<Database>(handle, "Database")
+      .def(py::init<>())
+      .def("setIngredientStock", &Database::setIngredientStock)
+      .def("addCheckout", &Database::addCheckout)
+      .def("purchase", &Database::purchase);
 }

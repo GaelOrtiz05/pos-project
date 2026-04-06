@@ -139,17 +139,18 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(top_row)
 
+        #------------------------------------
         combo_row = QHBoxLayout()
         combo_row.setSpacing(75)
         #displaying the categories
         
-        #Combo Buttons
+        #Displays Combo Buttons 1-4
         #--------------------------------------------------------------------
         combo1_button = self.create_button(f"Cheeseburger Combo",'#2e302f',300,100)
         combo1_button.clicked.connect(lambda: self.data.addCheckout("Cheeseburger"))
         combo_row.addWidget(combo1_button) 
 
-        combo2_button = self.create_button(f"Double Cheeseburger Combo",'#2e302f',400,100)
+        combo2_button = self.create_button(f"Double Cheeseburger Combo",'#2e302f',350,100)
         combo2_button.clicked.connect(lambda: self.data.addCheckout("Double Cheeseburger"))
         combo_row.addWidget(combo2_button) 
 
@@ -157,9 +158,13 @@ class MainWindow(QMainWindow):
         combo3_button.clicked.connect(lambda: self.data.addCheckout("Chicken Nuggets"))
         combo_row.addWidget(combo3_button) 
 
+        combo4_button = self.create_button(f"Chicken Tenders Combo",'#2e302f',300,100)
+        combo4_button.clicked.connect(lambda: self.data.addCheckout("Chicken Tenders"))
+        combo_row.addWidget(combo4_button) 
+
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(combo_row)
-
+        #------------------------------------------------------------------------------------------
         # Scroll Box - main combo items will be here 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -168,6 +173,7 @@ class MainWindow(QMainWindow):
         container = QWidget()
         grid = QGridLayout(container)
         grid.setSpacing(10)
+
 
         for i in range(10):
             for j in range(5):
@@ -197,8 +203,11 @@ class MainWindow(QMainWindow):
             cart_layout.addWidget(item)
 
         cart_layout.addStretch()  # To place checkout at the bottom
+
         checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
         # checkout_button.setStyleSheet('font-size: 25px;')
+        checkout_button.clicked.connect(lambda: self.data.purchase())
+        
         cart_layout.addWidget(checkout_button,alignment=Qt.AlignmentFlag.AlignCenter)
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
         # add the scroll and cart to main layout
