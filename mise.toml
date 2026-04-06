@@ -1,7 +1,3 @@
-[tools]
-cmake = "latest"
-python = "3.14"
-
 [env]
 _.python.venv = { path = "venv", create = true }
 
@@ -14,3 +10,13 @@ depends = ["setup"]
 
 [tasks.build]
 run = "cmake -S . -B build && cmake --build build && src/python/main.py"
+
+[tasks.requirements]
+run = "pip install -r requirements.txt"
+
+[tasks.build_cpp]
+run = "cmake -S . -B build && cmake --build build && ./build/pos_cpp"
+
+[tasks.build_python]
+run = "cmake -S . -B build && cmake --build build && python src/python/main.py"
+# , env = { PYTHONPATH = "{{config_root}}/build" } }
