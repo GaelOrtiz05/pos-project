@@ -143,19 +143,27 @@ class MainWindow(QMainWindow):
         #Displays Combo Buttons 1-4
         #--------------------------------------------------------------------
         combo1_button = self.create_button(f"Cheeseburger Combo",'#2e302f',300,100)
-        combo1_button.clicked.connect(lambda: self.data.addCheckout("Cheeseburger"))
+        combo1_button.clicked.connect(lambda: self.add_to_cart(1))
+        combo1_button.clicked.connect(lambda: self.add_to_cart(6))
+        combo1_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo1_button) 
 
         combo2_button = self.create_button(f"Double Cheeseburger Combo",'#2e302f',350,100)
-        combo2_button.clicked.connect(lambda: self.data.addCheckout("Double Cheeseburger"))
+        combo2_button.clicked.connect(lambda: self.add_to_cart(2))
+        combo2_button.clicked.connect(lambda: self.add_to_cart(6))
+        combo2_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo2_button) 
 
         combo3_button = self.create_button(f"Chicken Nugget Combo",'#2e302f',300,100)
-        combo3_button.clicked.connect(lambda: self.data.addCheckout("Chicken Nuggets"))
+        combo3_button.clicked.connect(lambda: self.add_to_cart(3))
+        combo3_button.clicked.connect(lambda: self.add_to_cart(6))
+        combo3_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo3_button) 
 
         combo4_button = self.create_button(f"Chicken Tenders Combo",'#2e302f',300,100)
-        combo4_button.clicked.connect(lambda: self.data.addCheckout("Chicken Tenders"))
+        combo4_button.clicked.connect(lambda: self.add_to_cart(4))
+        combo4_button.clicked.connect(lambda: self.add_to_cart(6))
+        combo4_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo4_button) 
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -181,46 +189,54 @@ class MainWindow(QMainWindow):
         # manual grid of items, loop implementation is planned.
         btn_cheeseburger = self.create_button("Cheeseburger", '#2e302f', 250, 150)
         grid.addWidget(btn_cheeseburger, 0, 0)
-        btn_cheeseburger.clicked.connect(lambda: self.add_to_cart("Cheeseburger"))
+        btn_cheeseburger.clicked.connect(lambda: self.add_to_cart(1))
 
         btn_d_cheeseburger = self.create_button("Double Cheeseburger", '#2e302f', 250, 150)
         grid.addWidget(btn_d_cheeseburger, 0, 1)
-        btn_d_cheeseburger.clicked.connect(lambda: self.add_to_cart("Double Cheeseburger"))
+        btn_d_cheeseburger.clicked.connect(lambda: self.add_to_cart(2))
 
         btn_chk_nuggets = self.create_button("Chicken Nuggets", '#2e302f', 250, 150)
         grid.addWidget(btn_chk_nuggets, 0, 2)
-        btn_chk_nuggets.clicked.connect(lambda: self.add_to_cart("Chicken Nuggets"))
+        btn_chk_nuggets.clicked.connect(lambda: self.add_to_cart(3))
 
 
         btn_ckn_tenders = self.create_button("Chicken Tenders", '#2e302f', 250, 150)
         grid.addWidget(btn_ckn_tenders, 0, 3)
-        btn_ckn_tenders.clicked.connect(lambda: self.add_to_cart("Chicken Tenders"))
+        btn_ckn_tenders.clicked.connect(lambda: self.add_to_cart(4))
 
         #----------------------------
         btn_sm_fries = self.create_button("Small Fries", '#2e302f', 250, 150)
         grid.addWidget(btn_sm_fries, 1, 0)
+        btn_sm_fries.clicked.connect(lambda: self.add_to_cart(5))
 
         btn_med_fries = self.create_button("Medium Fries", '#2e302f', 250, 150)
         grid.addWidget(btn_med_fries, 1, 1)
+        btn_med_fries.clicked.connect(lambda: self.add_to_cart(6))
 
         btn_lg_fries = self.create_button("Large Fries", '#2e302f', 250, 150)
         grid.addWidget(btn_lg_fries, 1, 2)
+        btn_lg_fries.clicked.connect(lambda: self.add_to_cart(7))
 
         btn_xl_fries = self.create_button("XL Fries", '#2e302f', 250, 150)
         grid.addWidget(btn_xl_fries, 1, 3)
+        btn_xl_fries.clicked.connect(lambda: self.add_to_cart(8))
 
         #----------------------------
         btn_sm_drink = self.create_button("Small Drink", '#2e302f', 250, 150)
         grid.addWidget(btn_sm_drink, 2, 0)
+        btn_sm_drink.clicked.connect(lambda: self.add_to_cart(9))
 
         btn_med_drink = self.create_button("Medium Drink", '#2e302f', 250, 150)
         grid.addWidget(btn_med_drink, 2, 1)
+        btn_med_drink.clicked.connect(lambda: self.add_to_cart(10))
 
         btn_lg_drink = self.create_button("Large Drink", '#2e302f', 250, 150)
         grid.addWidget(btn_lg_drink, 2, 2)
+        btn_lg_drink.clicked.connect(lambda: self.add_to_cart(11))
 
         btn_xl_drink = self.create_button("XL Drink", '#2e302f', 250, 150)
         grid.addWidget(btn_xl_drink, 2, 3)
+        btn_xl_drink.clicked.connect(lambda: self.add_to_cart(12))
         #---------------------------------------------------------------------------
 
 
@@ -362,11 +378,11 @@ class MainWindow(QMainWindow):
 
     def update_cart(self): #update cart each time item is added
         t = 0.0;
-        for i in range(self.cart_layout.count()): #clear current cart
+        for i in reversed(range(self.cart_layout.count())):
             widget = self.cart_layout.itemAt(i).widget()
-            if (widget and widget.text() != "Cart") and (widget.text() != "Checkout"):
+            if widget and widget.text() not in ("Cart", "Checkout"):
                 widget.deleteLater()
-                print("Cart cleared for update.")
+                
         # putting Items from cart to the screen
         for item in range(self.data.getCartCount()):
             label = QLabel(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}")
@@ -375,10 +391,13 @@ class MainWindow(QMainWindow):
             t += self.data.getCheckoutPrice(item)
 
             print(f"added {self.data.getCheckoutName(item)} to cart display")
-            
-        Total = QLabel(f"Total: ${t:.2f}")
-        Total.setStyleSheet("color: white; font-size: 40px;")
-        self.cart_layout.insertWidget(self.cart_layout.count()-1, Total)
+
+        if hasattr(self, "total_label"):
+            self.total_label.deleteLater()
+
+        self.total_label = QLabel(f"Total: ${t:.2f}")
+        self.total_label.setStyleSheet("color: white; font-size: 40px;")
+        self.cart_layout.insertWidget(self.cart_layout.count()-1, self.total_label)
 
 
     def close_program(self):
