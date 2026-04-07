@@ -39,8 +39,8 @@ struct Combo {
 
 class Database {
 private:
-  SQLite::Database db;
-  void setupDatabase() {
+    SQLite::Database db;
+    void setupDatabase() {
 
     // categories - contains items
     // db.exec("CREATE TABLE IF NOT EXISTS categories ("
@@ -95,31 +95,35 @@ private:
     // also need to work out orders, order_items tables
 
 
-    //Table to store items                                       // ID  name                 price  ingredients
-    db.exec("CREATE TABLE IF NOT EXISTS items ("                 // 01  Cheeseburger         2.99   "bun,beef,cheese,lettuce,tomato,bun"
-          "id               INTEGER PRIMARY KEY AUTOINCREMENT,"    // 02  Double Cheeseburger  4.99   "bun,beef,beef,cheese,lettuce,tomato,bun"
-          "name             TEXT NOT NULL,"                        // 03  Chicken Nuggets      3.99   "chicken"
+        //Table to store items                                        // ID  name                 price  ingredients
+        db.exec("CREATE TABLE IF NOT EXISTS items ("                  // 01  Cheeseburger         2.99   "bun,beef,cheese,lettuce,tomato,bun"
+          "id               INTEGER PRIMARY KEY AUTOINCREMENT,"   // 02  Double Cheeseburger  4.99   "bun,beef,beef,cheese,lettuce,tomato,bun"
+          "name             TEXT NOT NULL UNIQUE,"                       // 03  Chicken Nuggets      3.99   "chicken"
           "price            DOUBLE NOT NULL,"
           "ingredients      TEXT NOT NULL);");
 
-    db.exec("CREATE TABLE IF NOT EXISTS ingredients( "           // 01  bun      10
-          "id               integer PRIMARY KEY AUTOINCREMENT,"    // 02  beef     10
-          "name             TEXT NOT NULL,"                        // 03  chicke   10
-          "stock            DOUBLE NOT NULL);");
+        db.exec("CREATE TABLE IF NOT EXISTS ingredients( "            // 01  bun       10
+            "id               integer PRIMARY KEY AUTOINCREMENT,"   // 02  beef      10
+            "name             TEXT NOT NULL,"                       // 03  chicken   10
+            "stock            DOUBLE NOT NULL);");
 
           //hard-coded sample data -M
-    addDefaultItems();
-    addDefaultIngredients();
+        if(db.execAndGet("SELECT COUNT(*) FROM items").getInt() == 0) {
+            addDefaultItems();
+        }
+        if (db.execAndGet("SELECT COUNT(*) FROM ingredients").getInt() == 0) {
+            addDefaultIngredients();
+        }
 
-    // Clear checkout table when program opens anew.
-    db.exec("DROP TABLE IF EXISTS checkout;");
+        // Clear checkout table when program opens anew.
+        db.exec("DROP TABLE IF EXISTS checkout;");
     
 
-    //Table to track items added to checkout                     // item             price   ingredients
-    db.exec("CREATE TABLE IF NOT EXISTS checkout("               // Cheeseburger     2.99    "bun,beef,cheese,lettuce,tomato,bun"
-          "item             TEXT NOT NULL,"                        // Cheeseburger     4.99    "bun,beef,cheese,lettuce,tomato,bun"
-          "price            DOUBLE NOT NULL,"                      // Chicken Nuggets  3.99    "chicken"
-          "ingredients      TEXT NOT NULL); ");
+        //Table to track items added to checkout                     // item             price   ingredients
+        db.exec("CREATE TABLE IF NOT EXISTS checkout("               // Cheeseburger     2.99    "bun,beef,cheese,lettuce,tomato,bun"
+            "item             TEXT NOT NULL,"                        // Cheeseburger     4.99    "bun,beef,cheese,lettuce,tomato,bun"
+            "price            DOUBLE NOT NULL,"                      // Chicken Nuggets  3.99    "chicken"
+            "ingredients      TEXT NOT NULL); ");
   }
 
 public:
