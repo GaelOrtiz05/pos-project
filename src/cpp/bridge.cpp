@@ -26,5 +26,8 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def(py::init<>())
       .def("setIngredientStock", &Database::setIngredientStock)
       .def("addCheckout", &Database::addCheckout)
+      .def("getCartCount", &Database::getCartCount)
+      .def("getCheckoutName", &Database::getCheckoutName)
+      .def("getCheckoutPrice", &Database::getCheckoutPrice)
       .def("purchase", &Database::purchase);
 }

@@ -108,11 +108,15 @@ private:
           "stock            DOUBLE NOT NULL);");
 
           //hard-coded sample data -M
-      addDefaultItems();
-      addDefaultIngredients();
+    addDefaultItems();
+    addDefaultIngredients();
 
-      //Table to track items added to checkout                     // item             price   ingredients
-      db.exec("CREATE TABLE IF NOT EXISTS checkout("               // Cheeseburger     2.99    "bun,beef,cheese,lettuce,tomato,bun"
+    // Clear checkout table when program opens anew.
+    db.exec("DROP TABLE IF EXISTS checkout;");
+    
+
+    //Table to track items added to checkout                     // item             price   ingredients
+    db.exec("CREATE TABLE IF NOT EXISTS checkout("               // Cheeseburger     2.99    "bun,beef,cheese,lettuce,tomato,bun"
           "item             TEXT NOT NULL,"                        // Cheeseburger     4.99    "bun,beef,cheese,lettuce,tomato,bun"
           "price            DOUBLE NOT NULL,"                      // Chicken Nuggets  3.99    "chicken"
           "ingredients      TEXT NOT NULL); ");
@@ -228,6 +232,38 @@ void addCheckout(const std::string& item) {
     //Copies the item name, price, and ingredient list
 }
 
+int getCartCount() {
+    int test = db.execAndGet("SELECT COUNT(*) FROM checkout").getInt();
+    std::cout << "Cart amount: " << test << std::endl;
+    return test;
+}
+std::string getCheckoutName(int row) {
+    
+    SQLite::Statement query(db,
+        "SELECT item FROM checkout LIMIT 1 OFFSET ?");
+        query.bind(1, row);
+
+    if (query.executeStep()) {
+    std::string item = query.getColumn(0).getText();
+    return item;
+    }
+    else {
+        return "Empty";
+    }
+}
+double getCheckoutPrice(int row) {
+    SQLite::Statement query(db,
+        "SELECT price FROM checkout LIMIT 1 OFFSET ?");
+        query.bind(1, row);
+
+    if (query.executeStep()) {
+    double price = query.getColumn(0).getDouble();
+    return price;
+    }
+    else {
+        return 0.0;
+    }
+}
 
 //Reads checkout table and reduces the stock of ingredients in the ingredients table
   //uses a try/catch and TRANSACTION(sequence of statements) to prevent errors -M
@@ -268,15 +304,12 @@ void Database::addDefaultItems() {
         " VALUES('Cheeseburger',2.99,'bun,beef,cheese,lettuce,tomato,bun'); ");
     db.exec("INSERT into items (name,price,ingredients)"
         " VALUES('Double Cheeseburger', 4.99,'bun,beef,beef,cheese,lettuce,tomato,bun'); ");
-
     db.exec("INSERT into items (name,price,ingredients)"
         " VALUES('Chicken Nuggets', 3.99, 'chicken'); ");
     db.exec("INSERT into items (name,price,ingredients)"
         " VALUES('Chicken Tenders', 4.99, 'chicken'); ");
 
-    db.exec("INSERT into items (name,price,ingredients)"
-        " VALUES('Hot Dog', 2.99, 'bun,beef'); ");
-
+    
     db.exec("INSERT into items (name,price,ingredients)"
         " VALUES('Medium Drink', 1.99, 'cup'); ");
 }
