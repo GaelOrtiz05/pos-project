@@ -228,6 +228,7 @@ void addCheckout(const std::string& item) {
     SQLite::Statement query(db,
         "INSERT INTO checkout(item,price,ingredients) SELECT name,price,ingredients FROM items WHERE name = ?");
     query.bind(1, item);
+    std::cout << item << " added to checkout." << std::endl;
     query.exec();
     //Copies the item name, price, and ingredient list
 }

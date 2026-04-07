@@ -171,10 +171,58 @@ class MainWindow(QMainWindow):
         grid.setSpacing(10)
 
 
-        for i in range(10):
-            for j in range(5):
-                btn = self.create_button((f"Item {i*5+j+1}"),'#2e302f',150,150)
-                grid.addWidget(btn, i, j)
+       #Grid
+        #--------------------------------------------------------------------------------------------
+        #for i in range(10):
+        #    for j in range(5):
+        #        btn = self.create_button((f"Item {i*5+j+1}"),'#2e302f',150,150)
+        #        grid.addWidget(btn, i, j)
+
+        # manual grid of items, loop implementation is planned.
+        btn_cheeseburger = self.create_button("Cheeseburger", '#2e302f', 250, 150)
+        grid.addWidget(btn_cheeseburger, 0, 0)
+        btn_cheeseburger.clicked.connect(lambda: self.data.addCheckout("Cheeseburger"))
+
+        btn_d_cheeseburger = self.create_button("Double Cheeseburger", '#2e302f', 250, 150)
+        grid.addWidget(btn_d_cheeseburger, 0, 1)
+        btn_d_cheeseburger.clicked.connect(lambda: self.data.addCheckout("Double Cheeseburger"))
+
+        btn_chk_nuggets = self.create_button("Chicken Nuggets", '#2e302f', 250, 150)
+        grid.addWidget(btn_chk_nuggets, 0, 2)
+        btn_chk_nuggets.clicked.connect(lambda: self.data.addCheckout("Chicken Nuggets"))
+
+
+        btn_ckn_tenders = self.create_button("Chicken Tenders", '#2e302f', 250, 150)
+        grid.addWidget(btn_ckn_tenders, 0, 3)
+        btn_ckn_tenders.clicked.connect(lambda: self.data.addCheckout("Chicken Tenders"))
+
+        #----------------------------
+        btn_sm_fries = self.create_button("Small Fries", '#2e302f', 250, 150)
+        grid.addWidget(btn_sm_fries, 1, 0)
+
+        btn_med_fries = self.create_button("Medium Fries", '#2e302f', 250, 150)
+        grid.addWidget(btn_med_fries, 1, 1)
+
+        btn_lg_fries = self.create_button("Large Fries", '#2e302f', 250, 150)
+        grid.addWidget(btn_lg_fries, 1, 2)
+
+        btn_xl_fries = self.create_button("XL Fries", '#2e302f', 250, 150)
+        grid.addWidget(btn_xl_fries, 1, 3)
+
+        #----------------------------
+        btn_sm_drink = self.create_button("Small Drink", '#2e302f', 250, 150)
+        grid.addWidget(btn_sm_drink, 2, 0)
+
+        btn_med_drink = self.create_button("Medium Drink", '#2e302f', 250, 150)
+        grid.addWidget(btn_med_drink, 2, 1)
+
+        btn_lg_drink = self.create_button("Large Drink", '#2e302f', 250, 150)
+        grid.addWidget(btn_lg_drink, 2, 2)
+
+        btn_xl_drink = self.create_button("XL Drink", '#2e302f', 250, 150)
+        grid.addWidget(btn_xl_drink, 2, 3)
+        #---------------------------------------------------------------------------
+
 
         scroll.setWidget(container)
         #main_layout.addWidget(scroll)
