@@ -255,7 +255,7 @@ class MainWindow(QMainWindow):
         cart_widget.setFixedWidth(400) #maybe more?? idk
         cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 10px;")
 
-        cart_title = self.create_label("Cart",'gray',400,50)
+        cart_title = self.create_label("Cart",'gray',350,50)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.cart_layout.addWidget(cart_title)
   
@@ -263,7 +263,6 @@ class MainWindow(QMainWindow):
         self.cart_layout.addStretch()  # To place checkout at the bottom
 
         checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
-        # checkout_button.setStyleSheet('font-size: 25px;')
         checkout_button.clicked.connect(lambda: self.data.purchase())
         checkout_button.clicked.connect(lambda: self.update_cart())
         
@@ -362,22 +361,34 @@ class MainWindow(QMainWindow):
     def create_button(self, text, color="gray", width=300, height=50): 
         btn = QPushButton(text)
         btn.setFixedSize(width, height)
-        btn.setStyleSheet(f"QPushButton {{background-color: {color};font-size: 25px;border-radius: 20px;}}QPushButton:pressed {{background-color: gray;}}QPushButton:hover{{ background-color: blue;}}")
+        btn.setStyleSheet(f"""QPushButton {{background-color: {color};color: white;font-size: 25px;font-weight: 600;border: 3px;border-radius: 25px;padding: 10px;}}QPushButton:hover {{background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 {color},stop:1 #797b8a);color: #222;}}QPushButton:pressed {{background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 #d0d0d0,stop:1 #a0a0a0);}}""")       
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(15)
+        shadow.setXOffset(2)
+        shadow.setYOffset(2)
+        shadow.setColor(Qt.gray)
+        btn.setGraphicsEffect(shadow)
+
         return btn
     
     def create_label(self,text,color = 'gray',width=300,height = 50):
         label = QLabel(text)
         label.setFixedSize(width,height)
-        label.setStyleSheet(f"background-color: {color};font-size: 25px; border-radius: 10px; color: white;")
+        label.setStyleSheet(f"background-color: {color};font-size: 25px; border-radius: 10px; color: white; padding: 5px")
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(15)
+        shadow.setXOffset(3)
+        shadow.setYOffset(3)
+        shadow.setColor(Qt.black)
+        label.setGraphicsEffect(shadow)
         return label
-    
     def add_to_cart(self, item): # this function will add the items to screen
         self.data.addCheckout(item)
         self.update_cart()
-        pass
+
 
     def update_cart(self): #update cart each time item is added
-        t = 0.0;
+        t = 0.0
         for i in reversed(range(self.cart_layout.count())):
             widget = self.cart_layout.itemAt(i).widget()
             if widget and widget.text() not in ("Cart", "Checkout"):
@@ -395,8 +406,8 @@ class MainWindow(QMainWindow):
         if hasattr(self, "total_label"):
             self.total_label.deleteLater()
 
-        self.total_label = QLabel(f"Total: ${t:.2f}")
-        self.total_label.setStyleSheet("color: white; font-size: 40px;")
+        self.total_label = self.create_label(f"Total: ${t:.2f}",'',300,225)
+        self.total_label.setStyleSheet('font-size: 25px')
         self.cart_layout.insertWidget(self.cart_layout.count()-1, self.total_label)
 
 
