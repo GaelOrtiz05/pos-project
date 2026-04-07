@@ -321,6 +321,11 @@ void Database::addDefaultItems() {
     db.exec("INSERT into items (name,price,ingredient_id,category_id)"
         " VALUES('Chicken Tenders', 4.99,3,1); ");
 
+    //2 - Sides
+    //05 - Small Fries
+    //06 - Medium Fries
+    //07 - Large Fries
+    //08 - XL Fries
     db.exec("INSERT into items (name,price,ingredient_id,category_id)"
         " VALUES('Small Fries', 0.99,8,2); ");
     db.exec("INSERT into items (name,price,ingredient_id,category_id)"
@@ -330,6 +335,11 @@ void Database::addDefaultItems() {
     db.exec("INSERT into items (name,price,ingredient_id,category_id)"
         " VALUES('XL Fries', 3.99,8,2); ");
 
+    //4 - Drinks
+    //09 - Small Drink
+    //10 - Medium Drink
+    //11 - Large Drink
+    //12 - XL Drink
     db.exec("INSERT into items (name,price,ingredient_id,category_id)"
         " VALUES('Small Drink', 0.99,7,4); ");
     db.exec("INSERT into items (name,price,ingredient_id,category_id)"
@@ -349,7 +359,7 @@ void Database::addDefaultIngredients() {
     //07 - cup
     //08 - potato
     db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('bun',100); ");
+        " VALUES('buns',100); ");
 
     db.exec("INSERT INTO ingredients(name, stock)"
         " VALUES('beef',100); ");
@@ -358,7 +368,7 @@ void Database::addDefaultIngredients() {
         " VALUES('chicken',100); ");
 
     db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('tomato',100); ");
+        " VALUES('tomatos',100); ");
 
     db.exec("INSERT INTO ingredients(name, stock)"
         " VALUES('cheese',100); ");
@@ -367,10 +377,10 @@ void Database::addDefaultIngredients() {
         " VALUES('lettuce',100); ");
 
     db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('cup',100); ");
+        " VALUES('cups',100); ");
 
     db.exec("INSERT INTO ingredients(name, stock)"
-        " VALUES('potato',10); ");
+        " VALUES('potatoes',100); ");
 }
 
 #endif
