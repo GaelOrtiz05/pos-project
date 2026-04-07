@@ -279,7 +279,7 @@ void purchase() {
             if (!list) continue;
 
             std::string ingredientList = list;
-            std::cout << ingredientList;
+            std::cout << ingredientList << " Used ";
 
             std::istringstream input(ingredientList);
             std::string item;

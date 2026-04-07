@@ -181,20 +181,20 @@ class MainWindow(QMainWindow):
         # manual grid of items, loop implementation is planned.
         btn_cheeseburger = self.create_button("Cheeseburger", '#2e302f', 250, 150)
         grid.addWidget(btn_cheeseburger, 0, 0)
-        btn_cheeseburger.clicked.connect(lambda: self.data.addCheckout("Cheeseburger"))
+        btn_cheeseburger.clicked.connect(lambda: self.add_to_cart("Cheeseburger"))
 
         btn_d_cheeseburger = self.create_button("Double Cheeseburger", '#2e302f', 250, 150)
         grid.addWidget(btn_d_cheeseburger, 0, 1)
-        btn_d_cheeseburger.clicked.connect(lambda: self.data.addCheckout("Double Cheeseburger"))
+        btn_d_cheeseburger.clicked.connect(lambda: self.add_to_cart("Double Cheeseburger"))
 
         btn_chk_nuggets = self.create_button("Chicken Nuggets", '#2e302f', 250, 150)
         grid.addWidget(btn_chk_nuggets, 0, 2)
-        btn_chk_nuggets.clicked.connect(lambda: self.data.addCheckout("Chicken Nuggets"))
+        btn_chk_nuggets.clicked.connect(lambda: self.add_to_cart("Chicken Nuggets"))
 
 
         btn_ckn_tenders = self.create_button("Chicken Tenders", '#2e302f', 250, 150)
         grid.addWidget(btn_ckn_tenders, 0, 3)
-        btn_ckn_tenders.clicked.connect(lambda: self.data.addCheckout("Chicken Tenders"))
+        btn_ckn_tenders.clicked.connect(lambda: self.add_to_cart("Chicken Tenders"))
 
         #----------------------------
         btn_sm_fries = self.create_button("Small Fries", '#2e302f', 250, 150)
@@ -226,9 +226,11 @@ class MainWindow(QMainWindow):
 
         scroll.setWidget(container)
         #main_layout.addWidget(scroll)
+
         # Bottom section (items + cart)
         bottom_row = QHBoxLayout()
         bottom_row.setSpacing(20)
+
         # LEFT SIDE (scroll box)
         bottom_row.addWidget(scroll, 3)  
         # RIGHT SIDE (cart panel)
@@ -236,21 +238,18 @@ class MainWindow(QMainWindow):
         self.cart_layout = QVBoxLayout(cart_widget)
         cart_widget.setFixedWidth(400) #maybe more?? idk
         cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 10px;")
+
         cart_title = self.create_label("Cart",'gray',400,50)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.cart_layout.addWidget(cart_title)
   
-        # cart items printing w/ price and stuff
-        for i in range(3): # testing the # of items
-            item = QLabel(f"Item {i+1}")
-            item.setStyleSheet("color: white; font-size: 16px;")
-            self.cart_layout.addWidget(item)
-
+    
         self.cart_layout.addStretch()  # To place checkout at the bottom
 
         checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
         # checkout_button.setStyleSheet('font-size: 25px;')
         checkout_button.clicked.connect(lambda: self.data.purchase())
+        checkout_button.clicked.connect(lambda: self.update_cart())
         
         self.cart_layout.addWidget(checkout_button,alignment=Qt.AlignmentFlag.AlignCenter)
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
@@ -259,6 +258,8 @@ class MainWindow(QMainWindow):
         #programming the button 
         logout_button.clicked.connect(self.show_login_screen) #logoin screen
         manager_button.clicked.connect(lambda: self.manager_event_handler())
+
+        self.update_cart() # to update cart each time we go back to home screen, so it doesn't show old items after purchase
 
     # added event handler
     def manager_event_handler(self):
@@ -354,19 +355,30 @@ class MainWindow(QMainWindow):
         label.setStyleSheet(f"background-color: {color};font-size: 25px; border-radius: 10px; color: white;")
         return label
     
-    def add_to_cart(self): # this function will add the items to screen
+    def add_to_cart(self, item): # this function will add the items to screen
+        self.data.addCheckout(item)
         self.update_cart()
         pass
+
     def update_cart(self): #update cart each time item is added
+        t = 0.0;
         for i in range(self.cart_layout.count()): #clear current cart
             widget = self.cart_layout.itemAt(i).widget()
-            if widget and widget.text() != "Cart":
+            if (widget and widget.text() != "Cart") and (widget.text() != "Checkout"):
                 widget.deleteLater()
+                print("Cart cleared for update.")
         # putting Items from cart to the screen
-      #  for item in cart:
-      #      label = QLabel(f"{item.name} - ${item.price}")
-      #      label.setStyleSheet("color: white;")
-      #      self.cart_layout.insertWidget(self.cart_layout.count()-1, label)
+        for item in range(self.data.getCartCount()):
+            label = QLabel(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}")
+            label.setStyleSheet("color: white;")
+            self.cart_layout.insertWidget(self.cart_layout.count()-1, label)
+            t += self.data.getCheckoutPrice(item)
+
+            print(f"added {self.data.getCheckoutName(item)} to cart display")
+            
+        Total = QLabel(f"Total: ${t:.2f}")
+        Total.setStyleSheet("color: white; font-size: 40px;")
+        self.cart_layout.insertWidget(self.cart_layout.count()-1, Total)
 
 
     def close_program(self):
