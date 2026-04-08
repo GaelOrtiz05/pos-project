@@ -22,13 +22,14 @@ from PySide6.QtWidgets import (
 
 #shortcuts, inputs, etc.
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QShortcut, QKeySequence,QKeySequence,QGuiApplication
+from PySide6.QtGui import QShortcut, QKeySequence,QKeySequence,QGuiApplication, QFont
 
 import pos_backend 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.manager_feedback_message = ""
         screen = QGuiApplication.primaryScreen()
         size = screen.availableGeometry()
         window_length = size.width()
@@ -83,6 +84,7 @@ class MainWindow(QMainWindow):
 
             login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
             quit_button.clicked.connect(lambda: self.close_program())            
+    
     def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
@@ -97,7 +99,6 @@ class MainWindow(QMainWindow):
             layout.addWidget(error_label,5,0,1,2)
             error_label.setStyleSheet("background-color: black;font-size: 20px;border-radius: 10px; color: red;")
             
-
     def show_home_screen(self):  # Main UI
 
         home_widget = QWidget()
@@ -127,15 +128,17 @@ class MainWindow(QMainWindow):
         drink_button = self.create_button('Drinks', '#2e302f', 150, 50)
         drink_button.clicked.connect(lambda: self.load_grid(4))
         
-        manager_button = self.create_button('Manager', '#2e302f', 150, 50)
+
+        if self.current_user.isAdmin:
+            manager_button = self.create_button('Manager', '#2e302f', 150, 50)
+        
         logout_button = self.create_button('Logout', '#540612', 150, 50)
 
-        for button in [all_items, entre_button, sides_button, dessert_button, drink_button, manager_button, logout_button]:
+        for button in [all_items, entre_button, sides_button, dessert_button, drink_button] + ([manager_button] if self.current_user.isAdmin else []) + [logout_button]:
             top_row.addWidget(button)
         top_row.setAlignment(Qt.AlignmentFlag.AlignCenter) # centering the buttons
         # Disp username
-        user_label = self.create_label(f"Logged in as: {self.current_user.name}",'#2e302f',50,50)
-        user_label.setMaximumSize(500,50)
+        user_label = self.create_label(f"Logged in as: {self.current_user.name}",'#2e302f',500,50)
         top_row.addWidget(user_label)
 
         main_layout.addLayout(top_row)
@@ -230,7 +233,8 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(bottom_row)
         #programming the button 
         logout_button.clicked.connect(self.show_login_screen) #logoin screen
-        manager_button.clicked.connect(lambda: self.manager_event_handler())
+        if self.current_user.isAdmin:
+            manager_button.clicked.connect(lambda: self.manager_event_handler())
 
         self.update_cart() # to update cart each time we go back to home screen, so it doesn't show old items after purchase
 
@@ -256,9 +260,19 @@ class MainWindow(QMainWindow):
         # Manager inventory button
         manage_inventory_button = self.create_button('Manage Inventory','gray',300,50)
         layout.addWidget(manage_inventory_button,2,0)
+        if self.manager_feedback_message:
+            feedback_label = QLabel(self.manager_feedback_message)
+            feedback_label.setFixedSize(360, 45)
+            feedback_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            feedback_label.setStyleSheet(
+                "color: white; font-size: 18px; background-color: #0c401a; "
+                "border-radius: 10px; padding: 6px;"
+            )
+            layout.addWidget(feedback_label, 3, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+            self.manager_feedback_message = ""
         # Back Button
         back_button = self.create_button('Return','red',300,50)
-        layout.addWidget(back_button,3,0)
+        layout.addWidget(back_button,4,0)
         back_button.clicked.connect(self.show_home_screen)
 
     def show_add_employee_screen(self): # Add employee
@@ -266,12 +280,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(add_ui)
         add_ui.setStyleSheet("background-color: black;")
 
+        self.add_employee_feedback = None
         layout = QGridLayout(add_ui)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Title
         title = self.create_label("Add Employee","",400,50)
-        title.setStyleSheet('font-size: 25px')
+        title.setFont(self.create_font(25))
 
         # Username
         user_label = self.create_label("Username:",'',100,40)
@@ -289,11 +304,11 @@ class MainWindow(QMainWindow):
 
         # Checkbox
         checkbox = QCheckBox("Admin:")
-        checkbox.setStyleSheet("QCheckBox::indicator { width: 20px; height: 20px; }")
+        checkbox.setStyleSheet("color: white; font-size: 18px; QCheckBox::indicator { width: 20px; height: 20px; }")
 
         # Submit button
         submit_button = self.create_button('Add-User','green',300,50)
-        submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox.isChecked()))
+        submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox))
 
         # Back button
         back_button = self.create_button('Back','red',300,50)
@@ -307,18 +322,52 @@ class MainWindow(QMainWindow):
         layout.addWidget(pass_input, 2, 1, alignment=Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(checkbox, 3, 1, 1, 2,alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(submit_button, 4, 0, 1, 3)
-        layout.addWidget(back_button, 5, 0, 1, 3)
+
+        self.add_employee_feedback = QLabel("")
+        self.add_employee_feedback.setFixedSize(360, 45)
+        self.add_employee_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.add_employee_feedback.setWordWrap(True)
+        self.add_employee_feedback.setStyleSheet(
+            "color: white; font-size: 18px; background-color: transparent;"
+        )
+        layout.addWidget(self.add_employee_feedback, 5, 0, 1, 3,
+                         alignment=Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(back_button, 6, 0, 1, 3)
 
     # added submit event handler
     # should probably validate input to make sure there are no spaces in username, or password
-    def submit_event_handler(self, username, password, isAdmin):
-        username = username.text()
-        password = password.text()
-        self.logic.addUser(username, password, isAdmin)
+    def submit_event_handler(self, username, password, checkbox):
+        username_text = username.text().strip()
+        password_text = password.text()
+        is_admin = checkbox.isChecked()
+
+        if not username_text or not password_text:
+            self.show_add_employee_feedback("Username and password are required.", False)
+            return
+
+        if self.logic.addUser(username_text, password_text, is_admin):
+            self.manager_feedback_message = f"Added user '{username_text}'."
+            self.show_manager_menu()
+            return
+
+        self.show_add_employee_feedback(f"Username '{username_text}' is already taken.", False)
+
+    def show_add_employee_feedback(self, message, success):
+        if not self.add_employee_feedback:
+            return
+
+        color = "#0c401a" if success else "#7a1010"
+        self.add_employee_feedback.setText(message)
+        self.add_employee_feedback.setStyleSheet(
+            f"color: white; font-size: 18px; background-color: {color}; "
+            "border-radius: 10px; padding: 6px;"
+        )
 
     def create_button(self, text, color="gray", width=300, height=50): 
         btn = QPushButton(text)
         btn.setFixedSize(width, height)
+        btn.setFont(self.create_font(25, 600))
         btn.setStyleSheet(f"""QPushButton {{background-color: {color};color: white;font-size: 25px;font-weight: 600;border: 3px;border-radius: 25px;padding: 10px;}}QPushButton:hover {{background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 {color},stop:1 #797b8a);color: #222;}}QPushButton:pressed {{background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 #d0d0d0,stop:1 #a0a0a0);}}""")       
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(15)
@@ -330,8 +379,11 @@ class MainWindow(QMainWindow):
         return btn
     
     def create_label(self,text,color = 'gray',width=300,height = 50):
+        if not color:
+            color = "transparent"
         label = QLabel(text)
         label.setFixedSize(width,height)
+        label.setFont(self.create_font(25))
         label.setStyleSheet(f"background-color: {color};font-size: 25px; border-radius: 10px; color: white; padding: 5px")
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(15)
@@ -376,22 +428,30 @@ class MainWindow(QMainWindow):
 
     
 
+
+    def create_font(self, point_size, weight=QFont.Weight.Normal):
+        font = QFont()
+        font.setPointSize(point_size)
+        if isinstance(weight, int):
+            weight = QFont.Weight(weight)
+        font.setWeight(weight)
+        return font
+
     def add_to_cart(self, item): # this function will add the items to screen
         self.data.addCheckout(item)
         self.update_cart()
 
-
     def update_cart(self): #update cart each time item is added
         t = 0.0
         for i in reversed(range(self.cart_items_layout.count())):
-            widget = self.cart_items_layout.itemAt(i).widget()
+            widget = self.cart_items_layout.takeAt(i).widget()
             if widget:
                 widget.deleteLater()
                 
         # putting Items from cart to the screen
         for item in range(self.data.getCartCount()):
-            label = self.create_label(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}",'',250,50)
-            label.setStyleSheet("font-size:20px;")
+            label = self.create_label(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}",'',250,40)
+            label.setFont(self.create_font(20))
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             self.cart_items_layout.addWidget(label)
             t += self.data.getCheckoutPrice(item)
@@ -401,9 +461,8 @@ class MainWindow(QMainWindow):
         if hasattr(self, "total_label"):
             self.total_label.deleteLater()
         self.total_label = self.create_label(f"Total: ${t:.2f}",'',300,225)
-        self.total_label.setStyleSheet('font-size: 25px')
+        self.total_label.setFont(self.create_font(25))
         self.cart_layout.addWidget(self.total_label)
-
 
     def close_program(self):
         QApplication.quit()  
