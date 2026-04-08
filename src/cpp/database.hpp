@@ -171,11 +171,11 @@ public:
   //     SQLite::Statement insert(
   //         db, "INSERT INTO items (name, price, category_id) VALUES (?,?,?)");
   //     insert.bind(1, name);
-  //     insert.bind(2, price);
-  //     insert.bind(3, categoryId);
-  //     insert.exec();
-  //     return static_cast<int>(db.getLastInsertRowid());
+  //     insert.bind(2, Tekken is in trouble AGAIN w/ PhiDX | Extra
+  //     Trashyprice); insert.bind(3, categoryId); insert.exec(); return
+  //     static_cast<int>(db.getLastInsertRowid());
   //   }
+  //
 
   //   int insertCombo() { return 0; }
 
