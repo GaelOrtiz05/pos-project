@@ -84,6 +84,7 @@ class MainWindow(QMainWindow):
 
             login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
             quit_button.clicked.connect(lambda: self.close_program())            
+    
     def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
@@ -98,7 +99,6 @@ class MainWindow(QMainWindow):
             layout.addWidget(error_label,5,0,1,2)
             error_label.setStyleSheet("background-color: black;font-size: 20px;border-radius: 10px; color: red;")
             
-
     def show_home_screen(self):  # Main UI
 
         home_widget = QWidget()
@@ -446,10 +446,10 @@ class MainWindow(QMainWindow):
             weight = QFont.Weight(weight)
         font.setWeight(weight)
         return font
+
     def add_to_cart(self, item): # this function will add the items to screen
         self.data.addCheckout(item)
         self.update_cart()
-
 
     def update_cart(self): #update cart each time item is added
         t = 0.0
@@ -472,8 +472,7 @@ class MainWindow(QMainWindow):
             self.total_label.deleteLater()
         self.total_label = self.create_label(f"Total: ${t:.2f}",'',300,225)
         self.total_label.setFont(self.create_font(25))
-        self.cart_items_layout.addWidget(self.total_label)
-
+        self.cart_layout.addWidget(self.total_label)
 
     def close_program(self):
         QApplication.quit()  
