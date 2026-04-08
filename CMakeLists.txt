@@ -1,4 +1,3 @@
-# Don't really know what any of this means but it works
 cmake_minimum_required(VERSION 3.14)
 project(POS)
 
