@@ -24,6 +24,10 @@ PYBIND11_MODULE(pos_backend, handle) {
 
   py::class_<Database>(handle, "Database")
       .def(py::init<>())
+      .def("getItemCount", &Database::getItemCount)
+      .def("getIngredientCount", &Database::getIngredientCount)
+      .def("getCategoryID", &Database::getCategoryID)
+      .def("getItemName", &Database::getItemName)
       .def("setIngredientStock", &Database::setIngredientStock)
       .def("addCheckout", &Database::addCheckout)
       .def("getCartCount", &Database::getCartCount)

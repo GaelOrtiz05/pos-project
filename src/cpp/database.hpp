@@ -208,6 +208,39 @@ void addDefaultIngredients();
 // ----------------------------------------------------------------------------------------
 // update ingredient stock. used to either decrement stock on successful
   // order, or set to a value to emulate additional stock arriving
+
+//returns the number of items and ingredients in the database.
+int getItemCount() {return db.execAndGet("SELECT COUNT(*) FROM items").getInt(); }
+int getIngredientCount() {return db.execAndGet("SELECT COUNT(*) FROM ingredients").getInt(); }
+
+int getCategoryID(int itemID) {
+     SQLite::Statement query(db,"SELECT category_id FROM items WHERE id = ?");
+        query.bind(1, itemID);
+    if (query.executeStep()) {
+        int categoryID = query.getColumn(0).getInt();
+        return categoryID;   
+    }
+    else {
+        std::cout << "C++ Error: Item ID not found." << std::endl;
+        return -1;
+    }
+    return -1;
+}
+std::string getItemName(int row) {
+    
+    SQLite::Statement query(db,
+        "SELECT name FROM items WHERE id = ?");
+        query.bind(1, row);
+
+    if (query.executeStep()) {
+    std::string name = query.getColumn(0).getText();
+    return name;
+    }
+    else {
+        return "no item";
+    }
+}
+
 void setIngredientStock(bool increase, int id, double val = 1) {
     //Determine whether we are decreasing or increasing
 

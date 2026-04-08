@@ -113,10 +113,20 @@ class MainWindow(QMainWindow):
         top_row.setSpacing(10)
 
         all_items = self.create_button('All', '#2e302f', 150, 50)
+        all_items.clicked.connect(lambda: self.load_grid(0))
+
         entre_button = self.create_button('Entre', '#2e302f', 150, 50)
+        entre_button.clicked.connect(lambda: self.load_grid(1))
+
         sides_button = self.create_button('Sides', '#2e302f', 150, 50)
+        sides_button.clicked.connect(lambda: self.load_grid(2))
+
         dessert_button = self.create_button('Dessert', '#2e302f', 150, 50)
+        dessert_button.clicked.connect(lambda: self.load_grid(3))
+
         drink_button = self.create_button('Drinks', '#2e302f', 150, 50)
+        drink_button.clicked.connect(lambda: self.load_grid(4))
+        
         manager_button = self.create_button('Manager', '#2e302f', 150, 50)
         logout_button = self.create_button('Logout', '#540612', 150, 50)
 
@@ -148,6 +158,7 @@ class MainWindow(QMainWindow):
         combo2_button.clicked.connect(lambda: self.add_to_cart(6))
         combo2_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo2_button) 
+        
 
         combo3_button = self.create_button(f"Chicken Nugget Combo",'#2e302f',300,100)
         combo3_button.clicked.connect(lambda: self.add_to_cart(3))
@@ -169,70 +180,13 @@ class MainWindow(QMainWindow):
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet("background-color: black; border: none;")
         container = QWidget()
-        grid = QGridLayout(container)
-        grid.setSpacing(10)
+        self.grid = QGridLayout(container)
+        self.grid.setSpacing(10)
+        
+        #load grid with all items
+        self.load_grid(0)
 
-
-       #Grid
-        #--------------------------------------------------------------------------------------------
-        #for i in range(10):
-        #    for j in range(5):
-        #        btn = self.create_button((f"Item {i*5+j+1}"),'#2e302f',150,150)
-        #        grid.addWidget(btn, i, j)
-
-        # manual grid of items, loop implementation is planned.
-        btn_cheeseburger = self.create_button("Cheeseburger", '#2e302f', 250, 150)
-        grid.addWidget(btn_cheeseburger, 0, 0)
-        btn_cheeseburger.clicked.connect(lambda: self.add_to_cart(1))
-
-        btn_d_cheeseburger = self.create_button("Double Cheeseburger", '#2e302f', 250, 150)
-        grid.addWidget(btn_d_cheeseburger, 0, 1)
-        btn_d_cheeseburger.clicked.connect(lambda: self.add_to_cart(2))
-
-        btn_chk_nuggets = self.create_button("Chicken Nuggets", '#2e302f', 250, 150)
-        grid.addWidget(btn_chk_nuggets, 0, 2)
-        btn_chk_nuggets.clicked.connect(lambda: self.add_to_cart(3))
-
-
-        btn_ckn_tenders = self.create_button("Chicken Tenders", '#2e302f', 250, 150)
-        grid.addWidget(btn_ckn_tenders, 0, 3)
-        btn_ckn_tenders.clicked.connect(lambda: self.add_to_cart(4))
-
-        #----------------------------
-        btn_sm_fries = self.create_button("Small Fries", '#2e302f', 250, 150)
-        grid.addWidget(btn_sm_fries, 1, 0)
-        btn_sm_fries.clicked.connect(lambda: self.add_to_cart(5))
-
-        btn_med_fries = self.create_button("Medium Fries", '#2e302f', 250, 150)
-        grid.addWidget(btn_med_fries, 1, 1)
-        btn_med_fries.clicked.connect(lambda: self.add_to_cart(6))
-
-        btn_lg_fries = self.create_button("Large Fries", '#2e302f', 250, 150)
-        grid.addWidget(btn_lg_fries, 1, 2)
-        btn_lg_fries.clicked.connect(lambda: self.add_to_cart(7))
-
-        btn_xl_fries = self.create_button("XL Fries", '#2e302f', 250, 150)
-        grid.addWidget(btn_xl_fries, 1, 3)
-        btn_xl_fries.clicked.connect(lambda: self.add_to_cart(8))
-
-        #----------------------------
-        btn_sm_drink = self.create_button("Small Drink", '#2e302f', 250, 150)
-        grid.addWidget(btn_sm_drink, 2, 0)
-        btn_sm_drink.clicked.connect(lambda: self.add_to_cart(9))
-
-        btn_med_drink = self.create_button("Medium Drink", '#2e302f', 250, 150)
-        grid.addWidget(btn_med_drink, 2, 1)
-        btn_med_drink.clicked.connect(lambda: self.add_to_cart(10))
-
-        btn_lg_drink = self.create_button("Large Drink", '#2e302f', 250, 150)
-        grid.addWidget(btn_lg_drink, 2, 2)
-        btn_lg_drink.clicked.connect(lambda: self.add_to_cart(11))
-
-        btn_xl_drink = self.create_button("XL Drink", '#2e302f', 250, 150)
-        grid.addWidget(btn_xl_drink, 2, 3)
-        btn_xl_drink.clicked.connect(lambda: self.add_to_cart(12))
-        #---------------------------------------------------------------------------
-
+      
 
         scroll.setWidget(container)
         #main_layout.addWidget(scroll)
@@ -259,7 +213,7 @@ class MainWindow(QMainWindow):
         self.cart_scroll.setStyleSheet("border-radius:15px; background-color:black; padding:5px;")       
         self.cart_container = QWidget()
         self.cart_items_layout = QVBoxLayout(self.cart_container)
-        self.cart_items_layout.setSpacing(5)
+        self.cart_items_layout.setSpacing(1)
         self.cart_scroll.setWidget(self.cart_container)
         self.cart_layout.insertWidget(1, self.cart_scroll) 
         
@@ -386,6 +340,42 @@ class MainWindow(QMainWindow):
         shadow.setColor(Qt.black)
         label.setGraphicsEffect(shadow)
         return label
+
+    def load_grid(self,category = 0):
+        for i in reversed(range(self.grid.count())):
+            widget = self.grid.takeAt(i).widget()
+            if widget:
+                widget.deleteLater()
+        
+        list_buttons = []
+        
+
+        print (f"{range(self.data.getItemCount())} is the range")
+        print(f"category is {category}")
+        for i in range(self.data.getItemCount()):
+            btn = self.create_button((f"{self.data.getItemName(i+1)}"),'#2e302f',250,150)
+            list_buttons.append(btn)
+            list_buttons[i].clicked.connect(lambda _, x=i+1: self.add_to_cart(x))
+        
+        row = 0
+        col = 0
+        for i in range(self.data.getItemCount()):
+            if (self.data.getCategoryID(i+1) == category or category == 0):
+                if (col < 4):
+                    self.grid.addWidget(list_buttons[i], row, col)
+                    print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
+                    col += 1
+                else:
+                    col = 0
+                    row += 1
+                    self.grid.addWidget(list_buttons[i], row, col)
+                    print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
+                    col += 1
+    #Make c++ function to return a vector/list instead of calling it each iteration. 
+                
+
+    
+
     def add_to_cart(self, item): # this function will add the items to screen
         self.data.addCheckout(item)
         self.update_cart()
@@ -400,7 +390,7 @@ class MainWindow(QMainWindow):
                 
         # putting Items from cart to the screen
         for item in range(self.data.getCartCount()):
-            label = self.create_label(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}",'',250,100)
+            label = self.create_label(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}",'',250,50)
             label.setStyleSheet("font-size:20px;")
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             self.cart_items_layout.addWidget(label)
@@ -412,7 +402,7 @@ class MainWindow(QMainWindow):
             self.total_label.deleteLater()
         self.total_label = self.create_label(f"Total: ${t:.2f}",'',300,225)
         self.total_label.setStyleSheet('font-size: 25px')
-        self.cart_items_layout.addWidget(self.total_label)
+        self.cart_layout.addWidget(self.total_label)
 
 
     def close_program(self):
