@@ -120,13 +120,8 @@ class MainWindow(QMainWindow):
         manager_button = self.create_button('Manager', '#2e302f', 150, 50)
         logout_button = self.create_button('Logout', '#540612', 150, 50)
 
-        top_row.addWidget(all_items)
-        top_row.addWidget(entre_button)
-        top_row.addWidget(sides_button)
-        top_row.addWidget(dessert_button)
-        top_row.addWidget(drink_button)
-        top_row.addWidget(manager_button)
-        top_row.addWidget(logout_button)
+        for button in [all_items, entre_button, sides_button, dessert_button, drink_button, manager_button, logout_button]:
+            top_row.addWidget(button)
         top_row.setAlignment(Qt.AlignmentFlag.AlignCenter) # centering the buttons
         # Disp username
         user_label = self.create_label(f"Logged in as: {self.current_user.name}",'#2e302f',50,50)
@@ -173,7 +168,6 @@ class MainWindow(QMainWindow):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet("background-color: black; border: none;")
-
         container = QWidget()
         grid = QGridLayout(container)
         grid.setSpacing(10)
@@ -255,10 +249,20 @@ class MainWindow(QMainWindow):
         cart_widget.setFixedWidth(400) #maybe more?? idk
         cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 10px;")
 
+        #cart items
         cart_title = self.create_label("Cart",'gray',350,50)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.cart_layout.addWidget(cart_title)
-  
+        #scroll wheel to handle more items
+        self.cart_scroll = QScrollArea()
+        self.cart_scroll.setWidgetResizable(True)
+        self.cart_scroll.setStyleSheet("border-radius:15px; background-color:black; padding:5px;")       
+        self.cart_container = QWidget()
+        self.cart_items_layout = QVBoxLayout(self.cart_container)
+        self.cart_items_layout.setSpacing(5)
+        self.cart_scroll.setWidget(self.cart_container)
+        self.cart_layout.insertWidget(1, self.cart_scroll) 
+        
     
         self.cart_layout.addStretch()  # To place checkout at the bottom
 
@@ -389,26 +393,26 @@ class MainWindow(QMainWindow):
 
     def update_cart(self): #update cart each time item is added
         t = 0.0
-        for i in reversed(range(self.cart_layout.count())):
-            widget = self.cart_layout.itemAt(i).widget()
-            if widget and widget.text() not in ("Cart", "Checkout"):
+        for i in reversed(range(self.cart_items_layout.count())):
+            widget = self.cart_items_layout.itemAt(i).widget()
+            if widget:
                 widget.deleteLater()
                 
         # putting Items from cart to the screen
         for item in range(self.data.getCartCount()):
-            label = QLabel(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}")
-            label.setStyleSheet("color: white;")
-            self.cart_layout.insertWidget(self.cart_layout.count()-1, label)
+            label = self.create_label(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}",'',250,100)
+            label.setStyleSheet("font-size:20px;")
+            label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            self.cart_items_layout.addWidget(label)
             t += self.data.getCheckoutPrice(item)
 
             print(f"added {self.data.getCheckoutName(item)} to cart display")
 
         if hasattr(self, "total_label"):
             self.total_label.deleteLater()
-
         self.total_label = self.create_label(f"Total: ${t:.2f}",'',300,225)
         self.total_label.setStyleSheet('font-size: 25px')
-        self.cart_layout.insertWidget(self.cart_layout.count()-1, self.total_label)
+        self.cart_items_layout.addWidget(self.total_label)
 
 
     def close_program(self):
