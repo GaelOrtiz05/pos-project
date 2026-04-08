@@ -394,7 +394,7 @@ class MainWindow(QMainWindow):
     def update_cart(self): #update cart each time item is added
         t = 0.0
         for i in reversed(range(self.cart_items_layout.count())):
-            widget = self.cart_items_layout.itemAt(i).widget()
+            widget = self.cart_items_layout.takeAt(i).widget()
             if widget:
                 widget.deleteLater()
                 
