@@ -98,7 +98,10 @@ class MainWindow(QMainWindow):
             error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             layout.addWidget(error_label,5,0,1,2)
             error_label.setStyleSheet("background-color: black;font-size: 20px;border-radius: 10px; color: red;")
-            
+
+
+    #POS HOME SCREEN
+    #-------------------------------------------------------------------------------- 
     def show_home_screen(self):  # Main UI
 
         home_widget = QWidget()
@@ -109,6 +112,8 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(15, 15, 15, 15)
         main_layout.setSpacing(15)
 
+        #Top Row Layout - categories, username, manager, logout
+        #---------------------------------------------------------------------------
         # Row for the categories
         top_row = QHBoxLayout()
         top_row.setSpacing(10)
@@ -128,7 +133,6 @@ class MainWindow(QMainWindow):
         drink_button = self.create_button('Drinks', '#2e302f', 150, 50)
         drink_button.clicked.connect(lambda: self.load_grid(4))
         
-
         if self.current_user.isAdmin:
             manager_button = self.create_button('Manager', '#2e302f', 150, 50)
         
@@ -162,7 +166,6 @@ class MainWindow(QMainWindow):
         combo2_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo2_button) 
         
-
         combo3_button = self.create_button(f"Chicken Nugget Combo",'#2e302f',300,100)
         combo3_button.clicked.connect(lambda: self.add_to_cart(3))
         combo3_button.clicked.connect(lambda: self.add_to_cart(6))
@@ -189,17 +192,17 @@ class MainWindow(QMainWindow):
         #load grid with all items
         self.load_grid(0)
 
-      
-
         scroll.setWidget(container)
         #main_layout.addWidget(scroll)
-
+        
         # Bottom section (items + cart)
+        #-----------------------------------------------------------------------------------------    
         bottom_row = QHBoxLayout()
         bottom_row.setSpacing(20)
 
         # LEFT SIDE (scroll box)
         bottom_row.addWidget(scroll, 3)  
+
         # RIGHT SIDE (cart panel)
         cart_widget = QWidget()
         self.cart_layout = QVBoxLayout(cart_widget)
@@ -210,6 +213,7 @@ class MainWindow(QMainWindow):
         cart_title = self.create_label("Cart",'gray',350,50)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.cart_layout.addWidget(cart_title)
+
         #scroll wheel to handle more items
         self.cart_scroll = QScrollArea()
         self.cart_scroll.setWidgetResizable(True)
@@ -220,8 +224,8 @@ class MainWindow(QMainWindow):
         self.cart_scroll.setWidget(self.cart_container)
         self.cart_layout.insertWidget(1, self.cart_scroll) 
         
-    
-        self.cart_layout.addStretch()  # To place checkout at the bottom
+        # To place checkout at the bottom
+        self.cart_layout.addStretch()  
 
         checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
         checkout_button.clicked.connect(lambda: self.data.purchase())
@@ -229,8 +233,12 @@ class MainWindow(QMainWindow):
         
         self.cart_layout.addWidget(checkout_button,alignment=Qt.AlignmentFlag.AlignCenter)
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
+
         # add the scroll and cart to main layout
         main_layout.addLayout(bottom_row)
+
+        #Logout button functionality
+        #-----------------------------------------------------------------------------
         #programming the button 
         logout_button.clicked.connect(self.show_login_screen) #logoin screen
         if self.current_user.isAdmin:
@@ -238,7 +246,8 @@ class MainWindow(QMainWindow):
 
         self.update_cart() # to update cart each time we go back to home screen, so it doesn't show old items after purchase
 
-    # added event handler
+    # manager functions
+    #--------------------------------------------------------------------------------
     def manager_event_handler(self):
         if self.current_user.isAdmin:
             self.show_manager_menu()
@@ -364,6 +373,9 @@ class MainWindow(QMainWindow):
             "border-radius: 10px; padding: 6px;"
         )
 
+    #GUI element functions
+    #-----------------------------------------------------------------------------
+    #Button creation shortcut.
     def create_button(self, text, color="gray", width=300, height=50): 
         btn = QPushButton(text)
         btn.setFixedSize(width, height)
@@ -378,6 +390,7 @@ class MainWindow(QMainWindow):
 
         return btn
     
+    #label creation shortcut.
     def create_label(self,text,color = 'gray',width=300,height = 50):
         if not color:
             color = "transparent"
@@ -393,7 +406,9 @@ class MainWindow(QMainWindow):
         label.setGraphicsEffect(shadow)
         return label
 
-    def load_grid(self,category = 0):
+    #Loads main grid with items from the items table based on category_id
+    #Category 0 = all, 1 = entre, 2 = sides, 3 = dessert, 4 = drinks
+    def load_grid(self,category = 0):                
         for i in reversed(range(self.grid.count())):
             widget = self.grid.takeAt(i).widget()
             if widget:
@@ -424,11 +439,8 @@ class MainWindow(QMainWindow):
                     print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
                     col += 1
     #Make c++ function to return a vector/list instead of calling it each iteration. 
-                
 
-    
-
-
+    #Font shortcut function.     
     def create_font(self, point_size, weight=QFont.Weight.Normal):
         font = QFont()
         font.setPointSize(point_size)
@@ -437,17 +449,24 @@ class MainWindow(QMainWindow):
         font.setWeight(weight)
         return font
 
+#Checkout cart functions
+#-----------------------------------------------------------------------------
+    #Adds an item to the checkout table based on item id.
     def add_to_cart(self, item): # this function will add the items to screen
         self.data.addCheckout(item)
         self.update_cart()
 
-    def update_cart(self): #update cart each time item is added
-        t = 0.0
+    #Clears the current cart display.
+    def clear_cart(self):
         for i in reversed(range(self.cart_items_layout.count())):
             widget = self.cart_items_layout.takeAt(i).widget()
             if widget:
                 widget.deleteLater()
-                
+        
+    #adds item to the cart display.
+    def update_cart(self): #update cart each time item is added
+        t = 0.0
+        self.clear_cart()                
         # putting Items from cart to the screen
         for item in range(self.data.getCartCount()):
             label = self.create_label(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}",'',250,40)
@@ -464,7 +483,11 @@ class MainWindow(QMainWindow):
         self.total_label.setFont(self.create_font(25))
         self.cart_layout.addWidget(self.total_label)
 
+#Close program function
+#-----------------------------------------------------------------------------
+    #Closes the program.
     def close_program(self):
+        self.clear_cart()
         QApplication.quit()  
     
 if __name__ == "__main__":
