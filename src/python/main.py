@@ -449,6 +449,18 @@ class MainWindow(QMainWindow):
 
         self.show_add_employee_feedback(f"Username '{username_text}' is already taken.", False)
 
+    def remove_employee_handler(self,username):
+        username = username.text().strip()
+        if not username:
+            self.remove_employee_feedback.setText("Enter a username.")
+            return
+
+        success = self.logic.removeUser(username)
+        if success:
+            self.remove_employee_feedback.setText("User removed successfully.")
+        else:
+            self.remove_employee_feedback.setText("User not found.")
+
     def show_add_employee_feedback(self, message, success):
         if not self.add_employee_feedback:
             return
