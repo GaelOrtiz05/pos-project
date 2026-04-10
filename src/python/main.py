@@ -92,7 +92,8 @@ class MainWindow(QMainWindow):
         password = password.text()
         if self.logic.loginUser(username, password) is True:
             self.current_user = self.logic.getUser(username)
-            self.users = self.logic.getListOfUsers()
+            self.user = self.logic.getListOfUsers()
+            # self.itemsByCategory = self.data.getItemsByCategory()
             self.show_home_screen()
         else:
             error_label = QLabel('Incorrect User or Password')

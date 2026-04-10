@@ -49,18 +49,17 @@ private:
 
 public:
   Database() : db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
-    db.exec("PRAGMA foreign_keys = ON");
-
+    // db.exec("PRAGMA foreign_keys = ON");
     setupDatabase();
   };
 
   void setupDatabase() {
 
     // categories - contains items
-    // db.exec("CREATE TABLE IF NOT EXISTS categories ("
-    //         "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
-    //         "name                       TEXT NOT NULL"
-    //         ")");
+    db.exec("CREATE TABLE IF NOT EXISTS categories ("
+            "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "name                       TEXT NOT NULL"
+            ")");
 
     // items - menu items that belong to category
     db.exec("CREATE TABLE IF NOT EXISTS items ("
@@ -72,22 +71,23 @@ public:
             "FOREIGN KEY(category_id)   REFERENCES categories(id)"
             "ingredients                TEXT NOT NULL"
             ")");
-    // db.exec("CREATE TABLE IF NOT EXISTS items ("
-    //         "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
-    //         "name                       TEXT NOT NULL,"
-    //         "price                      INTEGER NOT NULL,"
-    //         "in_stock                   INTEGER DEFAULT 1,"
-    //         "category_id                INTEGER NOT NULL,"
-    //         "FOREIGN KEY(category_id)   REFERENCES categories(id)"
-    //         "ingredients                TEXT NOT NULL"
-    //         ")");
+
+    db.exec("CREATE TABLE IF NOT EXISTS items ("
+            "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "name                       TEXT NOT NULL,"
+            "price                      INTEGER NOT NULL,"
+            "in_stock                   INTEGER DEFAULT 1,"
+            "category_id                INTEGER NOT NULL,"
+            "FOREIGN KEY(category_id)   REFERENCES categories(id)"
+            "ingredients                TEXT NOT NULL"
+            ")");
 
     // ingredients - individual ingredients to track stock
-    // db.exec("CREATE TABLE IF NOT EXISTS ingredients ("
-    //         "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
-    //         "name                       TEXT NOT NULL,"
-    //         "stock                      INTEGER DEFAULT 100"
-    //         ")");
+    db.exec("CREATE TABLE IF NOT EXISTS ingredients ("
+            "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "name                       TEXT NOT NULL,"
+            "stock                      INTEGER DEFAULT 100"
+            ")");
 
     // ingredient and item junction table
     // tracks which items belong to which ingredients and vice versa
@@ -117,116 +117,68 @@ public:
             "FOREIGN KEY (item_id)   REFERENCES items(id)"
             ")");
 
-    // also need to work out orders, order_items tables
-
-    // hard-coded sample data -M
-    addDefaultItems();
-    addDefaultIngredients();
-
-    // db.exec("CREATE TABLE IF NOT EXISTS item_ingredients"
-    //         "item_id                         INTEGER NOT NULL,"
-    //         "ingredient_id                   INTEGER NOT NULL,"
-    //         "PRIMARY KEY (item_id, ingredient_id),"
-    //         "FOREIGN KEY (item_id)           REFERENCES items(id),"
-    //         "FOREIGN KEY (ingredient_id)     REFERENCES ingredients(id)"
-    //         ")");
+    db.exec("CREATE TABLE IF NOT EXISTS item_ingredients"
+            "item_id                         INTEGER NOT NULL,"
+            "ingredient_id                   INTEGER NOT NULL,"
+            "PRIMARY KEY (item_id, ingredient_id),"
+            "FOREIGN KEY (item_id)           REFERENCES items(id),"
+            "FOREIGN KEY (ingredient_id)     REFERENCES ingredients(id)"
+            ")");
 
     // combos
-    // db.exec("CREATE TABLE IF NOT EXISTS combos ("
-    //         "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
-    //         "name                       TEXT NOT NULL,"
-    //         "price                      INTEGER NOT NULL"
-    //         ")");
+    db.exec("CREATE TABLE IF NOT EXISTS combos ("
+            "id                         INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "name                       TEXT NOT NULL,"
+            "price                      INTEGER NOT NULL"
+            ")");
 
     // item and combos junction table
-    // db.exec("CREATE TABLE IF NOT EXISTS combo_items"
-    //         "combo_id                INTEGER NOT NULL,"
-    //         "item_id                 INTEGER NOT NULL,"
-    //         "PRIMARY KEY (combo_id, item_id),"
-    //         "FOREIGN KEY (combo_id)  REFERENCES combos(id),"
-    //         "FOREIGN KEY (item_id)   REFERENCES items(id)"
-    //         ")");
+    db.exec("CREATE TABLE IF NOT EXISTS combo_items"
+            "combo_id                INTEGER NOT NULL,"
+            "item_id                 INTEGER NOT NULL,"
+            "PRIMARY KEY (combo_id, item_id),"
+            "FOREIGN KEY (combo_id)  REFERENCES combos(id),"
+            "FOREIGN KEY (item_id)   REFERENCES items(id)"
+            ")");
 
-    // also need to work out orders, order_items tables
+    db.exec("CREATE TABLE IF NOT EXISTS checkout("
+            "item             TEXT NOT NULL,"
 
-    // Table to store items                                       // ID  name
-    // price  ingredients
-    db.exec(
-        "CREATE TABLE IF NOT EXISTS items (" // 01  Cheeseburger         2.99
-                                             // "bun,beef,cheese,lettuce,tomato,bun"
-        "id               INTEGER PRIMARY KEY AUTOINCREMENT," // 02  Double
-                                                              // Cheeseburger  4.99
-                                                              // "bun,beef,beef,cheese,lettuce,tomato,bun"
-        "name             TEXT NOT NULL," // 03  Chicken Nuggets      3.99
-                                          // "chicken"
-        "price            DOUBLE NOT NULL,"
-        "ingredients      TEXT NOT NULL);");
-
-    db.exec("CREATE TABLE IF NOT EXISTS ingredients( " // 01  bun      10
-            "id               integer PRIMARY KEY AUTOINCREMENT," // 02  beef 10
-            "name             TEXT NOT NULL," // 03  chicke   10
-            "stock            DOUBLE NOT NULL);");
-
-    // hard-coded sample data -M
-    addDefaultItems();
-    addDefaultIngredients();
-
-    // Table to track items added to checkout                     // item price
-    // ingredients
-    db.exec(
-        "CREATE TABLE IF NOT EXISTS checkout(" // Cheeseburger     2.99
-                                               // "bun,beef,cheese,lettuce,tomato,bun"
-        "item             TEXT NOT NULL," // Cheeseburger     4.99
-                                          // "bun,beef,cheese,lettuce,tomato,bun"
-        "price            DOUBLE NOT NULL," // Chicken Nuggets  3.99 "chicken"
-        "ingredients      TEXT NOT NULL); ");
+            "price            DOUBLE NOT NULL,"
+            "ingredients      TEXT NOT NULL); ");
   }
 
-  // sample data
-  void addDefaultItems();
-  void addDefaultIngredients();
+  // insertion functions
+  int insertCategory(const std::string &name) {
+    SQLite::Statement insert(db, "INSERT INTO categories (name) VALUES(?)");
+    insert.bind(1, name);
 
-public:
-  Database() : db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
-    setupDatabase();
+    insert.exec();
+    // returns last inserted id
+    // .getLastInsertRowid should return int64_t so static cast?
+    // could also just use int64_t directly
+    return static_cast<int>(db.getLastInsertRowid());
   };
 
-  // sample data
-  void addDefaultItems();
-  void addDefaultIngredients();
+  int insertIngredient(const std::string name, double price, int stock = 100) {
+    SQLite::Statement insert(
+        db, "INSERT INTO ingredients (name, price, stock) VALUE (?,?,?)");
+    insert.bind(1, name);
+    insert.bind(2, price);
+    insert.bind(3, stock);
+    insert.exec();
+    return static_cast<int>(db.getLastInsertRowid());
+  }
 
-  // insertion functions
-  //   int insertCategory(const std::string &name) {
-  //     SQLite::Statement insert(db, "INSERT INTO categories (name) VALUES
-  //     (?)"); insert.bind(1, name);
-
-  // insert.exec();
-  // returns last inserted id
-  // .getLastInsertRowid should return int64_t so static cast?
-  // could also just use int64_t directly
-  //     return static_cast<int>(db.getLastInsertRowid());
-  //   };
-
-  //   int insertIngredient(const std::string name, double price, int stock =
-  //   100) {
-  //     SQLite::Statement insert(
-  //         db, "INSERT INTO ingredients (name, price, stock) VALUE (?,?,?)");
-  //     insert.bind(1, name);
-  //     insert.bind(2, price);
-  //     insert.bind(3, stock);
-  //     insert.exec();
-  //     return static_cast<int>(db.getLastInsertRowid());
-  //   }
-
-  //   int insertItem(const std::string &name, double price, int categoryId) {
-  //     SQLite::Statement insert(
-  //         db, "INSERT INTO items (name, price, category_id) VALUES (?,?,?)");
-  //     insert.bind(1, name);
-  //     insert.bind(2, price);
-  //     insert.bind(3, categoryId);
-  //     insert.exec();
-  //     return static_cast<int>(db.getLastInsertRowid());
-  //   }
+  int insertItem(const std::string &name, double price, int categoryId) {
+    SQLite::Statement insert(
+        db, "INSERT INTO items (name, price, category_id) VALUES (?,?,?)");
+    insert.bind(1, name);
+    insert.bind(2, price);
+    insert.bind(3, categoryId);
+    insert.exec();
+    return static_cast<int>(db.getLastInsertRowid());
+  }
 
   int insertCombo(const std::string &name, double price) {
     SQLite::Statement insert(db,
@@ -245,14 +197,16 @@ public:
     query.bind(1, ingredientId);
 
     int changed = query.exec();
+
+    if (changed == 0) {
+      return false;
+    }
   }
   //   int insertCombo() { return 0; }
 
   // ingredient functions
-  //   bool incrementIngredientStock(int ingredientId) { return true; }
-  //   bool decrementIngredientStock(int ingredientId) { return true; }
-  //   bool setIngredientStock(int ingredientId, const int stock) { return true;
-  //   }
+  bool incrementIngredientStock(int ingredientId) { return true; }
+  bool decrementIngredientStock(int ingredientId) { return true; }
 
   // join functions
 
@@ -374,58 +328,8 @@ public:
   std::vector<Item> getComboItems() {}
 
   // runs once on first launch
-  void MenuInitialization() {
-    // categories
-    int categoryMeals = insertCategory("Meals");
-    int categorySides = insertCategory("Sides");
-    int categoryDeserts = insertCategory("Deserts");
-    int categoryDrinks = insertCategory("Drinks");
+  void MenuInitialization() {}
 
-    // ingredients
-    int ingredientBun = insertIngredient("Bun", .50, 100);
-    int ingredientPatty = insertIngredient("Patty", 1.00, 100);
-    int ingredientTomato = insertIngredient("Tomato", .50, 100);
-    int ingredientLettuce = insertIngredient("Lettuce", .50, 100);
-    int ingredientPickles = insertIngredient("Pickles", .25, 100);
-    int ingredientAmericanCheese =
-        insertIngredient("American Cheese", .50, 100);
-    int ingredientPepperJackCheese =
-        insertIngredient("Pepper Jack Cheese", .75, 100);
-    // items
-    int itemBurger = insertItem("Burger", 5.99, categoryMeals);
-    joinIngredientItem(itemBurger, ingredientBun, false, 0.0);
-    joinIngredientItem(itemBurger, ingredientPatty, false, 0.0);
-    joinIngredientItem(itemBurger, ingredientAmericanCheese, true, 0.0);
-    joinIngredientItem(itemBurger, ingredientPickles, true, 0.0);
-  }
-  //   void joinIngredientItem(int ingredientId, int itemId) {}
-  // join combo to item (combo_items)
-  //   void joinComboItem(int comboId, int itemId) {}
-
-  // get functions
-  std::vector<Item> getItems() {}
-  std::vector<Item> getItemsByCategory() {}
-  std::vector<Combo> getCombos() {}
-  std::vector<Ingredient> getIngredients() {}
-  std::vector<ItemIngredient> getItemIngredients() {}
-
-  // runs once on first launch
-  //   void MenuInitialization() {
-  //     // categories
-  //     int categoryMeals = insertCategory("Meals");
-  //     int categoryDrinks = insertCategory("Drinks");
-  //     int categoryDeserts = insertCategory("Deserts");
-  //     // ingredients
-  //     int ingredientBun = insertIngredient("Bun", .50, 100);
-  //     // items
-  //     int itemBurger = insertItem("Burger", 5.99, categoryMeals);
-  //     // joinIngredientItem(itemBurger, ingredientBun);
-  //   }
-
-  // added by M
-  // ----------------------------------------------------------------------------------------
-  // update ingredient stock. used to either decrement stock on successful
-  // order, or set to a value to emulate additional stock arriving
   void setIngredientStock(bool increase, const std::string &name,
                           double val = 1) {
     // Determine whether we are decreasing or increasing
@@ -489,48 +393,5 @@ public:
     }
   }
 };
-
-// SAMPLE HARDCODED DATA FOR TABLES -M
-void Database::addDefaultItems() {
-  db.exec(
-      "INSERT into items (name,price,ingredients)"
-      " VALUES('Cheeseburger',2.99,'bun,beef,cheese,lettuce,tomato,bun'); ");
-  db.exec("INSERT into items (name,price,ingredients)"
-          " VALUES('Double Cheeseburger', "
-          "4.99,'bun,beef,beef,cheese,lettuce,tomato,bun'); ");
-
-  db.exec("INSERT into items (name,price,ingredients)"
-          " VALUES('Chicken Nuggets', 3.99, 'chicken'); ");
-  db.exec("INSERT into items (name,price,ingredients)"
-          " VALUES('Chicken Tenders', 4.99, 'chicken'); ");
-
-  db.exec("INSERT into items (name,price,ingredients)"
-          " VALUES('Hot Dog', 2.99, 'bun,beef'); ");
-
-  db.exec("INSERT into items (name,price,ingredients)"
-          " VALUES('Medium Drink', 1.99, 'cup'); ");
-}
-void Database::addDefaultIngredients() {
-  db.exec("INSERT INTO ingredients(name, stock)"
-          " VALUES('bun',10); ");
-
-  db.exec("INSERT INTO ingredients(name, stock)"
-          " VALUES('beef',10); ");
-
-  db.exec("INSERT INTO ingredients(name, stock)"
-          " VALUES('chicken',10); ");
-
-  db.exec("INSERT INTO ingredients(name, stock)"
-          " VALUES('tomato',10); ");
-
-  db.exec("INSERT INTO ingredients(name, stock)"
-          " VALUES('cheese',10); ");
-
-  db.exec("INSERT INTO ingredients(name, stock)"
-          " VALUES('lettuce',10); ");
-
-  db.exec("INSERT INTO ingredients(name, stock)"
-          " VALUES('cup',10); ");
-}
 
 #endif
