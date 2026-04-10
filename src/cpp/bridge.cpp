@@ -1,4 +1,6 @@
-#include "POS.hpp"
+//#include "POS.hpp"
+#include "database.hpp"
+#include "login.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 

@@ -487,7 +487,6 @@ class MainWindow(QMainWindow):
 #-----------------------------------------------------------------------------
     #Closes the program.
     def close_program(self):
-        self.clear_cart()
         QApplication.quit()  
     
 if __name__ == "__main__":
