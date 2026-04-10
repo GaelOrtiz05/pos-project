@@ -1,6 +1,6 @@
 #ifndef POS_HPP
 #define POS_HPP
-#include "database.hpp"
+#include "db.hpp"
 #include "login.hpp"
 #include <iomanip>
 #include <iostream>
@@ -14,7 +14,6 @@ private:
 
 public:
   POS() {};
-
   void TopMenu() {
 
     bool running = true;
@@ -39,7 +38,6 @@ public:
 
       case 2: {
         try {
-          Login login;
           login.loginMenu();
           break;
         } catch (std::exception &e) {
