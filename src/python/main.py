@@ -263,12 +263,16 @@ class MainWindow(QMainWindow):
         create_new_account_button = self.create_button('Add Employee','gray',300,50)
         layout.addWidget(create_new_account_button,0,0) # Where it is row 3, col 0, takes 1 row and 2 columns
         create_new_account_button.clicked.connect(self.show_add_employee_screen)
+        # View employees button
+        view_employees_button = self.create_button('View Employees','gray',300,50)
+        layout.addWidget(view_employees_button,1,0)
+        view_employees_button.clicked.connect(self.show_view_employees_screen)
         # View sales button
         view_sales_button = self.create_button('View Sales','gray',300,50)
-        layout.addWidget(view_sales_button,1,0) # Where it is row 3, col 0, takes 1 row and 2 columns
+        layout.addWidget(view_sales_button,2,0) # Where it is row 3, col 0, takes 1 row and 2 columns
         # Manager inventory button
         manage_inventory_button = self.create_button('Manage Inventory','gray',300,50)
-        layout.addWidget(manage_inventory_button,2,0)
+        layout.addWidget(manage_inventory_button,3,0)
         if self.manager_feedback_message:
             feedback_label = QLabel(self.manager_feedback_message)
             feedback_label.setFixedSize(360, 45)
@@ -277,12 +281,48 @@ class MainWindow(QMainWindow):
                 "color: white; font-size: 18px; background-color: #0c401a; "
                 "border-radius: 10px; padding: 6px;"
             )
-            layout.addWidget(feedback_label, 3, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(feedback_label, 4, 0, alignment=Qt.AlignmentFlag.AlignCenter)
             self.manager_feedback_message = ""
         # Back Button
         back_button = self.create_button('Return','red',300,50)
-        layout.addWidget(back_button,4,0)
+        layout.addWidget(back_button,5,0)
         back_button.clicked.connect(self.show_home_screen)
+
+    def show_view_employees_screen(self):
+        employees_ui = QWidget()
+        self.setCentralWidget(employees_ui)
+        employees_ui.setStyleSheet("background-color: black;")
+
+        main_layout = QVBoxLayout(employees_ui)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(15)
+
+        title = self.create_label("Employees","",400,50)
+        title.setFont(self.create_font(25))
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(title, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("background-color: black; border: none;")
+
+        container = QWidget()
+        list_layout = QVBoxLayout(container)
+        list_layout.setSpacing(10)
+
+        self.users = self.logic.getListOfUsers()
+        for user in self.users:
+            role = "Admin" if user.isAdmin else "Employee"
+            user_label = self.create_label(f"{user.name} ({role})", '#2e302f', 500, 50)
+            list_layout.addWidget(user_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        list_layout.addStretch()
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
+
+        back_button = self.create_button('Back','red',300,50)
+        back_button.clicked.connect(self.show_manager_menu)
+        main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def show_add_employee_screen(self): # Add employee
         add_ui = QWidget()
@@ -356,6 +396,7 @@ class MainWindow(QMainWindow):
             return
 
         if self.logic.addUser(username_text, password_text, is_admin):
+            self.users = self.logic.getListOfUsers()
             self.manager_feedback_message = f"Added user '{username_text}'."
             self.show_manager_menu()
             return
