@@ -252,7 +252,9 @@ public:
 
   std::vector<User> getListOfUsers() {
 
-    SQLite::Statement query(db, "SELECT name FROM users where id >=0 ");
+    SQLite::Statement query(
+        db,
+        "SELECT name FROM users where id >=0 ORDER BY is_admin DESC, name ASC");
 
     std::vector<User> users;
 
