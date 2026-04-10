@@ -267,12 +267,16 @@ class MainWindow(QMainWindow):
         view_employees_button = self.create_button('View Employees','gray',300,50)
         layout.addWidget(view_employees_button,1,0)
         view_employees_button.clicked.connect(self.show_view_employees_screen)
+        # REmoive employee button
+        remove_employee_button = self.create_button('Remove Employee','gray',300,50)
+        layout.addWidget(remove_employee_button,2,0)
+        remove_employee_button.clicked.connect(self.show_remove_employee_screen)
         # View sales button
         view_sales_button = self.create_button('View Sales','gray',300,50)
-        layout.addWidget(view_sales_button,2,0) # Where it is row 3, col 0, takes 1 row and 2 columns
+        layout.addWidget(view_sales_button,3,0) # Where it is row 3, col 0, takes 1 row and 2 columns
         # Manager inventory button
         manage_inventory_button = self.create_button('Manage Inventory','gray',300,50)
-        layout.addWidget(manage_inventory_button,3,0)
+        layout.addWidget(manage_inventory_button,4,0)
         if self.manager_feedback_message:
             feedback_label = QLabel(self.manager_feedback_message)
             feedback_label.setFixedSize(360, 45)
@@ -281,12 +285,56 @@ class MainWindow(QMainWindow):
                 "color: white; font-size: 18px; background-color: #0c401a; "
                 "border-radius: 10px; padding: 6px;"
             )
-            layout.addWidget(feedback_label, 4, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(feedback_label, 5, 0, alignment=Qt.AlignmentFlag.AlignCenter)
             self.manager_feedback_message = ""
         # Back Button
         back_button = self.create_button('Return','red',300,50)
-        layout.addWidget(back_button,5,0)
+        layout.addWidget(back_button,6,0)
         back_button.clicked.connect(self.show_home_screen)
+
+    def show_remove_employee_screen(self):  # Remove employee
+        remove_ui = QWidget()
+        self.setCentralWidget(remove_ui)
+        remove_ui.setStyleSheet("background-color: black;")
+
+        self.remove_employee_feedback = None
+
+        layout = QGridLayout(remove_ui)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setHorizontalSpacing(20)
+        layout.setVerticalSpacing(18)
+        layout.setContentsMargins(40, 40, 40, 40)
+
+        # Title
+        title = self.create_label("Remove Employee", "", 400, 50)
+        title.setFont(self.create_font(25))
+
+        # Username
+        user_label = self.create_label("Username:", "", 140, 40)
+        user_input = QLineEdit()
+        user_input.setFixedSize(260, 40)
+        user_input.setStyleSheet("font-size: 18px; border-radius: 15px; background-color: white; color: black; padding-left: 12px;")
+
+        # Submit button
+        submit_button = self.create_button("Remove User", "green", 300, 50)
+        submit_button.clicked.connect(lambda: self.remove_employee_handler(user_input))
+        # Back button
+        back_button = self.create_button("Back", "red", 300, 50)
+        back_button.clicked.connect(self.show_manager_menu)
+        # Feedback label
+        self.remove_employee_feedback = QLabel("")
+        self.remove_employee_feedback.setFixedSize(360, 45)
+        self.remove_employee_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.remove_employee_feedback.setWordWrap(True)
+        self.remove_employee_feedback.setStyleSheet("color: white; font-size: 18px; background-color: transparent;")
+
+        # Layout
+        layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(user_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(user_input, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(submit_button, 2, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.remove_employee_feedback, 3, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(back_button, 4, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def show_view_employees_screen(self):
         employees_ui = QWidget()
@@ -324,65 +372,63 @@ class MainWindow(QMainWindow):
         back_button.clicked.connect(self.show_manager_menu)
         main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-    def show_add_employee_screen(self): # Add employee
+    def show_add_employee_screen(self):  # Add employee
         add_ui = QWidget()
         self.setCentralWidget(add_ui)
         add_ui.setStyleSheet("background-color: black;")
 
-        self.add_employee_feedback = None
         layout = QGridLayout(add_ui)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setHorizontalSpacing(20)
+        layout.setVerticalSpacing(18)
+        layout.setContentsMargins(40, 40, 40, 40)
 
         # Title
-        title = self.create_label("Add Employee","",400,50)
+        title = self.create_label("Add Employee", "", 400, 50)
         title.setFont(self.create_font(25))
 
         # Username
-        user_label = self.create_label("Username:",'',100,40)
+        user_label = self.create_label("Username:", "", 140, 40)
         user_input = QLineEdit()
-        user_input.setMaximumSize(200, 40)
-        user_input.setStyleSheet("font-size: 18px;border-radius: 15px;background-color: white; color: black")
+        user_input.setFixedSize(260, 40)
+        user_input.setStyleSheet("font-size: 18px; border-radius: 15px; background-color: white; color: black; padding-left: 12px;")
 
         # Password
-        pass_label = self.create_label("Password:",'',100,40)
+        pass_label = self.create_label("Password:", "", 140, 40)
         pass_input = QLineEdit()
         pass_input.setEchoMode(QLineEdit.EchoMode.Password)
-        pass_input.setFixedSize(250, 40)
-        pass_input.setMaximumSize(200, 40)
-        pass_input.setStyleSheet("font-size: 18px;border-radius: 15px; background-color: white; color: black")
+        pass_input.setFixedSize(260, 40)
+        pass_input.setStyleSheet("font-size: 18px; border-radius: 15px; background-color: white; color: black; padding-left: 12px;")
 
         # Checkbox
-        checkbox = QCheckBox("Admin:")
-        checkbox.setStyleSheet("color: white; font-size: 18px; QCheckBox::indicator { width: 20px; height: 20px; }")
-
-        # Submit button
-        submit_button = self.create_button('Add-User','green',300,50)
+        checkbox = QCheckBox("Admin")
+        checkbox.setStyleSheet("color: white; font-size: 18px;")
+        
+        # Buttons
+        submit_button = self.create_button('Add User', 'green', 300, 50)
         submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox))
 
-        # Back button
-        back_button = self.create_button('Back','red',300,50)
+        back_button = self.create_button('Back', 'red', 300, 50)
         back_button.clicked.connect(self.show_manager_menu)
 
-        # Add to layout
+        # Feedback
+        self.add_employee_feedback = QLabel("")
+        self.add_employee_feedback.setFixedSize(360, 45)
+        self.add_employee_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.add_employee_feedback.setWordWrap(True)
+        self.add_employee_feedback.setStyleSheet("color: white; font-size: 18px; background-color: transparent;")
+
+        # Layout
         layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(user_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(user_input, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(pass_label, 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(pass_input, 2, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(checkbox, 3, 1, 1, 2,alignment=Qt.AlignmentFlag.AlignRight)
-        layout.addWidget(submit_button, 4, 0, 1, 3)
+        layout.addWidget(checkbox, 3, 1, alignment=Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(submit_button, 4, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.add_employee_feedback, 5, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(back_button, 6, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.add_employee_feedback = QLabel("")
-        self.add_employee_feedback.setFixedSize(360, 45)
-        self.add_employee_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.add_employee_feedback.setWordWrap(True)
-        self.add_employee_feedback.setStyleSheet(
-            "color: white; font-size: 18px; background-color: transparent;"
-        )
-        layout.addWidget(self.add_employee_feedback, 5, 0, 1, 3,
-                         alignment=Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(back_button, 6, 0, 1, 3)
 
     # added submit event handler
     # should probably validate input to make sure there are no spaces in username, or password
