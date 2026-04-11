@@ -1,80 +1,145 @@
 #include "db.hpp"
 
 std::vector<Category> Database::getCategories() {
-  SQLite::Statement query(db, "SELECT id, name FROM categories");
+  SQLite::Statement query(db,
+                          "SELECT id, name FROM categories ORDER BY id ASC");
   std::vector<Category> categories;
   while (query.executeStep()) {
-    Category category;
-    category.id = query.getColumn(0).getInt();
-    category.name = query.getColumn(1).getString();
-    categories.push_back(category);
+    Category c;
+    c.id = query.getColumn(0).getInt();
+    c.name = query.getColumn(1).getString();
+    categories.push_back(c);
   }
   return categories;
 }
 
+int Database::getCategoryIdByName(std::string &name) {
+  SQLite::Statement query(db, "SELECT id FROM categories WHERE name = ?");
+  query.bind(1, name);
+
+  if (!query.executeStep()) {
+    throw std::runtime_error("Category " + name + " not found");
+  }
+
+  return query.getColumn(0).getInt();
+}
+
 std::vector<Ingredient> Database::getIngredients() {
-  SQLite::Statement query(db, "SELECT id, name, stock FROM ingredients");
+  SQLite::Statement query(
+      db, "SELECT id, name, stock FROM ingredients ORDER BY id ASC");
   std::vector<Ingredient> ingredients;
   while (query.executeStep()) {
-    Ingredient ingredient;
-    ingredient.id = query.getColumn(0).getInt();
-    ingredient.name = query.getColumn(1).getString();
-    ingredient.stock = query.getColumn(2).getInt();
-    ingredients.push_back(ingredient);
+    Ingredient i;
+    i.id = query.getColumn(0).getInt();
+    i.name = query.getColumn(1).getString();
+    i.stock = query.getColumn(2).getInt();
+    ingredients.push_back(i);
   }
   return ingredients;
 }
 
 std::vector<Combo> Database::getCombos() {
-  SQLite::Statement query(db, "SELECT id, name FROM combos");
+  SQLite::Statement query(db,
+                          "SELECT id, name, price FROM combos ORDER BY id ASC");
   std::vector<Combo> combos;
   while (query.executeStep()) {
-    Combo combo;
-    combo.id = query.getColumn(0).getInt();
-    combo.name = query.getColumn(1).getString();
-    combos.push_back(combo);
+    Combo c;
+    c.id = query.getColumn(0).getInt();
+    c.name = query.getColumn(1).getString();
+    c.price = query.getColumn(2).getDouble();
+    combos.push_back(c);
   }
   return combos;
 }
 
 std::vector<Item> Database::getItems() {
-  SQLite::Statement query(
-      db, "SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name "
-          "FROM items i JOIN categories c ON i.category_id = c.id");
+  SQLite::Statement query(db, R"SQL(
+                          SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
+                          FROM items i JOIN categories c ON i.category_id = c.id
+                          ORDER BY i.name ASC
+                          )SQL");
+
   std::vector<Item> items;
   while (query.executeStep()) {
-    Item item;
-    item.id = query.getColumn(0).getInt();
-    item.name = query.getColumn(1).getString();
-    item.price = query.getColumn(2).getDouble();
-    item.inStock = query.getColumn(3).getInt();
-    item.categoryId = query.getColumn(4).getInt();
-    item.categoryName = query.getColumn(5).getString();
-    items.push_back(item);
+    Item i;
+    i.id = query.getColumn(0).getInt();
+    i.name = query.getColumn(1).getString();
+    i.price = query.getColumn(2).getDouble();
+    i.inStock = query.getColumn(3).getInt();
+    i.categoryId = query.getColumn(4).getInt();
+    i.categoryName = query.getColumn(5).getString();
+    items.push_back(i);
   }
   return items;
 }
 
-std::vector<Item> Database::getItemsByCategory(int categoryId) {
-  SQLite::Statement query(
-      db, "SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name "
-          "FROM items i JOIN categories c "
-          "ON i.category_id = c.id "
-          "WHERE i.category_id = ?");
-  query.bind(1, categoryId);
+std::vector<Item> Database::getItemsByCategory(std::string &name) {
+  SQLite::Statement query(db, R"SQL(
+                      SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
+                      FROM items i JOIN categories c ON i.category_id = c.id 
+                      WHERE c.name = ?
+                      ORDER BY i.name ASC
+                      )SQL");
+
+  query.bind(1, name);
+
   std::vector<Item> items;
   while (query.executeStep()) {
-    Item item;
-    item.id = query.getColumn(0).getInt();
-    item.name = query.getColumn(1).getString();
-    item.price = query.getColumn(2).getDouble();
-    item.inStock = query.getColumn(3).getInt();
-    item.categoryId = query.getColumn(4).getInt();
-    item.categoryName = query.getColumn(5).getString();
-    items.push_back(item);
+    Item i;
+    i.id = query.getColumn(0).getInt();
+    i.name = query.getColumn(1).getString();
+    i.price = query.getColumn(2).getDouble();
+    i.inStock = query.getColumn(3).getInt();
+    i.categoryId = query.getColumn(4).getInt();
+    i.categoryName = query.getColumn(5).getString();
+    items.push_back(i);
   }
   return items;
 }
 
-std::vector<ItemIngredient> Database::getItemIngredients() {}
-std::vector<Item> Database::getComboItems() {}
+std::vector<ItemIngredient> Database::getItemIngredients(std::string &name) {
+  SQLite::Statement query(db, R"SQL(
+                          SELECT ing.id, ing.name, ii.is_removable, ii.price_change
+                          FROM ingredients ing JOIN item_ingredients ii ON ing.id = ii.ingredient_id
+                          JOIN items i ON ii.item_id = i.id
+                          WHERE i.name = ?
+                          )SQL");
+
+  query.bind(1, name);
+
+  std::vector<ItemIngredient> itemIngredients;
+
+  while (query.executeStep()) {
+    ItemIngredient ii;
+    ii.id = query.getColumn(0).getInt();      // ingredient id
+    ii.name = query.getColumn(1).getString(); // ingredient name;
+    ii.isRemovable = query.getColumn(2).getInt();
+    ii.priceChange = query.getColumn(3).getDouble();
+    itemIngredients.push_back(ii);
+  }
+  return itemIngredients;
+}
+
+std::vector<ComboItem> Database::getComboItems(int comboId) {
+  SQLite::Statement query(db, R"SQL(
+                          SELECT i.id, i.name, i.price, i.in_stock
+                          FROM items i
+                          JOIN combo_items ci ON i.id = ci.item_id
+                          WHERE ci.combo_id = ?
+                          )SQL");
+
+  query.bind(1, comboId);
+
+  std::vector<ComboItem> comboItems;
+
+  while (query.executeStep()) {
+    ComboItem ci;
+    ci.id = query.getColumn(0).getInt();       // item id
+    ci.name = query.getColumn(1).getString();  // item name
+    ci.price = query.getColumn(2).getDouble(); // combo price
+    ci.inStock = query.getColumn(3).getInt();
+    comboItems.push_back(ci);
+  }
+
+  return comboItems;
+}

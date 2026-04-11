@@ -1,4 +1,4 @@
-//#include "POS.hpp"
+// #include "POS.hpp"
 #include "db.hpp"
 #include "login.hpp"
 #include <pybind11/pybind11.h>
@@ -24,16 +24,7 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("togglePrivileges", &Login::togglePrivileges)
       .def("getListOfUsers", &Login::getListOfUsers);
 
-  py::class_<Database>(handle, "Database")
-      .def(py::init<>())
-      .def("getItemCount", &Database::getItemCount)
-      .def("getIngredientCount", &Database::getIngredientCount)
-      .def("getCategoryID", &Database::getCategoryID)
-      .def("getItemName", &Database::getItemName)
-      .def("setIngredientStock", &Database::setIngredientStock)
-      .def("addCheckout", &Database::addCheckout)
-      .def("getCartCount", &Database::getCartCount)
-      .def("getCheckoutName", &Database::getCheckoutName)
-      .def("getCheckoutPrice", &Database::getCheckoutPrice)
-      .def("purchase", &Database::purchase);
+  // py::class_<Database>(handle, "Database")
+  //     .def(py::init<>())
+  //     .def("purchase", &Database::purchase);
 }

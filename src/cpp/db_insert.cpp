@@ -1,40 +1,36 @@
 #include "db.hpp"
 
-int Database::insertCategory(const std::string &name) {
+void Database::insertCategory(const std::string &name) {
   SQLite::Statement insert(db, "INSERT INTO categories (name) VALUES(?)");
   insert.bind(1, name);
   insert.exec();
-  return static_cast<int>(db.getLastInsertRowid());
 }
 
-int Database::insertIngredient(const std::string &name, double price,
-                               int stock) {
+void Database::insertIngredient(const std::string &name, double price,
+                                int stock) {
   SQLite::Statement insert(
       db, "INSERT INTO ingredients (name, price, stock) VALUES (?,?,?)");
   insert.bind(1, name);
   insert.bind(2, price);
   insert.bind(3, stock);
   insert.exec();
-  return static_cast<int>(db.getLastInsertRowid());
 }
 
-int Database::insertItem(const std::string &name, double price,
-                         int categoryId) {
+void Database::insertItem(const std::string &name, double price,
+                          int categoryId) {
   SQLite::Statement insert(
       db, "INSERT INTO items (name, price, category_id) VALUES (?,?,?)");
   insert.bind(1, name);
   insert.bind(2, price);
   insert.bind(3, categoryId);
   insert.exec();
-  return static_cast<int>(db.getLastInsertRowid());
 }
 
-int Database::insertCombo(const std::string &name, double price) {
+void Database::insertCombo(const std::string &name, double price) {
   SQLite::Statement insert(db, "INSERT INTO combos (name, price) VALUES (?,?)");
   insert.bind(1, name);
   insert.bind(2, price);
   insert.exec();
-  return static_cast<int>(db.getLastInsertRowid());
 }
 
 void Database::joinIngredientItem(int ingredientId, int itemId, int isRemovable,

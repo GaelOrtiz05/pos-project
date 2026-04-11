@@ -9,7 +9,7 @@
 class POS {
 private:
   Login login;
-  Database pos_db;
+  Database database;
   const double SALES_TAX = 1.08;
 
 public:
@@ -32,9 +32,16 @@ public:
 
       switch (input) {
 
-      case 1:
-        std::cout << "This should be the inventory\n";
+      case 1: {
+        try {
+          database.DatabaseMenu();
+          break;
+        } catch (std::exception &e) {
+          std::cerr << "error: " << e.what() << "\n";
+          break;
+        }
         break;
+      }
 
       case 2: {
         try {
