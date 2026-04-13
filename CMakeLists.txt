@@ -10,7 +10,7 @@ add_subdirectory(libraries/SQLiteCpp)
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
 # pybind11_add_module(pos_backend src/cpp/bridge.cpp)
-pybind11_add_module(pos_backend src/cpp/bridge.cpp)
+pybind11_add_module(pos_backend src/cpp/bridge.cpp src/cpp/db.cpp src/cpp/db_insert.cpp src/cpp/db_select.cpp)
 
 target_link_libraries(pos_backend PRIVATE SQLiteCpp sqlite3)
 
@@ -20,6 +20,6 @@ set_target_properties(pos_backend PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/src/python"
 )
 
-add_executable(pos_cpp src/cpp/main.cpp)
+add_executable(pos_cpp src/cpp/main.cpp src/cpp/db.cpp src/cpp/db_insert.cpp src/cpp/db_select.cpp)
 target_link_libraries(pos_cpp PRIVATE SQLiteCpp sqlite3)
 
