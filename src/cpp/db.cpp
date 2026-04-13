@@ -55,7 +55,7 @@ void Database::setupDatabase() {
     );                                    
 
     CREATE TABLE IF NOT EXISTS checkout (                                                                                                                                              
-      id                 INTERGER PRIMARY KEY AUTOINCREMENT,
+      id                 INTEGER PRIMARY KEY AUTOINCREMENT,
       item_id            INTEGER NOT NULL,
       item_name          TEXT NOT NULL,
       item_price         DOUBLE NOT NULL,                                                                                                                                                   
@@ -91,7 +91,7 @@ void Database::MenuInitialization() {
               (3, 'Desserts'),
               (4, 'Drinks');
 
-            INSERT INTO items (id, name, price, in_stock, category_id) VALUES
+            INSERT INTO items (id, name, price, category_id, in_stock) VALUES
               (1,  'Burger'               , 5.99, 1, 1),
               (2,  'Chicken Sandwich'     , 5.49, 1, 1),
               (3,  'Cheese Burger'        , 6.49, 1, 1),
@@ -141,7 +141,8 @@ void Database::MenuInitialization() {
 
             INSERT INTO combos (id, name, price) VALUES
               (1, 'Combo #1', 9.99),
-              (2, 'Combo #2', 9.99);
+              (2, 'Combo #2', 9.99),
+              (3, 'Combo #3', 9.99);
 
             INSERT INTO combo_items (combo_id, item_id) VALUES
             -- Burger Combo
@@ -188,7 +189,7 @@ void Database::DatabaseMenu() {
               << "4. Get Item Ingredients\n"
               << "5. Get Combos\n"
               << "6. Get Combo Items\n"
-              << "7. Add Item\n"
+              // << "7. Add Item\n"
               << "0. Quit\n"
               << "Input: ";
 

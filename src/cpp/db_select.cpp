@@ -136,7 +136,7 @@ std::vector<ComboItem> Database::getComboItems(int comboId) {
     ComboItem ci;
     ci.id = query.getColumn(0).getInt();       // item id
     ci.name = query.getColumn(1).getString();  // item name
-    ci.price = query.getColumn(2).getDouble(); // combo price
+    ci.price = query.getColumn(2).getDouble(); // item price
     ci.inStock = query.getColumn(3).getInt();
     comboItems.push_back(ci);
   }
