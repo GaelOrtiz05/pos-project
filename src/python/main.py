@@ -273,7 +273,8 @@ class MainWindow(QMainWindow):
         remove_employee_button.clicked.connect(self.show_remove_employee_screen)
         # View sales button
         view_sales_button = self.create_button('View Sales','gray',300,50)
-        layout.addWidget(view_sales_button,3,0) # Where it is row 3, col 0, takes 1 row and 2 columns
+        layout.addWidget(view_sales_button,3,0) 
+        view_sales_button.clicked.connect(self.disp_sales_menu)
         # Manager inventory button
         manage_inventory_button = self.create_button('Manage Inventory','gray',300,50)
         layout.addWidget(manage_inventory_button,4,0)
@@ -521,8 +522,7 @@ class MainWindow(QMainWindow):
         for i in range(self.data.getItemCount()):
             btn = self.create_button((f"{self.data.getItemName(i+1)}"),'#2e302f',250,150)
             list_buttons.append(btn)
-            list_buttons[i].clicked.connect(lambda _, x=i+1: self.add_to_cart(x))
-        
+            list_buttons[i].clicked.connect(lambda _, x=i+1: self.disp_ingredients_menu(x))        
         row = 0
         col = 0
         for i in range(self.data.getItemCount()):
@@ -582,6 +582,47 @@ class MainWindow(QMainWindow):
         self.total_label.setFont(self.create_font(25))
         self.cart_layout.addWidget(self.total_label)
 
+    def disp_sales_menu(self):
+        sales_ui = QWidget()
+        self.setCentralWidget(sales_ui)
+        sales_ui.setStyleSheet("background-color: black;")
+        layout = QGridLayout(sales_ui)
+        # Add employee Button
+        todays_sales = self.create_button('Sale Today','gray',300,50)
+        layout.addWidget(todays_sales,0,0)
+        weekly_sales = self.create_button('Sale This Week','gray',300,50)
+        layout.addWidget(weekly_sales,0,1)
+        monthly_sales = self.create_button('Sale This Month','gray',300,50)
+        layout.addWidget(monthly_sales,0,2)
+
+        back_button = self.create_button('Back','red',300,50)
+        back_button.clicked.connect(self.show_manager_menu)
+        layout.addWidget(back_button,0,3)
+
+
+
+    def disp_ingredients_menu(self, item):
+        ingredients_ui = QWidget()
+        self.setCentralWidget(ingredients_ui)
+        ingredients_ui.setStyleSheet("background-color: black;")
+        layout = QGridLayout(ingredients_ui)
+        #titles
+        title = self.create_label(f"Customize {self.data.getItemName(item)}", "", 500, 50)
+        layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        #confrim (sending to cart)
+        confirm_button = self.create_button('Confirm', 'green', 300, 50)
+        confirm_button.clicked.connect(lambda: self.confirm_item(item))
+        layout.addWidget(confirm_button, 1, 0)
+
+        #go to home screen
+        back_button = self.create_button('Back', 'red', 300, 50)
+        back_button.clicked.connect(self.show_home_screen)
+        layout.addWidget(back_button, 1, 1)
+
+    def confirm_item(self, item): # will connect this to the ingredients screen
+        self.data.addCheckout(item)
+        self.show_home_screen()
+        self.update_cart()
 #Close program function
 #-----------------------------------------------------------------------------
     #Closes the program.
