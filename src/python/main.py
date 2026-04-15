@@ -206,32 +206,65 @@ class MainWindow(QMainWindow):
         # RIGHT SIDE (cart panel)
         cart_widget = QWidget()
         self.cart_layout = QVBoxLayout(cart_widget)
-        cart_widget.setFixedWidth(400) #maybe more?? idk
-        cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 10px;")
+        self.cart_layout.setContentsMargins(12, 12, 12, 12)
+        self.cart_layout.setSpacing(12)
+        cart_widget.setFixedWidth(420)
+        cart_widget.setStyleSheet("background-color: #2e302f; border-radius: 14px;")
 
-        #cart items
-        cart_title = self.create_label("Cart",'gray',350,50)
+        # cart title
+        cart_title = QLabel("Cart")
+        cart_title.setFixedHeight(50)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        cart_title.setFont(self.create_font(20, 600))
+        cart_title.setStyleSheet(
+            "background-color: #888888; color: white; border-radius: 12px;"
+        )
         self.cart_layout.addWidget(cart_title)
 
-        #scroll wheel to handle more items
+        # scroll wheel to handle more items
         self.cart_scroll = QScrollArea()
         self.cart_scroll.setWidgetResizable(True)
-        self.cart_scroll.setStyleSheet("border-radius:15px; background-color:black; padding:5px;")       
+        self.cart_scroll.setStyleSheet(
+            "QScrollArea { border-radius: 15px; background-color: black; padding: 6px; }"
+        )
         self.cart_container = QWidget()
         self.cart_items_layout = QVBoxLayout(self.cart_container)
-        self.cart_items_layout.setSpacing(1)
-        self.cart_scroll.setWidget(self.cart_container)
-        self.cart_layout.insertWidget(1, self.cart_scroll) 
-        
-        # To place checkout at the bottom
-        self.cart_layout.addStretch()  
+        self.cart_items_layout.setContentsMargins(10, 10, 10, 10)
+        self.cart_items_layout.setSpacing(8)
+        self.cart_items_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        checkout_button = self.create_button("Checkout",'#0c401a',300,100) #checkout button
+        self.cart_item_row_height = 52
+        self.cart_visible_rows = 4
+        visible_rows_height = (
+            (self.cart_item_row_height * self.cart_visible_rows)
+            + (self.cart_items_layout.spacing() * (self.cart_visible_rows - 1))
+            + 20
+        )
+        self.cart_scroll.setFixedHeight(visible_rows_height)
+        self.cart_scroll.setWidget(self.cart_container)
+        self.cart_layout.addWidget(self.cart_scroll, 1)
+
+        # footer with persistent total + checkout action
+        footer_widget = QWidget()
+        footer_layout = QVBoxLayout(footer_widget)
+        footer_layout.setContentsMargins(0, 0, 0, 0)
+        footer_layout.setSpacing(10)
+
+        self.total_label = QLabel("Total: $0.00")
+        self.total_label.setFixedHeight(58)
+        self.total_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.total_label.setFont(self.create_font(24, 600))
+        self.total_label.setStyleSheet(
+            "background-color: #151515; color: white; border: 2px solid #0c401a; border-radius: 14px;"
+        )
+
+        checkout_button = self.create_button("Checkout", '#0c401a', 320, 90)
         checkout_button.clicked.connect(lambda: self.data.purchase())
         checkout_button.clicked.connect(lambda: self.update_cart())
-        
-        self.cart_layout.addWidget(checkout_button,alignment=Qt.AlignmentFlag.AlignCenter)
+
+        footer_layout.addWidget(self.total_label)
+        footer_layout.addWidget(checkout_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.cart_layout.addWidget(footer_widget)
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
 
         # add the scroll and cart to main layout
@@ -568,19 +601,32 @@ class MainWindow(QMainWindow):
         self.clear_cart()                
         # putting Items from cart to the screen
         for item in range(self.data.getCartCount()):
-            label = self.create_label(f"{self.data.getCheckoutName(item)} - ${self.data.getCheckoutPrice(item)}",'',250,40)
-            label.setFont(self.create_font(20))
+            item_name = self.data.getCheckoutName(item)
+            item_price = self.data.getCheckoutPrice(item)
+            label = QLabel(f"{item_name} - ${item_price:.2f}")
+            label.setFixedHeight(self.cart_item_row_height)
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            label.setFont(self.create_font(18))
+            label.setStyleSheet(
+                "background-color: #111111; color: white; border-radius: 10px; padding-left: 12px;"
+            )
             self.cart_items_layout.addWidget(label)
-            t += self.data.getCheckoutPrice(item)
+            t += item_price
 
             print(f"added {self.data.getCheckoutName(item)} to cart display")
 
-        if hasattr(self, "total_label"):
-            self.total_label.deleteLater()
-        self.total_label = self.create_label(f"Total: ${t:.2f}",'',300,225)
-        self.total_label.setFont(self.create_font(25))
-        self.cart_layout.addWidget(self.total_label)
+        if self.data.getCartCount() == 0:
+            empty_label = QLabel("No items in cart")
+            empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            empty_label.setFont(self.create_font(16))
+            empty_label.setStyleSheet(
+                "background-color: transparent; color: #a0a0a0;"
+            )
+            self.cart_items_layout.addStretch()
+            self.cart_items_layout.addWidget(empty_label)
+            self.cart_items_layout.addStretch()
+
+        self.total_label.setText(f"Total: ${t:.2f}")
 
     def disp_sales_menu(self):
         sales_ui = QWidget()
