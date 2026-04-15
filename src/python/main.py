@@ -44,6 +44,19 @@ class MainWindow(QMainWindow):
         self.logic = pos_backend.Login()
         self.data = pos_backend.Database()
 
+    def clear_enter_shortcuts(self):
+        if hasattr(self, '_enter_shortcuts'):
+            for shortcut in self._enter_shortcuts:
+                shortcut.deleteLater()
+        self._enter_shortcuts = []
+
+    def bind_enter_key(self, handler):
+        self.clear_enter_shortcuts()
+        for key in [Qt.Key_Return, Qt.Key_Enter]:
+            enter_shortcut = QShortcut(QKeySequence(key), self)
+            enter_shortcut.activated.connect(handler)
+            self._enter_shortcuts.append(enter_shortcut)
+
     def show_login_screen(self): # Login Screen
             # creating a container
             central = QWidget()
@@ -83,8 +96,10 @@ class MainWindow(QMainWindow):
             layout.addWidget(quit_button,6,0,1,2)
 
             login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
-            quit_button.clicked.connect(lambda: self.close_program())            
-    
+            quit_button.clicked.connect(lambda: self.close_program())        
+
+            self.bind_enter_key(lambda: self.login_event_handler(user_input, password_input, layout))
+            
     def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
@@ -158,20 +173,20 @@ class MainWindow(QMainWindow):
         #--------------------------------------------------------------------
         combo1_button = self.create_button(f"Combo #1",'#2e302f',300,100)
         combo1_button.clicked.connect(lambda: self.add_to_cart(1))
-        combo1_button.clicked.connect(lambda: self.add_to_cart(6))
-        combo1_button.clicked.connect(lambda: self.add_to_cart(10))
+        combo1_button.clicked.connect(lambda: self.add_to_cart(4))
+        combo1_button.clicked.connect(lambda: self.add_to_cart(8))
         combo_row.addWidget(combo1_button) 
 
         combo2_button = self.create_button(f"Combo #2",'#2e302f',350,100)
         combo2_button.clicked.connect(lambda: self.add_to_cart(2))
-        combo2_button.clicked.connect(lambda: self.add_to_cart(6))
-        combo2_button.clicked.connect(lambda: self.add_to_cart(10))
+        combo2_button.clicked.connect(lambda: self.add_to_cart(4))
+        combo2_button.clicked.connect(lambda: self.add_to_cart(8))
         combo_row.addWidget(combo2_button) 
         
         combo3_button = self.create_button(f"Combo #3",'#2e302f',300,100)
         combo3_button.clicked.connect(lambda: self.add_to_cart(3))
-        combo3_button.clicked.connect(lambda: self.add_to_cart(6))
-        combo3_button.clicked.connect(lambda: self.add_to_cart(10))
+        combo3_button.clicked.connect(lambda: self.add_to_cart(5))
+        combo3_button.clicked.connect(lambda: self.add_to_cart(11))
         combo_row.addWidget(combo3_button) 
 
         # combo4_button = self.create_button(f"Chicken Tenders Combo",'#2e302f',300,100)
@@ -444,6 +459,8 @@ class MainWindow(QMainWindow):
         submit_button = self.create_button('Add User', 'green', 300, 50)
         submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox))
 
+        self.bind_enter_key(lambda: self.submit_event_handler(user_input, pass_input, checkbox))
+
         back_button = self.create_button('Back', 'red', 300, 50)
         back_button.clicked.connect(self.show_manager_menu)
 
@@ -544,8 +561,8 @@ class MainWindow(QMainWindow):
     #Loads main grid with items from the items table based on category_id
     #Category 0 = all, 1 = entre, 2 = sides, 3 = dessert, 4 = drinks
     def load_grid(self,category = 0):                
-        for items in reversed(range(self.grid.count())):
-            widget = self.grid.takeAt(items).widget()
+        for item in reversed(range(self.grid.count())):
+            widget = self.grid.takeAt(item).widget()
             if widget:
                 widget.deleteLater()
         
@@ -556,23 +573,23 @@ class MainWindow(QMainWindow):
         # print (f"{range(self.data.getItemCount())} is the range")
         # print(f"category is {category}")
 
-        for idx, items in enumerate(self.items):
-            btn = self.create_button((f"{items.name}"),'#2e302f',250,150)
+        for idx, item in enumerate(self.items):
+            btn = self.create_button((f"{item.name}"),'#2e302f',250,150)
             list_buttons.append(btn)
-            list_buttons[idx].clicked.connect(lambda _, x=items: self.disp_ingredients_menu(x))
+            list_buttons[idx].clicked.connect(lambda _, x=item: self.disp_ingredients_menu(x))
         row = 0
         col = 0
-        for idx, items in enumerate(self.items):
-            if (items.categoryId == category or category == 0):
+        for idx, item in enumerate(self.items):
+            if (item.categoryId == category or category == 0):
                 if (col < 4):
                     self.grid.addWidget(list_buttons[idx], row, col)
-                    print(f"added {items.name} to grid. index is {idx}")
+                    print(f"added {item.name} to grid. index is {idx}")
                     col += 1
                 else:
                     col = 0
                     row += 1
                     self.grid.addWidget(list_buttons[idx], row, col)
-                    print(f"added {items.name} to grid. index is {idx}")
+                    print(f"added {item.name} to grid. index is {idx}")
                     col += 1
  
     #     for i in range(self.data.getItemCount()):
@@ -675,20 +692,35 @@ class MainWindow(QMainWindow):
         ingredients_ui = QWidget()
         self.setCentralWidget(ingredients_ui)
         ingredients_ui.setStyleSheet("background-color: black;")
-        layout = QGridLayout(ingredients_ui)
-        #titles
-        self.items = self.data.getItems()
-        title = self.create_label(f"Customize {item.name}", "", 500, 50)
-        layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        #confrim (sending to cart)
-        confirm_button = self.create_button('Confirm', 'green', 300, 50)
-        confirm_button.clicked.connect(lambda: self.confirm_item(item.id))
-        layout.addWidget(confirm_button, 1, 0)
 
-        #go to home screen
-        back_button = self.create_button('Back', 'red', 300, 50)
+        # Outer layout fills the window, but centers a smaller card
+        outer_layout = QVBoxLayout(ingredients_ui)
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        outer_layout.addStretch()
+
+        card = QWidget()
+        card.setFixedSize(650, 260)  # make this smaller/larger as needed
+        card.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+        card_layout = QGridLayout(card)
+        card_layout.setContentsMargins(20, 20, 20, 20)
+        card_layout.setHorizontalSpacing(16)
+        card_layout.setVerticalSpacing(16)
+
+        title = self.create_label(f"Customize {item.name}", "", 360, 44)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(self.create_font(20, 600))
+        card_layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        confirm_button = self.create_button("Confirm", "green", 220, 48)
+        confirm_button.clicked.connect(lambda: self.confirm_item(item.id))
+        card_layout.addWidget(confirm_button, 1, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        back_button = self.create_button("Back", "red", 220, 48)
         back_button.clicked.connect(self.show_home_screen)
-        layout.addWidget(back_button, 1, 1)
+        card_layout.addWidget(back_button, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        outer_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
+        outer_layout.addStretch()
 
     def confirm_item(self, item): # will connect this to the ingredients screen
         self.data.addCheckout(item)
