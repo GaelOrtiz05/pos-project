@@ -2,6 +2,7 @@
 import os
 #access environment
 import sys
+import platform
 
 #Easier access to GUI elements
 from PySide6.QtWidgets import (
@@ -35,7 +36,12 @@ class MainWindow(QMainWindow):
         window_length = size.width()
         window_height = size.height()
         self.setWindowTitle("POS")
-        self.setFixedSize(window_length, window_height)
+        
+        if platform.system() == "Windows":
+            self.setFixedSize(window_length, window_height)
+        else:
+            self.resize(window_length, window_height)
+        
         self.show_login_screen()
 
         self.shortcut_close = QShortcut(QKeySequence.StandardKey.Close, self)
