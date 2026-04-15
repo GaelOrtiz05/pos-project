@@ -54,11 +54,11 @@ void Database::joinComboItem(int comboId, int itemId) {
 }
 
 // Copies items from item table to checkout table when clicked -M
-void Database::addCheckout(const std::string &item) {
-  SQLite::Statement query(db,
-                          "INSERT INTO checkout(item,price,ingredients) SELECT "
-                          "name,price,ingredients FROM items WHERE name = ?");
-  query.bind(1, item);
+void Database::addCheckout(int itemId) {
+  SQLite::Statement query(
+      db, "INSERT INTO checkout(item_id, item_name, item_price) "
+          "SELECT id, name, price FROM items WHERE id = ?");
+  query.bind(1, itemId);
   query.exec();
 }
 
@@ -79,6 +79,10 @@ void Database::setIngredientStock(bool increase, const std::string &name,
   }
 }
 
+void Database::purchase() {
+  SQLite::Statement query(db, "DELETE FROM checkout");
+  query.exec();
+}
 // bool Database::incrementIngredientStock(int ingredientId) { return true; }
 // bool Database::decrementIngredientStock(int ingredientId) { return true; }
 //

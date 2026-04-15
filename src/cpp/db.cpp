@@ -286,33 +286,3 @@ void Database::DatabaseMenu() {
     }
   }
 }
-
-// Reads checkout table and reduces ingredient stock.
-// Uses a TRANSACTION to roll back on error. -M
-void Database::purchase() {
-  db.exec("BEGIN TRANSACTION");
-  try {
-    SQLite::Statement query(db, "SELECT ingredients FROM checkout");
-
-    while (query.executeStep()) {
-      const char *list = query.getColumn(0).getText();
-      if (!list)
-        continue;
-
-      std::string ingredientList = list;
-      std::cout << ingredientList;
-
-      std::istringstream input(ingredientList);
-      std::string item;
-
-      while (std::getline(input, item, ',')) {
-        setIngredientStock(false, item);
-      }
-    }
-    db.exec("DELETE FROM checkout;");
-    db.exec("COMMIT");
-  } catch (const std::exception &e) {
-    db.exec("ROLLBACK");
-    std::cerr << "Purchase error: " << e.what() << std::endl;
-  }
-}

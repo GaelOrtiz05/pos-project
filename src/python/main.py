@@ -90,8 +90,9 @@ class MainWindow(QMainWindow):
         password = password.text()
         if self.logic.loginUser(username, password) is True:
             self.current_user = self.logic.getUser(username)
-            self.user = self.logic.getListOfUsers()
+            # self.user = self.logic.getListOfUsers()
             # self.itemsByCategory = self.data.getItemsByCategory()
+            self.items = self.data.getItems()
             self.show_home_screen()
         else:
             error_label = QLabel('Incorrect User or Password')
@@ -155,29 +156,29 @@ class MainWindow(QMainWindow):
         
         #Displays Combo Buttons 1-4
         #--------------------------------------------------------------------
-        combo1_button = self.create_button(f"Cheeseburger Combo",'#2e302f',300,100)
+        combo1_button = self.create_button(f"Combo #1",'#2e302f',300,100)
         combo1_button.clicked.connect(lambda: self.add_to_cart(1))
         combo1_button.clicked.connect(lambda: self.add_to_cart(6))
         combo1_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo1_button) 
 
-        combo2_button = self.create_button(f"Double Cheeseburger Combo",'#2e302f',350,100)
+        combo2_button = self.create_button(f"Combo #2",'#2e302f',350,100)
         combo2_button.clicked.connect(lambda: self.add_to_cart(2))
         combo2_button.clicked.connect(lambda: self.add_to_cart(6))
         combo2_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo2_button) 
         
-        combo3_button = self.create_button(f"Chicken Nugget Combo",'#2e302f',300,100)
+        combo3_button = self.create_button(f"Combo #3",'#2e302f',300,100)
         combo3_button.clicked.connect(lambda: self.add_to_cart(3))
         combo3_button.clicked.connect(lambda: self.add_to_cart(6))
         combo3_button.clicked.connect(lambda: self.add_to_cart(10))
         combo_row.addWidget(combo3_button) 
 
-        combo4_button = self.create_button(f"Chicken Tenders Combo",'#2e302f',300,100)
-        combo4_button.clicked.connect(lambda: self.add_to_cart(4))
-        combo4_button.clicked.connect(lambda: self.add_to_cart(6))
-        combo4_button.clicked.connect(lambda: self.add_to_cart(10))
-        combo_row.addWidget(combo4_button) 
+        # combo4_button = self.create_button(f"Chicken Tenders Combo",'#2e302f',300,100)
+        # combo4_button.clicked.connect(lambda: self.add_to_cart(4))
+        # combo4_button.clicked.connect(lambda: self.add_to_cart(6))
+        # combo4_button.clicked.connect(lambda: self.add_to_cart(10))
+        # combo_row.addWidget(combo4_button) 
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(combo_row)
@@ -543,35 +544,56 @@ class MainWindow(QMainWindow):
     #Loads main grid with items from the items table based on category_id
     #Category 0 = all, 1 = entre, 2 = sides, 3 = dessert, 4 = drinks
     def load_grid(self,category = 0):                
-        for i in reversed(range(self.grid.count())):
-            widget = self.grid.takeAt(i).widget()
+        for items in reversed(range(self.grid.count())):
+            widget = self.grid.takeAt(items).widget()
             if widget:
                 widget.deleteLater()
         
         list_buttons = []
         
+        self.items = self.data.getItems()
 
-        print (f"{range(self.data.getItemCount())} is the range")
-        print(f"category is {category}")
-        for i in range(self.data.getItemCount()):
-            btn = self.create_button((f"{self.data.getItemName(i+1)}"),'#2e302f',250,150)
+        # print (f"{range(self.data.getItemCount())} is the range")
+        # print(f"category is {category}")
+
+        for idx, items in enumerate(self.items):
+            btn = self.create_button((f"{items.name}"),'#2e302f',250,150)
             list_buttons.append(btn)
-            list_buttons[i].clicked.connect(lambda _, x=i+1: self.disp_ingredients_menu(x))        
+            list_buttons[idx].clicked.connect(lambda _, x=items: self.disp_ingredients_menu(x))
         row = 0
         col = 0
-        for i in range(self.data.getItemCount()):
-            if (self.data.getCategoryID(i+1) == category or category == 0):
+        for idx, items in enumerate(self.items):
+            if (items.categoryId == category or category == 0):
                 if (col < 4):
-                    self.grid.addWidget(list_buttons[i], row, col)
-                    print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
+                    self.grid.addWidget(list_buttons[idx], row, col)
+                    print(f"added {items.name} to grid. index is {idx}")
                     col += 1
                 else:
                     col = 0
                     row += 1
-                    self.grid.addWidget(list_buttons[i], row, col)
-                    print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
+                    self.grid.addWidget(list_buttons[idx], row, col)
+                    print(f"added {items.name} to grid. index is {idx}")
                     col += 1
-    #Make c++ function to return a vector/list instead of calling it each iteration. 
+ 
+    #     for i in range(self.data.getItemCount()):
+    #         btn = self.create_button((f"{self.items.name(0)}"),'#2e302f',250,150)
+    #         list_buttons.append(btn)
+    #         list_buttons[i].clicked.connect(lambda _, x=i+1: self.disp_ingredients_menu(x))        
+    #     row = 0
+    #     col = 0
+    #     for i in range(self.data.getItemCount()):
+    #         if (self.data.getCategoryID(i+1) == category or category == 0):
+    #             if (col < 4):
+    #                 self.grid.addWidget(list_buttons[i], row, col)
+    #                 print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
+    #                 col += 1
+    #             else:
+    #                 col = 0
+    #                 row += 1
+    #                 self.grid.addWidget(list_buttons[i], row, col)
+    #                 print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
+    #                 col += 1
+    # #Make c++ function to return a vector/list instead of calling it each iteration. 
 
     #Font shortcut function.     
     def create_font(self, point_size, weight=QFont.Weight.Normal):
@@ -599,11 +621,12 @@ class MainWindow(QMainWindow):
     #adds item to the cart display.
     def update_cart(self): #update cart each time item is added
         t = 0.0
-        self.clear_cart()                
+        self.clear_cart()
+        checkout_items = self.data.getCheckout()
         # putting Items from cart to the screen
-        for item in range(self.data.getCartCount()):
-            item_name = self.data.getCheckoutName(item)
-            item_price = self.data.getCheckoutPrice(item)
+        for checkout_item in checkout_items:
+            item_name = checkout_item.itemName
+            item_price = checkout_item.itemPrice
             label = QLabel(f"{item_name} - ${item_price:.2f}")
             label.setFixedHeight(self.cart_item_row_height)
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -614,9 +637,9 @@ class MainWindow(QMainWindow):
             self.cart_items_layout.addWidget(label)
             t += item_price
 
-            print(f"added {self.data.getCheckoutName(item)} to cart display")
+            print(f"added {item_name} to cart display")
 
-        if self.data.getCartCount() == 0:
+        if len(checkout_items) == 0:
             empty_label = QLabel("No items in cart")
             empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             empty_label.setFont(self.create_font(16))
@@ -654,11 +677,12 @@ class MainWindow(QMainWindow):
         ingredients_ui.setStyleSheet("background-color: black;")
         layout = QGridLayout(ingredients_ui)
         #titles
-        title = self.create_label(f"Customize {self.data.getItemName(item)}", "", 500, 50)
+        self.items = self.data.getItems()
+        title = self.create_label(f"Customize {item.name}", "", 500, 50)
         layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
         #confrim (sending to cart)
         confirm_button = self.create_button('Confirm', 'green', 300, 50)
-        confirm_button.clicked.connect(lambda: self.confirm_item(item))
+        confirm_button.clicked.connect(lambda: self.confirm_item(item.id))
         layout.addWidget(confirm_button, 1, 0)
 
         #go to home screen

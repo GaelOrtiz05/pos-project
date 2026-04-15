@@ -120,6 +120,20 @@ std::vector<ItemIngredient> Database::getItemIngredients(std::string &name) {
   return itemIngredients;
 }
 
+std::vector<Checkout> Database::getCheckout() {
+  SQLite::Statement query(db,
+                          "SELECT item_id, item_name, item_price FROM checkout");
+  std::vector<Checkout> items;
+  while (query.executeStep()) {
+    Checkout c;
+    c.itemId = query.getColumn(0).getInt();
+    c.itemName = query.getColumn(1).getString();
+    c.itemPrice = query.getColumn(2).getDouble();
+    items.push_back(c);
+  }
+  return items;
+}
+
 std::vector<ComboItem> Database::getComboItems(int comboId) {
   SQLite::Statement query(db, R"SQL(
                           SELECT i.id, i.name, i.price, i.in_stock

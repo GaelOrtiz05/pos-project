@@ -74,14 +74,16 @@ public:
   void joinIngredientItem(int ingredientId, int itemId, int isRemovable,
                           double priceChange = 0.0);
   void joinComboItem(int comboId, int itemId);
-  void addCheckout(const std::string &item);
+  void addCheckout(int itemId);
+  std::vector<Checkout> getCheckout();
 
   // update
+  void purhcase();
   bool incrementIngredientStock(int ingredientId, int stock);
   bool decrementIngredientStock(int ingredientId, int stock);
   bool incrementIngredientStock(int ingredientId);
   bool decrementIngredientStock(int ingredientId);
-  bool setIngredientStock(int ingredientId, int stock);
+  // bool setIngredientStock(int ingredientId, int stock);
   void setIngredientStock(bool increase, const std::string &name,
                           double val = 1);
 
