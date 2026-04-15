@@ -651,19 +651,35 @@ class MainWindow(QMainWindow):
         ingredients_ui = QWidget()
         self.setCentralWidget(ingredients_ui)
         ingredients_ui.setStyleSheet("background-color: black;")
-        layout = QGridLayout(ingredients_ui)
-        #titles
-        title = self.create_label(f"Customize {self.data.getItemName(item)}", "", 500, 50)
-        layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        #confrim (sending to cart)
-        confirm_button = self.create_button('Confirm', 'green', 300, 50)
-        confirm_button.clicked.connect(lambda: self.confirm_item(item))
-        layout.addWidget(confirm_button, 1, 0)
 
-        #go to home screen
-        back_button = self.create_button('Back', 'red', 300, 50)
+        # Outer layout fills the window, but centers a smaller card
+        outer_layout = QVBoxLayout(ingredients_ui)
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        outer_layout.addStretch()
+
+        card = QWidget()
+        card.setFixedSize(650, 260)  # make this smaller/larger as needed
+        card.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+        card_layout = QGridLayout(card)
+        card_layout.setContentsMargins(20, 20, 20, 20)
+        card_layout.setHorizontalSpacing(16)
+        card_layout.setVerticalSpacing(16)
+
+        title = self.create_label(f"Customize {self.data.getItemName(item)}", "", 360, 44)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(self.create_font(20, 600))
+        card_layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        confirm_button = self.create_button("Confirm", "green", 220, 48)
+        confirm_button.clicked.connect(lambda: self.confirm_item(item))
+        card_layout.addWidget(confirm_button, 1, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        back_button = self.create_button("Back", "red", 220, 48)
         back_button.clicked.connect(self.show_home_screen)
-        layout.addWidget(back_button, 1, 1)
+        card_layout.addWidget(back_button, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        outer_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
+        outer_layout.addStretch()
 
     def confirm_item(self, item): # will connect this to the ingredients screen
         self.data.addCheckout(item)
