@@ -44,6 +44,19 @@ class MainWindow(QMainWindow):
         self.logic = pos_backend.Login()
         self.data = pos_backend.Database()
 
+    def clear_enter_shortcuts(self):
+        if hasattr(self, '_enter_shortcuts'):
+            for shortcut in self._enter_shortcuts:
+                shortcut.deleteLater()
+        self._enter_shortcuts = []
+
+    def bind_enter_key(self, handler):
+        self.clear_enter_shortcuts()
+        for key in [Qt.Key_Return, Qt.Key_Enter]:
+            enter_shortcut = QShortcut(QKeySequence(key), self)
+            enter_shortcut.activated.connect(handler)
+            self._enter_shortcuts.append(enter_shortcut)
+
     def show_login_screen(self): # Login Screen
             # creating a container
             central = QWidget()
@@ -83,8 +96,10 @@ class MainWindow(QMainWindow):
             layout.addWidget(quit_button,6,0,1,2)
 
             login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
-            quit_button.clicked.connect(lambda: self.close_program())            
-    
+            quit_button.clicked.connect(lambda: self.close_program())        
+
+            self.bind_enter_key(lambda: self.login_event_handler(user_input, password_input, layout))
+            
     def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
@@ -441,6 +456,8 @@ class MainWindow(QMainWindow):
         # Buttons
         submit_button = self.create_button('Add User', 'green', 300, 50)
         submit_button.clicked.connect(lambda: self.submit_event_handler(user_input, pass_input, checkbox))
+
+        self.bind_enter_key(lambda: self.submit_event_handler(user_input, pass_input, checkbox))
 
         back_button = self.create_button('Back', 'red', 300, 50)
         back_button.clicked.connect(self.show_manager_menu)
