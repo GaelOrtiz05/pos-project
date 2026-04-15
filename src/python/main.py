@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         window_length = size.width()
         window_height = size.height()
         self.setWindowTitle("POS")
-        self.resize(window_length, window_height)
+        self.setFixedSize(window_length, window_height)
         self.show_login_screen()
 
         self.shortcut_close = QShortcut(QKeySequence.StandardKey.Close, self)
