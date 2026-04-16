@@ -768,13 +768,17 @@ class MainWindow(QMainWindow):
             stock_input.setFixedSize(140, 45)
             stock_input.setStyleSheet("background-color: white; color: black; border-radius: 10px; font-size: 18px;")
             #set button
-            update_button = self.create_button("Confrim", "green", 160, 45)
-            update_button.clicked.connect(lambda _, ing=ingredient, inp=stock_input: self.update_ingredient_stock(ing, inp))
+            Increase_button = self.create_button("Increase", "green", 160, 45)
+            Increase_button.clicked.connect(lambda _, ing=ingredient, inp=stock_input: self.update_ingredient_stock(ing, inp,increase = True))
+            Decrease_button = self.create_button("Decrease", "red", 160, 45)
+            Decrease_button.clicked.connect(lambda _, ing=ingredient, inp=stock_input: self.update_ingredient_stock(ing, inp, increase=False))
+
             #adding items
             row_layout.addWidget(name_label)
             row_layout.addWidget(stock_label)
             row_layout.addWidget(stock_input)
-            row_layout.addWidget(update_button)
+            row_layout.addWidget(Increase_button)
+            row_layout.addWidget(Decrease_button)
 
             list_layout.addWidget(row_widget)
 
@@ -785,12 +789,12 @@ class MainWindow(QMainWindow):
         back_button.clicked.connect(self.show_manager_menu)
         main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-    def update_ingredient_stock(self, ingredient, stock_input): #works with disp_manage_inventory
+    def update_ingredient_stock(self, ingredient, stock_input, increase=True): #works with disp_manage_inventory
         text = stock_input.text().strip()
 
         if not text or not text.isdigit(): #fail safe for wrong input
             return
-        self.data.setIngredientStock(True, ingredient.name, int(text)) #send to cpp db
+        self.data.setIngredientStock(increase, ingredient.name, int(text)) #send to cpp db
         self.disp_manage_inventory_menu()
 #Close program function
 #-----------------------------------------------------------------------------
