@@ -36,13 +36,12 @@ class MainWindow(QMainWindow):
         window_length = size.width()
         window_height = size.height()
         self.setWindowTitle("POS")
-
+        
         if platform.system() == "Windows":
             self.setFixedSize(window_length, window_height)
         else:
             self.resize(window_length, window_height)
         
-        self.showFullScreen()
         self.show_login_screen()
 
         self.shortcut_close = QShortcut(QKeySequence.StandardKey.Close, self)
@@ -334,6 +333,8 @@ class MainWindow(QMainWindow):
         view_sales_button.clicked.connect(self.disp_sales_menu)
         # Manager inventory button
         manage_inventory_button = self.create_button('Manage Inventory','gray',300,50)
+        manage_inventory_button.clicked.connect(self.disp_manage_inventory_menu)
+
         layout.addWidget(manage_inventory_button,4,0)
         if self.manager_feedback_message:
             feedback_label = QLabel(self.manager_feedback_message)
@@ -599,26 +600,6 @@ class MainWindow(QMainWindow):
                     print(f"added {item.name} to grid. index is {idx}")
                     col += 1
  
-    #     for i in range(self.data.getItemCount()):
-    #         btn = self.create_button((f"{self.items.name(0)}"),'#2e302f',250,150)
-    #         list_buttons.append(btn)
-    #         list_buttons[i].clicked.connect(lambda _, x=i+1: self.disp_ingredients_menu(x))        
-    #     row = 0
-    #     col = 0
-    #     for i in range(self.data.getItemCount()):
-    #         if (self.data.getCategoryID(i+1) == category or category == 0):
-    #             if (col < 4):
-    #                 self.grid.addWidget(list_buttons[i], row, col)
-    #                 print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
-    #                 col += 1
-    #             else:
-    #                 col = 0
-    #                 row += 1
-    #                 self.grid.addWidget(list_buttons[i], row, col)
-    #                 print(f"added {self.data.getItemName(i+1)} to grid. index is {i}")
-    #                 col += 1
-    # #Make c++ function to return a vector/list instead of calling it each iteration. 
-
     #Font shortcut function.     
     def create_font(self, point_size, weight=QFont.Weight.Normal):
         font = QFont()
@@ -733,6 +714,69 @@ class MainWindow(QMainWindow):
         self.data.addCheckout(item)
         self.show_home_screen()
         self.update_cart()
+
+
+
+
+
+    def disp_manage_inventory_menu(self):
+        manage_inventory_ui = QWidget()
+        self.setCentralWidget(manage_inventory_ui)
+        manage_inventory_ui.setStyleSheet("background-color: black;")
+
+        main_layout = QVBoxLayout(manage_inventory_ui)
+
+        title = self.create_label("manage inventory", "", 450, 50)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(self.create_font(25, 600))
+        main_layout.addWidget(title, alignment=Qt.AlignmentFlag.AlignCenter)
+        #scrollable area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("background-color: black; border: none;")
+
+        container = QWidget()
+        list_layout = QVBoxLayout(container)
+        list_layout.setSpacing(12)
+
+        inventory_items = self.data.getIngredients() #reading from cpp
+
+        for ingredient in inventory_items: #going through the list
+            row_widget = QWidget()
+            row_widget.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+            row_layout = QHBoxLayout(row_widget)
+
+            name_label = self.create_label(f"{ingredient.name}", "#2e302f", 250, 50)
+            stock_label = self.create_label(f"Stock: {ingredient.stock}", "#2e302f", 160, 50)
+            # text edits
+            stock_input = QLineEdit()
+            stock_input.setFixedSize(140, 45)
+            stock_input.setStyleSheet("background-color: white; color: black; border-radius: 10px; font-size: 18px;")
+            #set button
+            update_button = self.create_button("Confrim", "green", 160, 45)
+            update_button.clicked.connect(lambda _, ing=ingredient, inp=stock_input: self.update_ingredient_stock(ing, inp))
+            #adding items
+            row_layout.addWidget(name_label)
+            row_layout.addWidget(stock_label)
+            row_layout.addWidget(stock_input)
+            row_layout.addWidget(update_button)
+
+            list_layout.addWidget(row_widget)
+
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
+        #back button
+        back_button = self.create_button('Back', 'red', 300, 50)
+        back_button.clicked.connect(self.show_manager_menu)
+        main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+    def update_ingredient_stock(self, ingredient, stock_input): #works with disp_manage_inventory
+        text = stock_input.text().strip()
+
+        if not text or not text.isdigit(): #fail safe for wrong input
+            return
+        self.data.setIngredientStock(True, ingredient.name, int(text)) #send to cpp db
+        self.disp_manage_inventory_menu()
 #Close program function
 #-----------------------------------------------------------------------------
     #Closes the program.
