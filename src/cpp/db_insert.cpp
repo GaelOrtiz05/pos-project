@@ -1,3 +1,4 @@
+#include "SQLiteCpp/Statement.h"
 #include "db.hpp"
 
 void Database::insertCategory(const std::string &name) {
@@ -53,15 +54,6 @@ void Database::joinComboItem(int comboId, int itemId) {
   insert.exec();
 }
 
-// Copies items from item table to checkout table when clicked -M
-void Database::addCheckout(int itemId) {
-  SQLite::Statement query(
-      db, "INSERT INTO checkout(item_id, item_name, item_price) "
-          "SELECT id, name, price FROM items WHERE id = ?");
-  query.bind(1, itemId);
-  query.exec();
-}
-
 void Database::setIngredientStock(bool increase, const std::string &name,
                                   double val) {
   if (increase) {
@@ -79,19 +71,40 @@ void Database::setIngredientStock(bool increase, const std::string &name,
   }
 }
 
-void Database::purchase() {
-  SQLite::Statement query(db, "DELETE FROM checkout");
+void Database::addCheckout(int itemId) {
+  SQLite::Statement query(
+      db, "INSERT INTO checkout(item_id, item_name, item_price) "
+          "SELECT id, name, price FROM items WHERE id = ?");
+  query.bind(1, itemId);
   query.exec();
 }
-// bool Database::incrementIngredientStock(int ingredientId) { return true; }
-// bool Database::decrementIngredientStock(int ingredientId) { return true; }
-//
-// bool Database::setIngredientStock(int ingredientId, int stock) {
-//   SQLite::Statement query(db, "UPDATE ingredients SET stock WHERE id = ?");
-//   query.bind(1, ingredientId);
-//   int changed = query.exec();
-//   if (changed == 0)
-//     return false;
-//   return true;
-// }
-//
+
+void Database::purchase(const std::vector<OrderItem> &items, double total) {
+  SQLite::Transaction tx(db);
+
+  SQLite::Statement insertOrderId(db, R"SQL(
+                                  INSERT INTO orders (total)
+                                  VALUES (?)
+  )SQL");
+
+  // insert total
+  insertOrderId.bind(1, total);
+  insertOrderId.exec();
+  int orderId = static_cast<int>(db.getLastInsertRowid());
+
+  // for loop to insert every item
+  for (const auto &oi : items) {
+
+    SQLite::Statement insertOrderItems(db, R"SQL(
+                                       INSERT INTO order_items (order_id, item_id, item_name, item_price)
+                                       VALUES (?,?,?,?)
+                                       )SQL");
+    insertOrderItems.bind(1, orderId);
+    insertOrderItems.bind(2, oi.itemId);
+    insertOrderItems.bind(3, oi.itemName);
+    insertOrderItems.bind(4, oi.itemPrice);
+    insertOrderItems.exec();
+  }
+
+  tx.commit();
+}

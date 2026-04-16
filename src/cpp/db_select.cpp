@@ -38,12 +38,12 @@ std::vector<Ingredient> Database::getIngredients() {
   return ingredients;
 }
 
-std::vector<Combo> Database::getCombos() {
+std::vector<Item> Database::getCombos() {
   SQLite::Statement query(db,
                           "SELECT id, name, price FROM combos ORDER BY id ASC");
-  std::vector<Combo> combos;
+  std::vector<Item> combos;
   while (query.executeStep()) {
-    Combo c;
+    Item c;
     c.id = query.getColumn(0).getInt();
     c.name = query.getColumn(1).getString();
     c.price = query.getColumn(2).getDouble();
@@ -71,6 +71,23 @@ std::vector<Item> Database::getItems() {
     items.push_back(i);
   }
   return items;
+}
+
+Item Database::getItem(int itemId) {
+  SQLite::Statement query(db, R"SQL(
+                          SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
+                          FROM items i JOIN categories c ON i.category_id = c.id
+                          ORDER BY i.name ASC
+                          )SQL");
+
+  Item i;
+  i.id = query.getColumn(0).getInt();
+  i.name = query.getColumn(1).getString();
+  i.price = query.getColumn(2).getDouble();
+  i.inStock = query.getColumn(3).getInt();
+  i.categoryId = query.getColumn(4).getInt();
+  i.categoryName = query.getColumn(5).getString();
+  return i;
 }
 
 std::vector<Item> Database::getItemsByCategory(std::string &name) {
@@ -120,12 +137,12 @@ std::vector<ItemIngredient> Database::getItemIngredients(std::string &name) {
   return itemIngredients;
 }
 
-std::vector<Checkout> Database::getCheckout() {
-  SQLite::Statement query(db,
-                          "SELECT item_id, item_name, item_price FROM checkout");
-  std::vector<Checkout> items;
+std::vector<OrderItem> Database::getOrder() {
+  SQLite::Statement query(
+      db, "SELECT item_id, item_name, item_price FROM order_items");
+  std::vector<OrderItem> items;
   while (query.executeStep()) {
-    Checkout c;
+    OrderItem c;
     c.itemId = query.getColumn(0).getInt();
     c.itemName = query.getColumn(1).getString();
     c.itemPrice = query.getColumn(2).getDouble();

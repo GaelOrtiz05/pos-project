@@ -114,6 +114,8 @@ class MainWindow(QMainWindow):
             # self.user = self.logic.getListOfUsers()
             # self.itemsByCategory = self.data.getItemsByCategory()
             self.items = self.data.getItems()
+            self.combos = self.data.getCombos()
+            self.cart = []
             self.show_home_screen()
         else:
             error_label = QLabel('Incorrect User or Password')
@@ -175,31 +177,14 @@ class MainWindow(QMainWindow):
         combo_row.setSpacing(75)
         #displaying the categories
         
-        #Displays Combo Buttons 1-4
+        #Displays Combo Buttons
         #--------------------------------------------------------------------
-        combo1_button = self.create_button(f"Combo #1",'#2e302f',300,100)
-        combo1_button.clicked.connect(lambda: self.add_to_cart(1))
-        combo1_button.clicked.connect(lambda: self.add_to_cart(4))
-        combo1_button.clicked.connect(lambda: self.add_to_cart(8))
-        combo_row.addWidget(combo1_button) 
-
-        combo2_button = self.create_button(f"Combo #2",'#2e302f',350,100)
-        combo2_button.clicked.connect(lambda: self.add_to_cart(2))
-        combo2_button.clicked.connect(lambda: self.add_to_cart(4))
-        combo2_button.clicked.connect(lambda: self.add_to_cart(8))
-        combo_row.addWidget(combo2_button) 
         
-        combo3_button = self.create_button(f"Combo #3",'#2e302f',300,100)
-        combo3_button.clicked.connect(lambda: self.add_to_cart(3))
-        combo3_button.clicked.connect(lambda: self.add_to_cart(5))
-        combo3_button.clicked.connect(lambda: self.add_to_cart(11))
-        combo_row.addWidget(combo3_button) 
-
-        # combo4_button = self.create_button(f"Chicken Tenders Combo",'#2e302f',300,100)
-        # combo4_button.clicked.connect(lambda: self.add_to_cart(4))
-        # combo4_button.clicked.connect(lambda: self.add_to_cart(6))
-        # combo4_button.clicked.connect(lambda: self.add_to_cart(10))
-        # combo_row.addWidget(combo4_button) 
+        combos = self.data.getCombos()
+        for combo in combos:
+            btn = self.create_button(f"{combo.name}", '#2e302f', 300, 100)
+            btn.clicked.connect(lambda _, c=combo: self.confirm_combo(c))
+            combo_row.addWidget(btn)
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(combo_row)
@@ -281,9 +266,9 @@ class MainWindow(QMainWindow):
             "background-color: #151515; color: white; border: 2px solid #0c401a; border-radius: 14px;"
         )
 
+
         checkout_button = self.create_button("Checkout", '#0c401a', 320, 90)
-        checkout_button.clicked.connect(lambda: self.data.purchase())
-        checkout_button.clicked.connect(lambda: self.update_cart())
+        checkout_button.clicked.connect(self.checkout)
 
         footer_layout.addWidget(self.total_label)
         footer_layout.addWidget(checkout_button, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -301,6 +286,9 @@ class MainWindow(QMainWindow):
             manager_button.clicked.connect(lambda: self.manager_event_handler())
 
         self.update_cart() # to update cart each time we go back to home screen, so it doesn't show old items after purchase
+
+
+
 
     # manager functions
     #--------------------------------------------------------------------------------
@@ -613,7 +601,12 @@ class MainWindow(QMainWindow):
 #-----------------------------------------------------------------------------
     #Adds an item to the checkout table based on item id.
     def add_to_cart(self, item): # this function will add the items to screen
-        self.data.addCheckout(item)
+        self.cart.append({
+            "id": item.id,
+            "name": item.name,
+            "price": item.price,
+        })
+
         self.update_cart()
 
     #Clears the current cart display.
@@ -624,15 +617,16 @@ class MainWindow(QMainWindow):
                 widget.deleteLater()
         
     #adds item to the cart display.
-    def update_cart(self): #update cart each time item is added
+    def update_cart(self):
         t = 0.0
         self.clear_cart()
-        checkout_items = self.data.getCheckout()
-        # putting Items from cart to the screen
-        for checkout_item in checkout_items:
-            item_name = checkout_item.itemName
-            item_price = checkout_item.itemPrice
-            label = QLabel(f"{item_name} - ${item_price:.2f}")
+
+        for i in self.cart:
+            if "subtitle" in i:
+                display = f"{i['name']} - ${i['price']:.2f}\n{i['subtitle']}"
+            else:
+                display = f"{i['name']} - ${i['price']:.2f}"
+            label = QLabel(display)
             label.setFixedHeight(self.cart_item_row_height)
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             label.setFont(self.create_font(18))
@@ -640,11 +634,9 @@ class MainWindow(QMainWindow):
                 "background-color: #111111; color: white; border-radius: 10px; padding-left: 12px;"
             )
             self.cart_items_layout.addWidget(label)
-            t += item_price
+            t += i["price"]
 
-            print(f"added {item_name} to cart display")
-
-        if len(checkout_items) == 0:
+        if len(self.cart) == 0:
             empty_label = QLabel("No items in cart")
             empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             empty_label.setFont(self.create_font(16))
@@ -700,7 +692,7 @@ class MainWindow(QMainWindow):
         card_layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
 
         confirm_button = self.create_button("Confirm", "green", 220, 48)
-        confirm_button.clicked.connect(lambda: self.confirm_item(item.id))
+        confirm_button.clicked.connect(lambda: self.confirm_item(item))
         card_layout.addWidget(confirm_button, 1, 0, alignment=Qt.AlignmentFlag.AlignCenter)
 
         back_button = self.create_button("Back", "red", 220, 48)
@@ -710,14 +702,37 @@ class MainWindow(QMainWindow):
         outer_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
         outer_layout.addStretch()
 
-    def confirm_item(self, item): # will connect this to the ingredients screen
-        self.data.addCheckout(item)
-        self.show_home_screen()
+    def checkout(self):
+        order_items = []
+        total = 0.0
+        for i in self.cart:
+            oi = pos_backend.OrderItem()
+            oi.itemId = i["id"]
+            oi.itemName = i["name"]
+            oi.itemPrice = i["price"]
+            order_items.append(oi)
+            total += i["price"]
+        self.data.purchase(order_items, total)
+        self.cart = []
         self.update_cart()
 
+    def confirm_item(self, item):
+        self.cart.append({"id": item.id,
+                            "name": item.name,
+                            "price": item.price})
+        self.show_home_screen()
 
-
-
+    def confirm_combo(self, combo):
+        combo_items = self.data.getComboItems(combo.id)
+        subtitle = ""
+        for ci in combo_items:
+            subtitle += ci.name + ", "
+        subtitle = subtitle.rstrip(", ")
+        self.cart.append({"id": combo.id,
+                            "name": combo.name,
+                            "subtitle": subtitle,
+                            "price": combo.price})
+        self.show_home_screen()
 
     def disp_manage_inventory_menu(self):
         manage_inventory_ui = QWidget()

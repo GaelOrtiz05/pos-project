@@ -54,15 +54,28 @@ void Database::setupDatabase() {
       FOREIGN KEY (item_id)   REFERENCES items(id)                                                                                                                                     
     );                                    
 
-    CREATE TABLE IF NOT EXISTS checkout (                                                                                                                                              
+    -- CREATE TABLE IF NOT EXISTS checkout (                                                                                                                                              
+    --   id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    --   item_id            INTEGER ,
+    --   name               TEXT NOT NULL,
+    --   price              DOUBLE NOT NULL,
+    --   FOREIGN KEY (combo_id) REFERENCES combos(id),
+    --   FOREIGN KEY (item_id) REFERENCES items(id),
+    --   );
+
+    CREATE TABLE IF NOT EXISTS orders (
       id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-      item_id            INTEGER NOT NULL,
-      item_name          TEXT NOT NULL,
-      item_price         DOUBLE NOT NULL,                                                                                                                                                   
-      FOREIGN KEY (item_id) REFERENCES items(id),
-      FOREIGN KEY (item_name) REFERENCES items(name),
-      FOREIGN KEY (item_price) REFERENCES items(price)
-    );
+      total              REAL NOT NULL
+      );
+
+    CREATE TABLE IF NOT EXISTS order_items (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id        INTEGER NOT NULL,
+      item_id         INTEGER NOT NULL,
+      item_name       TEXT NOT NULL,
+      item_price      DOUBLE NOT NULL,
+      FOREIGN KEY (order_id) REFERENCES orders(id)
+      );
   )SQL");
 }
 
@@ -83,7 +96,7 @@ void Database::MenuInitialization() {
   if (!IsInitialized()) {
 
     db.exec(R"SQL(
-            BEGIN TRANSACTION;
+  BEGIN TRANSACTION;
 
             INSERT INTO categories (id, name) VALUES
               (1, 'Entrees'),
@@ -98,7 +111,7 @@ void Database::MenuInitialization() {
               (4,  'French Fries'         , 1.49, 2, 1),
               (5,  'Onion Rings'          , 1.69, 2, 1),
               (6,  'Chocolate Cake Slice' , 0.99, 3, 1),
-              (7,  'Apple Pie'            , 0.50, 3, 1),
+              (7,  'Apple Pie'            , 1.89, 3, 1),
               (8,  'Soda'                 , 1.49, 4, 1),
               (9,  'Orange Soda'          , 1.49, 4, 1),
               (10, 'Diet Soda'            , 1.39, 4, 1),
@@ -137,7 +150,8 @@ void Database::MenuInitialization() {
                (3, 4, 1, 0.0), -- Lettuce
                (3, 5, 1, 0.0), -- Tomato
                (3, 6, 1, 0.0), -- Pickles
-               (3, 7, 1, 0.0); -- Cheese
+               (3, 7, 1, 0.0), -- Cheese
+               (3, 8, 1, 0.0); -- Bacon
 
             INSERT INTO combos (id, name, price) VALUES
               (1, 'Combo #1', 9.99),
@@ -177,7 +191,7 @@ void Database::DatabaseMenu() {
 
   std::vector<Category> outputCategories = getCategories();
   std::vector<Item> outputItems = getItems();
-  std::vector<Combo> outputCombos = getCombos();
+  std::vector<Item> outputCombos = getCombos();
   std::vector<Ingredient> outputIngredients = getIngredients();
 
   while (running) {
@@ -241,7 +255,7 @@ void Database::DatabaseMenu() {
     case 5: {
       std::cout << "Combos: \n";
 
-      for (const Combo &c : outputCombos) {
+      for (const Item &c : outputCombos) {
         std::cout << "Id: " << c.id << ", ";
         std::cout << "Name: " << c.name << ", ";
         std::cout << "Price: " << c.price << "\n";
@@ -254,7 +268,7 @@ void Database::DatabaseMenu() {
 
       std::vector<ComboItem> outputComboItems = getComboItems(inputCombo);
 
-      for (const ComboItem &c : outputComboItems) {
+      for (const auto &c : outputComboItems) {
         std::cout << "Id: " << c.id << ", ";
         std::cout << "Name: " << c.name << ", ";
         std::cout << "Price: " << c.price << ", ";

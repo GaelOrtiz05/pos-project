@@ -48,10 +48,11 @@ struct ComboItem {
   bool inStock;
 };
 
-struct Checkout {
+struct OrderItem {
   int itemId;
   std::string itemName;
   double itemPrice;
+  std::vector<int> removedIngredients;
 };
 
 class Database {
@@ -63,7 +64,7 @@ public:
   void setupDatabase();
   void MenuInitialization();
   bool IsInitialized();
-  void purchase();
+  void purchase(const std::vector<OrderItem> &items, double total);
   void DatabaseMenu();
 
   // insert
@@ -75,10 +76,9 @@ public:
                           double priceChange = 0.0);
   void joinComboItem(int comboId, int itemId);
   void addCheckout(int itemId);
-  std::vector<Checkout> getCheckout();
+  std::vector<OrderItem> getOrder();
 
   // update
-  void purhcase();
   bool incrementIngredientStock(int ingredientId, int stock);
   bool decrementIngredientStock(int ingredientId, int stock);
   bool incrementIngredientStock(int ingredientId);
@@ -91,8 +91,9 @@ public:
   int getCategoryIdByName(std::string &name);
   std::vector<Category> getCategories();
   std::vector<Ingredient> getIngredients();
-  std::vector<Combo> getCombos();
+  std::vector<Item> getCombos();
   std::vector<Item> getItems();
+  Item getItem(int itemId);
   std::vector<Item> getItemsByCategory(std::string &name);
   std::vector<ItemIngredient> getItemIngredients(std::string &name);
   std::vector<ComboItem> getComboItems(int comboId);

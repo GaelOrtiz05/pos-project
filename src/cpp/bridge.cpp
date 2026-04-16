@@ -37,10 +37,10 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def_readonly("isRemovable", &ItemIngredient::isRemovable)
       .def_readonly("priceChange", &ItemIngredient::priceChange);
 
-  py::class_<Combo>(handle, "Combo")
-      .def_readonly("id", &Combo::id)
-      .def_readonly("name", &Combo::name)
-      .def_readonly("price", &Combo::price);
+  // py::class_<Combo>(handle, "Combo")
+  //     .def_readonly("id", &Combo::id)
+  //     .def_readonly("name", &Combo::name)
+  //     .def_readonly("price", &Combo::price);
 
   py::class_<ComboItem>(handle, "ComboItem")
       .def_readonly("id", &ComboItem::id)
@@ -48,10 +48,12 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def_readonly("price", &ComboItem::price)
       .def_readonly("inStock", &ComboItem::inStock);
 
-  py::class_<Checkout>(handle, "Checkout")
-      .def_readonly("itemId", &Checkout::itemId)
-      .def_readonly("itemName", &Checkout::itemName)
-      .def_readonly("itemPrice", &Checkout::itemPrice);
+  py::class_<OrderItem>(handle, "OrderItem")
+      .def(py::init<>())
+      .def_readwrite("itemId", &OrderItem::itemId)
+      .def_readwrite("itemName", &OrderItem::itemName)
+      .def_readwrite("itemPrice", &OrderItem::itemPrice);
+  // .def_readwrite("removedIngredientIds", &OrderItem::removedIngredientIds);
 
   py::class_<Login>(handle, "Login")
       .def(py::init<>())
@@ -72,11 +74,12 @@ PYBIND11_MODULE(pos_backend, handle) {
       // .def("getItemName", &Database::getItemName)
       .def("setIngredientStock", &Database::setIngredientStock)
       .def("addCheckout", &Database::addCheckout)
-      .def("getCheckout", &Database::getCheckout)
+      .def("getCheckout", &Database::getOrder)
       // new
       .def("getCategories", &Database::getCategories)
       .def("getCategoryIdByName", &Database::getCategoryIdByName)
       .def("getItems", &Database::getItems)
+      .def("getItem", &Database::getItem)
       .def("getIngredients", &Database::getIngredients)
       .def("getCombos", &Database::getCombos)
       .def("getItemsByCategory", &Database::getItemsByCategory)
