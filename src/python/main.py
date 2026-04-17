@@ -621,19 +621,29 @@ class MainWindow(QMainWindow):
         t = 0.0
         self.clear_cart()
 
-        for i in self.cart:
+        for index, i in enumerate(self.cart):
             if "subtitle" in i:
                 display = f"{i['name']} - ${i['price']:.2f}\n{i['subtitle']}"
             else:
                 display = f"{i['name']} - ${i['price']:.2f}"
+            row_widget = QWidget()
+            row_layout = QHBoxLayout(row_widget)
+            row_layout.setContentsMargins(0, 0, 0, 0)
+            row_layout.setSpacing(8)
+
             label = QLabel(display)
             label.setFixedHeight(self.cart_item_row_height)
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             label.setFont(self.create_font(18))
-            label.setStyleSheet(
-                "background-color: #111111; color: white; border-radius: 10px; padding-left: 12px;"
-            )
-            self.cart_items_layout.addWidget(label)
+            label.setStyleSheet("background-color: #111111; color: white; border-radius: 10px; padding-left: 12px;")
+
+            remove_button = self.create_button("x", "red", 40, 40)
+            remove_button.clicked.connect(lambda _, x=index: self.remove_cart_item(x))
+
+            row_layout.addWidget(label, 1)
+            row_layout.addWidget(remove_button)
+
+            self.cart_items_layout.addWidget(row_widget)
             t += i["price"]
 
         if len(self.cart) == 0:
@@ -666,6 +676,11 @@ class MainWindow(QMainWindow):
         back_button.clicked.connect(self.show_manager_menu)
         layout.addWidget(back_button,0,3)
 
+    def remove_cart_item(self, index):
+        if index < 0 or index >= len(self.cart):
+            return
+        self.cart.pop(index)
+        self.update_cart()
 
 
     def disp_ingredients_menu(self, item):
