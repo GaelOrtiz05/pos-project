@@ -37,16 +37,15 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def_readonly("isRemovable", &ItemIngredient::isRemovable)
       .def_readonly("priceChange", &ItemIngredient::priceChange);
 
-  // py::class_<Combo>(handle, "Combo")
-  //     .def_readonly("id", &Combo::id)
-  //     .def_readonly("name", &Combo::name)
-  //     .def_readonly("price", &Combo::price);
-
   py::class_<ComboItem>(handle, "ComboItem")
       .def_readonly("id", &ComboItem::id)
       .def_readonly("name", &ComboItem::name)
       .def_readonly("price", &ComboItem::price)
       .def_readonly("inStock", &ComboItem::inStock);
+
+  py::class_<Order>(handle, "Order")
+      .def_readonly("id", &Order::id)
+      .def_readonly("total", &Order::total);
 
   py::class_<OrderItem>(handle, "OrderItem")
       .def(py::init<>())
@@ -67,15 +66,8 @@ PYBIND11_MODULE(pos_backend, handle) {
 
   py::class_<Database>(handle, "Database")
       .def(py::init<>())
-      // old
-      // .def("getItemCount", &Database::getItemCount)
-      // .def("getIngredientCount", &Database::getIngredientCount)
-      // .def("getCategoryID", &Database::getCategoryID)
-      // .def("getItemName", &Database::getItemName)
       .def("setIngredientStock", &Database::setIngredientStock)
       .def("addCheckout", &Database::addCheckout)
-      .def("getCheckout", &Database::getOrder)
-      // new
       .def("getCategories", &Database::getCategories)
       .def("getCategoryIdByName", &Database::getCategoryIdByName)
       .def("getItems", &Database::getItems)
@@ -86,5 +78,7 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("getItemIngredients", &Database::getItemIngredients)
       .def("getComboItems", &Database::getComboItems)
       .def("purchase", &Database::purchase)
-      .def("getItems", &Database::getItems);
+      .def("getItems", &Database::getItems)
+      .def("getOrders", &Database::getOrders)
+      .def("getOrderItems", &Database::getOrderItems);
 }

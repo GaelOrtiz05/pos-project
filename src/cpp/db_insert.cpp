@@ -92,18 +92,33 @@ void Database::purchase(const std::vector<OrderItem> &items, double total) {
   insertOrderId.exec();
   int orderId = static_cast<int>(db.getLastInsertRowid());
 
-  // for loop to insert every item
-  for (const auto &oi : items) {
-
-    SQLite::Statement insertOrderItems(db, R"SQL(
+  SQLite::Statement insertOrderItems(db, R"SQL(
                                        INSERT INTO order_items (order_id, item_id, item_name, item_price)
                                        VALUES (?,?,?,?)
                                        )SQL");
+
+  SQLite::Statement decrementStock(db, R"SQL(
+                                   UPDATE ingredients SET stock = stock - 1
+                                   WHERE id IN (
+                                     SELECT ingredient_id
+                                     FROM item_ingredients
+                                     WHERE item_id = ?
+                                   )
+                                   )SQL");
+  // for loop to insert every item
+  // decrements stock
+  for (const auto &oi : items) {
+
     insertOrderItems.bind(1, orderId);
     insertOrderItems.bind(2, oi.itemId);
     insertOrderItems.bind(3, oi.itemName);
     insertOrderItems.bind(4, oi.itemPrice);
     insertOrderItems.exec();
+    insertOrderItems.reset();
+
+    decrementStock.bind(1, oi.itemId);
+    decrementStock.exec();
+    decrementStock.reset();
   }
 
   tx.commit();

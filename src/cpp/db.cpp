@@ -154,9 +154,9 @@ void Database::MenuInitialization() {
                (3, 8, 1, 0.0); -- Bacon
 
             INSERT INTO combos (id, name, price) VALUES
-              (1, 'Combo #1', 9.99),
-              (2, 'Combo #2', 9.99),
-              (3, 'Combo #3', 9.99);
+              (1, 'Burger Combo', 9.99),
+              (2, 'Chicken Sandwhich Combo', 9.99),
+              (3, 'Cheese Burger Combo', 9.99);
 
             INSERT INTO combo_items (combo_id, item_id) VALUES
             -- Burger Combo
@@ -188,11 +188,7 @@ void Database::DatabaseMenu() {
   int inputCombo = 0;
   int inputIsAdmin;
   int input = 1;
-
-  std::vector<Category> outputCategories = getCategories();
-  std::vector<Item> outputItems = getItems();
-  std::vector<Item> outputCombos = getCombos();
-  std::vector<Ingredient> outputIngredients = getIngredients();
+  int orderId;
 
   while (running) {
 
@@ -203,7 +199,8 @@ void Database::DatabaseMenu() {
               << "4. Get Item Ingredients\n"
               << "5. Get Combos\n"
               << "6. Get Combo Items\n"
-              // << "7. Add Item\n"
+              << "7. Get All Order Items\n"
+              << "8. Get Order Items by Order ID\n"
               << "0. Quit\n"
               << "Input: ";
 
@@ -212,26 +209,28 @@ void Database::DatabaseMenu() {
     switch (input) {
 
     case 1: {
-      outputCategories = getCategories();
+      std::vector<Category> outputCategories = getCategories();
       std::cout << "Categories\n";
-      for (const Category &c : outputCategories) {
+
+      for (const auto &c : outputCategories) {
         std::cout << "Category: " << c.name << "\n";
       }
       break;
     }
     case 2: {
-      outputItems = getItems();
+      std::vector<Item> outputItems = getItems();
       std::cout << "Items\n";
-      for (const Item &i : outputItems) {
+
+      for (const auto &i : outputItems) {
         std::cout << "Item: " << i.name << "\n";
       }
       break;
     }
     case 3: {
-      outputIngredients = getIngredients();
+      std::vector<Ingredient> outputIngredients = getIngredients();
       std::cout << "Ingredients: \n";
 
-      for (const Ingredient &i : outputIngredients) {
+      for (const auto &i : outputIngredients) {
         std::cout << "Id: " << i.id << ", ";
         std::cout << "Name: " << i.name << ", ";
         std::cout << "Stock: " << i.stock << "\n";
@@ -241,10 +240,11 @@ void Database::DatabaseMenu() {
     case 4: {
       std::cout << "Item Name: \n";
       std::cin >> inputItem;
+
       std::vector<ItemIngredient> itemIngredients =
           getItemIngredients(inputItem);
 
-      for (const ItemIngredient &ii : itemIngredients) {
+      for (const auto &ii : itemIngredients) {
         std::cout << "Id: " << ii.id << ", ";
         std::cout << "Name: " << ii.name << ", ";
         std::cout << "Is Removable: " << ii.isRemovable << ", ";
@@ -253,9 +253,10 @@ void Database::DatabaseMenu() {
       break;
     }
     case 5: {
+      std::vector<Item> outputCombos = getCombos();
       std::cout << "Combos: \n";
 
-      for (const Item &c : outputCombos) {
+      for (const auto &c : outputCombos) {
         std::cout << "Id: " << c.id << ", ";
         std::cout << "Name: " << c.name << ", ";
         std::cout << "Price: " << c.price << "\n";
@@ -276,18 +277,27 @@ void Database::DatabaseMenu() {
       }
       break;
     }
-
     case 7: {
+      std::vector<Order> allOrders = getOrders();
+      std::cout << "All Orders:\n";
+
+      for (const auto &o : allOrders) {
+        std::cout << "Id: " << o.id << ", ";
+        std::cout << "Total: " << o.total << "\n";
+      }
+      break;
     }
     case 8: {
-      std::cout << "Item Name: \n";
-      std::cin >> inputItem;
-      std::cout << "Price: \n";
-      std::cin >> inputPrice;
-      std::cout << "Category Name: \n";
-      std::cin >> categoryName;
-      int categoryId = Database::getCategoryIdByName(categoryName);
-      Database::insertItem(inputItem, inputPrice, categoryId);
+      std::cout << "Order ID: \n";
+      std::cin >> orderId;
+      std::vector<OrderItem> orderItems = getOrderItems(orderId);
+      std::cout << "Order Items for order " << orderId << ":\n";
+
+      for (const auto &oi : orderItems) {
+        std::cout << "Id: " << oi.itemId << ", ";
+        std::cout << "Name: " << oi.itemName << ", ";
+        std::cout << "Price: " << oi.itemPrice << "\n";
+      }
       break;
     }
     case 0: {

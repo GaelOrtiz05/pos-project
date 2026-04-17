@@ -48,6 +48,11 @@ struct ComboItem {
   bool inStock;
 };
 
+struct Order {
+  int id;
+  double total;
+};
+
 struct OrderItem {
   int itemId;
   std::string itemName;
@@ -76,7 +81,7 @@ public:
                           double priceChange = 0.0);
   void joinComboItem(int comboId, int itemId);
   void addCheckout(int itemId);
-  std::vector<OrderItem> getOrder();
+  std::vector<Order> getOrders();
 
   // update
   bool incrementIngredientStock(int ingredientId, int stock);
@@ -97,6 +102,7 @@ public:
   std::vector<Item> getItemsByCategory(std::string &name);
   std::vector<ItemIngredient> getItemIngredients(std::string &name);
   std::vector<ComboItem> getComboItems(int comboId);
+  std::vector<OrderItem> getOrderItems(int orderId);
 };
 
 #endif
