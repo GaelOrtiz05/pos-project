@@ -805,13 +805,23 @@ class MainWindow(QMainWindow):
         back_button.clicked.connect(self.show_manager_menu)
         main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
+        self.inventory_feedback = self.create_label("", "red", 400, 40)
+        self.inventory_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.inventory_feedback)
+
     def update_ingredient_stock(self, ingredient, stock_input, increase=True): #works with disp_manage_inventory
         text = stock_input.text().strip()
 
         if not text or not text.isdigit(): #fail safe for wrong input
+            return  
+        if int(text) > 200: # max capacity
+            self.inventory_feedback.setText("Inventory Cannot Exceed 200.")
+            self.inventory_feedback.show()
             return
+        
         self.data.setIngredientStock(increase, ingredient.name, int(text)) #send to cpp db
         self.disp_manage_inventory_menu()
+        self.inventory_feedback.hide()
 #Close program function
 #-----------------------------------------------------------------------------
     #Closes the program.
