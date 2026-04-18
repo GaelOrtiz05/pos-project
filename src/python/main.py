@@ -281,14 +281,11 @@ class MainWindow(QMainWindow):
         #Logout button functionality
         #-----------------------------------------------------------------------------
         #programming the button 
-        logout_button.clicked.connect(self.show_login_screen) #logoin screen
+        logout_button.clicked.connect(self.show_login_screen)
         if self.current_user.isAdmin:
             manager_button.clicked.connect(lambda: self.manager_event_handler())
 
         self.update_cart() # to update cart each time we go back to home screen, so it doesn't show old items after purchase
-
-
-
 
     # manager functions
     #--------------------------------------------------------------------------------
@@ -600,13 +597,14 @@ class MainWindow(QMainWindow):
 #Checkout cart functions
 #-----------------------------------------------------------------------------
     #Adds an item to the checkout table based on item id.
-    def add_to_cart(self, item): # this function will add the items to screen
-        self.cart.append({
-            "id": item.id,
-            "name": item.name,
-            "price": item.price,
-        })
+    def add_to_cart(self, item):
+        if self.data.decrementStock(item.id) == False:
+            print(f"'{item.name}' cannot be added: out of stock.")
+            return
 
+        self.cart.append({"id": item.id,
+                          "name": item.name,
+                          "price": item.price})
         self.update_cart()
 
     #Clears the current cart display.
@@ -679,6 +677,7 @@ class MainWindow(QMainWindow):
     def remove_cart_item(self, index):
         if index < 0 or index >= len(self.cart):
             return
+        self.data.incrementStock(self.cart[index]["id"])
         self.cart.pop(index)
         self.update_cart()
 
@@ -732,21 +731,23 @@ class MainWindow(QMainWindow):
         self.update_cart()
 
     def confirm_item(self, item):
-        self.cart.append({"id": item.id,
-                            "name": item.name,
-                            "price": item.price})
         self.show_home_screen()
+        self.add_to_cart(item)
 
     def confirm_combo(self, combo):
         combo_items = self.data.getComboItems(combo.id)
-        subtitle = ""
+
         for ci in combo_items:
-            subtitle += ci.name + ", "
-        subtitle = subtitle.rstrip(", ")
-        self.cart.append({"id": combo.id,
-                            "name": combo.name,
-                            "subtitle": subtitle,
-                            "price": combo.price})
+            for ing in self.data.getItemIngredients(ci.id):
+                if ing.stock < 1:
+                    print(f"'{combo.name}' cannot be added: '{ing.name}' is out of stock.")
+                    return
+
+        for ci in combo_items:
+            self.data.decrementStock(ci.id)
+
+        subtitle = ", ".join(ci.name for ci in combo_items)
+        self.cart.append({"id": combo.id, "name": combo.name, "subtitle": subtitle, "price": combo.price})
         self.show_home_screen()
 
     def disp_manage_inventory_menu(self):

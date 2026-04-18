@@ -238,11 +238,12 @@ void Database::DatabaseMenu() {
       break;
     }
     case 4: {
-      std::cout << "Item Name: \n";
-      std::cin >> inputItem;
+      std::cout << "Item ID: \n";
+      int inputItemId;
+      std::cin >> inputItemId;
 
       std::vector<ItemIngredient> itemIngredients =
-          getItemIngredients(inputItem);
+          getItemIngredients(inputItemId);
 
       for (const auto &ii : itemIngredients) {
         std::cout << "Id: " << ii.id << ", ";

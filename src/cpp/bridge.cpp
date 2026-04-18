@@ -34,6 +34,7 @@ PYBIND11_MODULE(pos_backend, handle) {
   py::class_<ItemIngredient>(handle, "ItemIngredient")
       .def_readonly("id", &ItemIngredient::id)
       .def_readonly("name", &ItemIngredient::name)
+      .def_readonly("stock", &ItemIngredient::stock)
       .def_readonly("isRemovable", &ItemIngredient::isRemovable)
       .def_readonly("priceChange", &ItemIngredient::priceChange);
 
@@ -76,6 +77,8 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("getCombos", &Database::getCombos)
       .def("getItemsByCategory", &Database::getItemsByCategory)
       .def("getItemIngredients", &Database::getItemIngredients)
+      .def("decrementStock", &Database::decrementStock)
+      .def("incrementStock", &Database::incrementStock)
       .def("getComboItems", &Database::getComboItems)
       .def("purchase", &Database::purchase)
       .def("getItems", &Database::getItems)

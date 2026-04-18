@@ -1,5 +1,6 @@
 #include "db.hpp"
 
+
 std::vector<Category> Database::getCategories() {
   SQLite::Statement query(db,
                           "SELECT id, name FROM categories ORDER BY id ASC");
@@ -114,24 +115,23 @@ std::vector<Item> Database::getItemsByCategory(std::string &name) {
   return items;
 }
 
-std::vector<ItemIngredient> Database::getItemIngredients(std::string &name) {
+std::vector<ItemIngredient> Database::getItemIngredients(int itemId) {
   SQLite::Statement query(db, R"SQL(
-                          SELECT ing.id, ing.name, ii.is_removable, ii.price_change
+                          SELECT ing.id, ing.name, ing.stock, ii.is_removable, ii.price_change
                           FROM ingredients ing JOIN item_ingredients ii ON ing.id = ii.ingredient_id
-                          JOIN items i ON ii.item_id = i.id
-                          WHERE i.name = ?
+                          WHERE ii.item_id = ?
                           )SQL");
 
-  query.bind(1, name);
+  query.bind(1, itemId);
 
   std::vector<ItemIngredient> itemIngredients;
-
   while (query.executeStep()) {
     ItemIngredient ii;
-    ii.id = query.getColumn(0).getInt();      // ingredient id
-    ii.name = query.getColumn(1).getString(); // ingredient name;
-    ii.isRemovable = query.getColumn(2).getInt();
-    ii.priceChange = query.getColumn(3).getDouble();
+    ii.id = query.getColumn(0).getInt();
+    ii.name = query.getColumn(1).getString();
+    ii.stock = query.getColumn(2).getInt();
+    ii.isRemovable = query.getColumn(3).getInt();
+    ii.priceChange = query.getColumn(4).getDouble();
     itemIngredients.push_back(ii);
   }
   return itemIngredients;

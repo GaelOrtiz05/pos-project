@@ -49,9 +49,43 @@ void Database::joinIngredientItem(int ingredientId, int itemId, int isRemovable,
 void Database::joinComboItem(int comboId, int itemId) {
   SQLite::Statement insert(
       db, "INSERT INTO combo_items (combo_id, item_id) VALUES (?,?)");
+
   insert.bind(1, comboId);
   insert.bind(2, itemId);
   insert.exec();
+}
+
+bool Database::decrementStock(int itemId) {
+  std::vector<ItemIngredient> ingredients = getItemIngredients(itemId);
+
+  for (const auto &ing : ingredients) {
+    if (ing.stock < 1)
+      return false;
+  }
+
+  SQLite::Statement decrement(
+      db, "UPDATE ingredients SET stock = stock - 1 WHERE id = ?");
+
+  for (const auto &ing : ingredients) {
+    decrement.bind(1, ing.id);
+    decrement.exec();
+    decrement.reset();
+  }
+  return true;
+}
+
+bool Database::incrementStock(int itemId) {
+  std::vector<ItemIngredient> ingredients = getItemIngredients(itemId);
+
+  SQLite::Statement increment(
+      db, "UPDATE ingredients SET stock = stock + 1 WHERE id = ?");
+
+  for (const auto &ing : ingredients) {
+    increment.bind(1, ing.id);
+    increment.exec();
+    increment.reset();
+  }
+  return true;
 }
 
 void Database::setIngredientStock(bool increase, const std::string &name,
@@ -97,28 +131,13 @@ void Database::purchase(const std::vector<OrderItem> &items, double total) {
                                        VALUES (?,?,?,?)
                                        )SQL");
 
-  SQLite::Statement decrementStock(db, R"SQL(
-                                   UPDATE ingredients SET stock = stock - 1
-                                   WHERE id IN (
-                                     SELECT ingredient_id
-                                     FROM item_ingredients
-                                     WHERE item_id = ?
-                                   )
-                                   )SQL");
-  // for loop to insert every item
-  // decrements stock
   for (const auto &oi : items) {
-
     insertOrderItems.bind(1, orderId);
     insertOrderItems.bind(2, oi.itemId);
     insertOrderItems.bind(3, oi.itemName);
     insertOrderItems.bind(4, oi.itemPrice);
     insertOrderItems.exec();
     insertOrderItems.reset();
-
-    decrementStock.bind(1, oi.itemId);
-    decrementStock.exec();
-    decrementStock.reset();
   }
 
   tx.commit();

@@ -30,6 +30,7 @@ struct Item {
 struct ItemIngredient {
   int id;
   std::string name;
+  int stock;
   bool isRemovable;
   double priceChange;
 };
@@ -91,6 +92,8 @@ public:
   // bool setIngredientStock(int ingredientId, int stock);
   void setIngredientStock(bool increase, const std::string &name,
                           double val = 1);
+  bool decrementStock(int itemId);
+  bool incrementStock(int itemId);
 
   // select
   int getCategoryIdByName(std::string &name);
@@ -100,7 +103,7 @@ public:
   std::vector<Item> getItems();
   Item getItem(int itemId);
   std::vector<Item> getItemsByCategory(std::string &name);
-  std::vector<ItemIngredient> getItemIngredients(std::string &name);
+  std::vector<ItemIngredient> getItemIngredients(int itemId);
   std::vector<ComboItem> getComboItems(int comboId);
   std::vector<OrderItem> getOrderItems(int orderId);
 };
