@@ -166,3 +166,10 @@ Run:
 # Macro for cmake -S . -B build && cmake --build build && python src/python/main.py
 mise build
 ```
+
+Default Login:
+
+```
+username = admin
+password = changeme
+```
