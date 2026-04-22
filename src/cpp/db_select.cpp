@@ -172,11 +172,12 @@ std::vector<Order> Database::getOrders() {
   return orders;
 }
 
-std::vector<OrderItem> Database::getOrderItems(int orderId) {
+std::vector<OrderItem> Database::getOrderItemsById(int orderId) {
   SQLite::Statement query(db, R"SQL(
-                          SELECT item_id, item_name, item_price, count
+                          SELECT order_id, item_id, item_name, item_price, count
                           FROM order_items
                           WHERE order_id = ?
+                          ORDER BY order_id ASC
                           )SQL");
 
   query.bind(1, orderId);
@@ -184,10 +185,11 @@ std::vector<OrderItem> Database::getOrderItems(int orderId) {
   std::vector<OrderItem> orderItems;
   while (query.executeStep()) {
     OrderItem oi;
-    oi.itemId = query.getColumn(0).getInt();
-    oi.itemName = query.getColumn(1).getString();
-    oi.itemPrice = query.getColumn(2).getDouble();
-    oi.count = query.getColumn(3).getInt();
+    oi.orderId = query.getColumn(0).getInt();
+    oi.itemId = query.getColumn(1).getInt();
+    oi.itemName = query.getColumn(2).getString();
+    oi.itemPrice = query.getColumn(3).getDouble();
+    oi.count = query.getColumn(4).getInt();
     orderItems.push_back(oi);
   }
   return orderItems;

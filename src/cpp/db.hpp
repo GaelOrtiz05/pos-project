@@ -55,6 +55,7 @@ struct Order {
 };
 
 struct OrderItem {
+  int orderId;
   int itemId;
   std::string itemName;
   double itemPrice;
@@ -106,7 +107,7 @@ public:
   std::vector<Item> getItemsByCategory(std::string &name);
   std::vector<ItemIngredient> getItemIngredients(int itemId);
   std::vector<ComboItem> getComboItems(int comboId);
-  std::vector<OrderItem> getOrderItems(int orderId);
+  std::vector<OrderItem> getOrderItemsById(int orderId);
 };
 
 #endif
