@@ -85,5 +85,5 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("purchase", &Database::purchase)
       .def("getItems", &Database::getItems)
       .def("getOrders", &Database::getOrders)
-      .def("getOrderItems", &Database::getOrderItems);
+      .def("getOrderItemsById", &Database::getOrderItemsById);
 }

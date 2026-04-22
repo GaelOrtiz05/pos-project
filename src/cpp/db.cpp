@@ -292,7 +292,7 @@ void Database::DatabaseMenu() {
     case 8: {
       std::cout << "Order ID: \n";
       std::cin >> orderId;
-      std::vector<OrderItem> orderItems = getOrderItems(orderId);
+      std::vector<OrderItem> orderItems = getOrderItemsById(orderId);
       std::cout << "Order Items for order " << orderId << ":\n";
 
       for (const auto &oi : orderItems) {
