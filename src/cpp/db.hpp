@@ -58,6 +58,7 @@ struct OrderItem {
   int itemId;
   std::string itemName;
   double itemPrice;
+  int count; // amount
   std::vector<int> removedIngredients;
 };
 

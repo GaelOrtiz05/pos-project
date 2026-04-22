@@ -127,8 +127,8 @@ void Database::purchase(const std::vector<OrderItem> &items, double total) {
   int orderId = static_cast<int>(db.getLastInsertRowid());
 
   SQLite::Statement insertOrderItems(db, R"SQL(
-                                       INSERT INTO order_items (order_id, item_id, item_name, item_price)
-                                       VALUES (?,?,?,?)
+                                       INSERT INTO order_items (order_id, item_id, item_name, item_price, count)
+                                       VALUES (?,?,?,?,?)
                                        )SQL");
 
   for (const auto &oi : items) {
@@ -136,6 +136,7 @@ void Database::purchase(const std::vector<OrderItem> &items, double total) {
     insertOrderItems.bind(2, oi.itemId);
     insertOrderItems.bind(3, oi.itemName);
     insertOrderItems.bind(4, oi.itemPrice);
+    insertOrderItems.bind(5, oi.count);
     insertOrderItems.exec();
     insertOrderItems.reset();
   }

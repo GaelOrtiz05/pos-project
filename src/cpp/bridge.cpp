@@ -52,8 +52,9 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def(py::init<>())
       .def_readwrite("itemId", &OrderItem::itemId)
       .def_readwrite("itemName", &OrderItem::itemName)
-      .def_readwrite("itemPrice", &OrderItem::itemPrice);
-  // .def_readwrite("removedIngredientIds", &OrderItem::removedIngredientIds);
+      .def_readwrite("itemPrice", &OrderItem::itemPrice)
+      .def_readwrite("count", &OrderItem::count)
+      .def_readwrite("removedIngredients", &OrderItem::removedIngredients);
 
   py::class_<Login>(handle, "Login")
       .def(py::init<>())

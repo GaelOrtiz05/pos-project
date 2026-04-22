@@ -74,6 +74,7 @@ void Database::setupDatabase() {
       item_id         INTEGER NOT NULL,
       item_name       TEXT NOT NULL,
       item_price      DOUBLE NOT NULL,
+      count           INTEGER NOT NULL,
       FOREIGN KEY (order_id) REFERENCES orders(id)
       );
   )SQL");
