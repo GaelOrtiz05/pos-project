@@ -298,7 +298,8 @@ void Database::DatabaseMenu() {
       for (const auto &oi : orderItems) {
         std::cout << "Id: " << oi.itemId << ", ";
         std::cout << "Name: " << oi.itemName << ", ";
-        std::cout << "Price: " << oi.itemPrice << "\n";
+        std::cout << "Price: " << oi.itemPrice << ", ";
+        std::cout << "Count: " << oi.count << "\n";
       }
       break;
     }

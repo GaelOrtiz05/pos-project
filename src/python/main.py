@@ -605,6 +605,7 @@ class MainWindow(QMainWindow):
         for i in self.cart:
             if i["id"] == item.id and not i["isCombo"]:
                 i["count"] += 1
+                print(f"item count: {i['count']}")
                 self.update_cart()
                 return
 
@@ -614,6 +615,7 @@ class MainWindow(QMainWindow):
                           "count": 1, # amount in cart 
                           "isCombo": 0
                           })
+
         self.update_cart()
 
     #Clears the current cart display.
@@ -736,13 +738,14 @@ class MainWindow(QMainWindow):
         order_items = []
         total = 0.0
         for i in self.cart:
-            for _ in range(i["count"]):
                 oi = pos_backend.OrderItem()
                 oi.itemId = i["id"]
                 oi.itemName = i["name"]
                 oi.itemPrice = i["price"]
+                oi.count = i['count']
+                print(f"item count: {i['count']}")
                 order_items.append(oi)
-            total += i["price"] * i["count"]
+                total += i["price"] * i["count"]
         self.data.purchase(order_items, total)
         self.cart = []
         self.update_cart()

@@ -1,6 +1,5 @@
 #include "db.hpp"
 
-
 std::vector<Category> Database::getCategories() {
   SQLite::Statement query(db,
                           "SELECT id, name FROM categories ORDER BY id ASC");
@@ -175,7 +174,7 @@ std::vector<Order> Database::getOrders() {
 
 std::vector<OrderItem> Database::getOrderItems(int orderId) {
   SQLite::Statement query(db, R"SQL(
-                          SELECT item_id, item_name, item_price
+                          SELECT item_id, item_name, item_price, count
                           FROM order_items
                           WHERE order_id = ?
                           )SQL");
@@ -188,6 +187,7 @@ std::vector<OrderItem> Database::getOrderItems(int orderId) {
     oi.itemId = query.getColumn(0).getInt();
     oi.itemName = query.getColumn(1).getString();
     oi.itemPrice = query.getColumn(2).getDouble();
+    oi.count = query.getColumn(3).getInt();
     orderItems.push_back(oi);
   }
   return orderItems;
