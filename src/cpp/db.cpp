@@ -54,17 +54,9 @@ void Database::setupDatabase() {
       FOREIGN KEY (item_id)   REFERENCES items(id)                                                                                                                                     
     );                                    
 
-    -- CREATE TABLE IF NOT EXISTS checkout (                                                                                                                                              
-    --   id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-    --   item_id            INTEGER ,
-    --   name               TEXT NOT NULL,
-    --   price              DOUBLE NOT NULL,
-    --   FOREIGN KEY (combo_id) REFERENCES combos(id),
-    --   FOREIGN KEY (item_id) REFERENCES items(id),
-    --   );
-
     CREATE TABLE IF NOT EXISTS orders (
       id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+      time               DATETIME NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')), 
       total              REAL NOT NULL
       );
 
