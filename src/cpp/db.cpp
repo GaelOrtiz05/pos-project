@@ -246,6 +246,7 @@ inline void print_orders(Database &db) {
 
   for (const auto &o : allOrders) {
     std::cout << "Id: " << o.id << ", ";
+    std::cout << "Time " << o.time << ", ";
     std::cout << "Total: " << o.total << "\n";
   }
 }

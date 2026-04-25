@@ -161,12 +161,14 @@ std::vector<ComboItem> Database::getComboItems(int comboId) {
 }
 
 std::vector<Order> Database::getOrders() {
-  SQLite::Statement query(db, "SELECT id, total FROM orders ORDER BY id ASC");
+  SQLite::Statement query(db,
+                          "SELECT id, time, total FROM orders ORDER BY id ASC");
   std::vector<Order> orders;
   while (query.executeStep()) {
     Order o;
     o.id = query.getColumn(0).getInt();
-    o.total = query.getColumn(1).getDouble();
+    o.time = query.getColumn(1).getString();
+    o.total = query.getColumn(2).getDouble();
     orders.push_back(o);
   }
   return orders;

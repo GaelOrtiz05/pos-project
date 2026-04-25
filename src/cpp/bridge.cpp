@@ -46,6 +46,7 @@ PYBIND11_MODULE(pos_backend, handle) {
 
   py::class_<Order>(handle, "Order")
       .def_readonly("id", &Order::id)
+      .def_readonly("time", &Order::time)
       .def_readonly("total", &Order::total);
 
   py::class_<OrderItem>(handle, "OrderItem")

@@ -51,6 +51,7 @@ struct ComboItem {
 
 struct Order {
   int id;
+  std::string time;
   double total;
 };
 
