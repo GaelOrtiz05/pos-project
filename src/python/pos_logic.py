@@ -177,8 +177,23 @@ class POSLogic:
         else:
             return f"{item['name']} - ${item['price']:.2f} - x{item_count}"
         
-        #Closes the program.
-        def close_program(self):
+    def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
+        if choice == 0:
+            pass
+        text = 'lol'
+        orders = self.data.getOrders()
+        for order in orders:
+            text += f"Order #{order.id} - Total: ${order.total:.2f}\n"
+
+            items = self.data.getOrderItemsById(order.id)
+            for item in items:
+                text += f"   {item.itemName} x{item.count} - ${item.itemPrice:.2f}\n"
+            text += "\n"
+        return text
+
+
+    #Closes the program.
+    def close_program(self):
             QApplication.quit()  
         
 
