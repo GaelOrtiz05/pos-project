@@ -524,14 +524,31 @@ class MainWindow(QMainWindow, POSLogic):
         layout = QGridLayout(sales_ui)
         # Add employee Button
         todays_sales = self.create_button('Sale Today','gray',300,50)
+       # todays_sales.clicked.connect(lambda: self.disp_sales(1))
         layout.addWidget(todays_sales,0,0)
+       # weekly_sales.clicked.connect(lambda: self.disp_sales(2))
         weekly_sales = self.create_button('Sale This Week','gray',300,50)
         layout.addWidget(weekly_sales,0,1)
-        monthly_sales = self.create_button('Sale This Month','gray',300,50)
-        layout.addWidget(monthly_sales,0,2)
+        all_sales = self.create_button('All Sales','gray',300,50)
+        all_sales.clicked.connect(lambda: self.disp_sales(3))
+        layout.addWidget(all_sales,0,2)
 
         back_button = self.create_button('Back','red',300,50)
         back_button.clicked.connect(self.show_manager_menu)
+        layout.addWidget(back_button,0,3)
+
+    def disp_sales(self,choice): # choice will be 1 2 or 3
+        sales_ui = QWidget()
+        self.setCentralWidget(sales_ui)
+        sales_ui.setStyleSheet("background-color: black;")
+        layout = QGridLayout(sales_ui)
+        sales_text = self.get_sales(choice)
+        sales_label = QLabel(sales_text)
+        sales_label.setStyleSheet("color: white; font-size: 18px;")
+
+        layout.addWidget(sales_label)
+        back_button = self.create_button('Back','red',300,50)
+        back_button.clicked.connect(self.disp_sales_menu)
         layout.addWidget(back_button,0,3)
 
     def disp_ingredients_menu(self, item):
