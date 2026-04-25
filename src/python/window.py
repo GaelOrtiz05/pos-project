@@ -542,11 +542,15 @@ class MainWindow(QMainWindow, POSLogic):
         self.setCentralWidget(sales_ui)
         sales_ui.setStyleSheet("background-color: black;")
         layout = QGridLayout(sales_ui)
-        sales_text = self.get_sales(choice)
+        sales_info = self.get_sales(choice)
+        sales_text = sales_info[0]
+        total = sales_info[1]
         sales_label = QLabel(sales_text)
         sales_label.setStyleSheet("color: white; font-size: 18px;")
 
         layout.addWidget(sales_label)
+        total_sales_label = self.create_label(f'Total Sale $:{total:.2f} ','black',400,150)
+        layout.addWidget(total_sales_label)
         back_button = self.create_button('Back','red',300,50)
         back_button.clicked.connect(self.disp_sales_menu)
         layout.addWidget(back_button,0,3)

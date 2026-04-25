@@ -180,7 +180,8 @@ class POSLogic:
     def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
         if choice == 0:
             pass
-        text = 'lol'
+        text = 'lol \n'
+        total_sales = 0
         orders = self.data.getOrders()
         for order in orders:
             text += f"Order #{order.id} - Total: ${order.total:.2f}\n"
@@ -189,7 +190,9 @@ class POSLogic:
             for item in items:
                 text += f"   {item.itemName} x{item.count} - ${item.itemPrice:.2f}\n"
             text += "\n"
-        return text
+            total_sales = order.total + total_sales
+        order_info = [text,total_sales]
+        return order_info
 
 
     #Closes the program.
