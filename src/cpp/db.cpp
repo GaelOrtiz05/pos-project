@@ -56,7 +56,7 @@ void Database::setupDatabase() {
 
     CREATE TABLE IF NOT EXISTS orders (
       id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-      time               DATETIME NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')), 
+      time               STRING NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')), 
       total              REAL NOT NULL
       );
 
@@ -72,22 +72,21 @@ void Database::setupDatabase() {
   )SQL");
 }
 
-bool Database::IsInitialized() {
+namespace {
+inline bool is_initialized(SQLite::Database &db) {
   SQLite::Statement query(db, "SELECT COUNT(*) FROM categories");
-
   query.executeStep();
-
   int count = query.getColumn(0).getInt();
-
   if (count > 0) {
     return true;
   }
   return false;
 }
 
-void Database::MenuInitialization() {
-  if (!IsInitialized()) {
+} // namespace
 
+void Database::MenuInitialization() {
+  if (!is_initialized(db)) {
     db.exec(R"SQL(
   BEGIN TRANSACTION;
 
@@ -172,136 +171,151 @@ void Database::MenuInitialization() {
   }
 }
 
-void Database::DatabaseMenu() {
-  bool running = true;
-  std::string inputItem = "";
-  std::string intputIngredient = "";
-  double inputPrice = 0.0;
-  std::string categoryName = "";
-  int inputCombo = 0;
-  int inputIsAdmin;
-  int input = 1;
+namespace {
+inline void print_categories(Database &db) {
+  std::vector<Category> outputCategories = db.getCategories();
+  std::cout << "Categories\n";
+  for (const auto &c : outputCategories) {
+    std::cout << "Category: " << c.name << "\n";
+  }
+}
+inline void print_items(Database &db) {
+  std::vector<Item> outputItems = db.getItems();
+  std::cout << "Items\n";
+
+  for (const auto &i : outputItems) {
+    std::cout << "Item: " << i.name << "\n";
+  }
+}
+
+inline void print_ingredients(Database &db) {
+  std::vector<Ingredient> outputIngredients = db.getIngredients();
+  std::cout << "Ingredients: \n";
+  for (const auto &i : outputIngredients) {
+    std::cout << "Id: " << i.id << ", ";
+    std::cout << "Name: " << i.name << ", ";
+    std::cout << "Stock: " << i.stock << "\n";
+  }
+}
+
+inline void print_item_ingredients(Database &db) {
+  std::cout << "Item ID: \n";
+  int inputItemId;
+  std::cin >> inputItemId;
+
+  std::vector<ItemIngredient> itemIngredients =
+      db.getItemIngredients(inputItemId);
+
+  for (const auto &ii : itemIngredients) {
+    std::cout << "Id: " << ii.id << ", ";
+    std::cout << "Name: " << ii.name << ", ";
+    std::cout << "Is Removable: " << ii.isRemovable << ", ";
+    std::cout << "Price Change: " << ii.priceChange << "\n";
+  }
+}
+
+inline void print_combos(Database &db) {
+  std::vector<Item> outputCombos = db.getCombos();
+  std::cout << "Combos: \n";
+
+  for (const auto &c : outputCombos) {
+    std::cout << "Id: " << c.id << ", ";
+    std::cout << "Name: " << c.name << ", ";
+    std::cout << "Price: " << c.price << "\n";
+  }
+}
+
+inline void print_combo_items(Database &db) {
+  int inputCombo;
+  std::cout << "Combo #: \n";
+  std::cin >> inputCombo;
+
+  std::vector<ComboItem> outputComboItems = db.getComboItems(inputCombo);
+
+  for (const auto &c : outputComboItems) {
+    std::cout << "Id: " << c.id << ", ";
+    std::cout << "Name: " << c.name << ", ";
+    std::cout << "Price: " << c.price << ", ";
+    std::cout << "Available: " << c.inStock << "\n";
+  }
+}
+
+inline void print_orders(Database &db) {
+  std::vector<Order> allOrders = db.getOrders();
+  std::cout << "All Orders:\n";
+
+  for (const auto &o : allOrders) {
+    std::cout << "Id: " << o.id << ", ";
+    std::cout << "Total: " << o.total << "\n";
+  }
+}
+inline void print_order_items(Database &db) {
   int orderId;
+  std::cout << "Order ID: \n";
+  std::cin >> orderId;
+  std::vector<OrderItem> orderItems = db.getOrderItemsById(orderId);
+  std::cout << "Order Items for order " << orderId << ":\n";
+
+  for (const auto &oi : orderItems) {
+    std::cout << "Order Id: " << oi.orderId << ", ";
+    std::cout << "Name: " << oi.itemName << ", ";
+    std::cout << "Price: " << oi.itemPrice << ", ";
+    std::cout << "Count: " << oi.count << "\n";
+  }
+}
+
+void print_headers() {
+  std::cout << "\nMENU\n"
+            << "1. Get Categories\n"
+            << "2. Get Items\n"
+            << "3. Get Ingredients\n"
+            << "4. Get Item Ingredients\n"
+            << "5. Get Combos\n"
+            << "6. Get Combo Items\n"
+            << "7. Get All Order Items\n"
+            << "8. Get Order Items by Order ID\n"
+            << "0. Quit\n"
+            << "Input: ";
+}
+} // namespace
+
+void database_menu(Database &db) {
+  bool running = true;
+  int input = 1;
 
   while (running) {
-
-    std::cout << "\nMENU\n"
-              << "1. Get Categories\n"
-              << "2. Get Items\n"
-              << "3. Get Ingredients\n"
-              << "4. Get Item Ingredients\n"
-              << "5. Get Combos\n"
-              << "6. Get Combo Items\n"
-              << "7. Get All Order Items\n"
-              << "8. Get Order Items by Order ID\n"
-              << "0. Quit\n"
-              << "Input: ";
-
+    print_headers();
     std::cin >> input;
-
     switch (input) {
-
-    case 1: {
-      std::vector<Category> outputCategories = getCategories();
-      std::cout << "Categories\n";
-
-      for (const auto &c : outputCategories) {
-        std::cout << "Category: " << c.name << "\n";
-      }
+    case 1:
+      print_categories(db);
       break;
-    }
-    case 2: {
-      std::vector<Item> outputItems = getItems();
-      std::cout << "Items\n";
-
-      for (const auto &i : outputItems) {
-        std::cout << "Item: " << i.name << "\n";
-      }
+    case 2:
+      print_items(db);
       break;
-    }
-    case 3: {
-      std::vector<Ingredient> outputIngredients = getIngredients();
-      std::cout << "Ingredients: \n";
-
-      for (const auto &i : outputIngredients) {
-        std::cout << "Id: " << i.id << ", ";
-        std::cout << "Name: " << i.name << ", ";
-        std::cout << "Stock: " << i.stock << "\n";
-      }
+    case 3:
+      print_ingredients(db);
       break;
-    }
-    case 4: {
-      std::cout << "Item ID: \n";
-      int inputItemId;
-      std::cin >> inputItemId;
-
-      std::vector<ItemIngredient> itemIngredients =
-          getItemIngredients(inputItemId);
-
-      for (const auto &ii : itemIngredients) {
-        std::cout << "Id: " << ii.id << ", ";
-        std::cout << "Name: " << ii.name << ", ";
-        std::cout << "Is Removable: " << ii.isRemovable << ", ";
-        std::cout << "Price Change: " << ii.priceChange << "\n";
-      }
+    case 4:
+      print_item_ingredients(db);
       break;
-    }
-    case 5: {
-      std::vector<Item> outputCombos = getCombos();
-      std::cout << "Combos: \n";
-
-      for (const auto &c : outputCombos) {
-        std::cout << "Id: " << c.id << ", ";
-        std::cout << "Name: " << c.name << ", ";
-        std::cout << "Price: " << c.price << "\n";
-      }
+    case 5:
+      print_combos(db);
       break;
-    }
-    case 6: {
-      std::cout << "Combo #: \n";
-      std::cin >> inputCombo;
-
-      std::vector<ComboItem> outputComboItems = getComboItems(inputCombo);
-
-      for (const auto &c : outputComboItems) {
-        std::cout << "Id: " << c.id << ", ";
-        std::cout << "Name: " << c.name << ", ";
-        std::cout << "Price: " << c.price << ", ";
-        std::cout << "Available: " << c.inStock << "\n";
-      }
+    case 6:
+      print_combo_items(db);
       break;
-    }
-    case 7: {
-      std::vector<Order> allOrders = getOrders();
-      std::cout << "All Orders:\n";
-
-      for (const auto &o : allOrders) {
-        std::cout << "Id: " << o.id << ", ";
-        std::cout << "Total: " << o.total << "\n";
-      }
+    case 7:
+      print_orders(db);
       break;
-    }
-    case 8: {
-      std::cout << "Order ID: \n";
-      std::cin >> orderId;
-      std::vector<OrderItem> orderItems = getOrderItemsById(orderId);
-      std::cout << "Order Items for order " << orderId << ":\n";
-
-      for (const auto &oi : orderItems) {
-        std::cout << "Order Id: " << oi.orderId << ", ";
-        std::cout << "Name: " << oi.itemName << ", ";
-        std::cout << "Price: " << oi.itemPrice << ", ";
-        std::cout << "Count: " << oi.count << "\n";
-      }
+    case 8:
+      print_order_items(db);
       break;
-    }
-    case 0: {
+    case 0:
       running = false;
       break;
-    }
-    default: {
+    default:
       std::cout << "Invalid Input\n";
-    }
     }
   }
 }

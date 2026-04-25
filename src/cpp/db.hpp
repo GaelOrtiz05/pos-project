@@ -69,11 +69,11 @@ private:
 
 public:
   Database();
+
+  // initialization
   void setupDatabase();
   void MenuInitialization();
-  bool IsInitialized();
   void purchase(const std::vector<OrderItem> &items, double total);
-  void DatabaseMenu();
 
   // insert
   void insertCategory(const std::string &name);
@@ -91,7 +91,6 @@ public:
   bool decrementIngredientStock(int ingredientId, int stock);
   bool incrementIngredientStock(int ingredientId);
   bool decrementIngredientStock(int ingredientId);
-  // bool setIngredientStock(int ingredientId, int stock);
   void setIngredientStock(bool increase, const std::string &name,
                           double val = 1);
   bool decrementStock(int itemId);
@@ -109,5 +108,7 @@ public:
   std::vector<ComboItem> getComboItems(int comboId);
   std::vector<OrderItem> getOrderItemsById(int orderId);
 };
+
+void database_menu(Database &db);
 
 #endif

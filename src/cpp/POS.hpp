@@ -34,7 +34,7 @@ public:
 
       case 1: {
         try {
-          database.DatabaseMenu();
+          database_menu(database);
           break;
         } catch (std::exception &e) {
           std::cerr << "error: " << e.what() << "\n";
