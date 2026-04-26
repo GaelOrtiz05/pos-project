@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QApplication, QLabel
 from PySide6.QtCore import Qt
 
 import pos_backend
-
+from datetime import datetime, timedelta
 class POSLogic:
     def __init__(self):
         self.logic = pos_backend.Login()
@@ -178,19 +178,28 @@ class POSLogic:
             return f"{item['name']} - ${item['price']:.2f} - x{item_count}"
         
     def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
-        if choice == 0:
-            pass
-        text = 'lol \n'
         total_sales = 0
-        orders = self.data.getOrders()
-        for order in orders:
-            text += f"Order #{order.id} - Total: ${order.total:.2f}\n"
+        text = 'lol \n'
+        orders = self.data.getOrders() # reading orders
+        current_time = datetime.now() #getting current time from sys
 
-            items = self.data.getOrderItemsById(order.id)
-            for item in items:
-                text += f"   {item.itemName} x{item.count} - ${item.itemPrice:.2f}\n"
-            text += "\n"
-            total_sales = order.total + total_sales
+        for order in orders:
+                order_time = datetime.fromisoformat(order.time)  #checking & getting orders time
+                include = False
+                if choice == 1:  # today
+                    include = (order_time.date() == current_time.date())
+                elif choice == 2:  # this weeks
+                    start_of_week = current_time - timedelta(days=current_time.weekday()) #compare getting orders in the range  
+                    include = (order_time >= start_of_week)
+                elif choice == 3:  # All orders
+                    include = True
+                if include:
+                    text += f"Order #{order.id} - Total: ${order.total:.2f}\n" # all orders
+                    items = self.data.getOrderItemsById(order.id)
+                    for item in items:
+                        text += f"   {item.itemName} x{item.count} - ${item.itemPrice:.2f}\n"
+                    text += "\n"
+                    total_sales += order.total
         order_info = [text,total_sales]
         return order_info
 
