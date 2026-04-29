@@ -77,7 +77,7 @@ Then Run:
 
 ```bash
 brew update
-brew install cmake git
+brew install cmake git libsodium
 ```
 
 ## Setting up Mise (MacOS)
@@ -160,16 +160,57 @@ mise install
 mise requirements
 ```
 
-Run:
+## Macos build
+
+### With mise
 
 ```bash
-# Macro for cmake -S . -B build && cmake --build build && python src/python/main.py
-mise build
+# One-time
+brew install libsodium
+
+mise run build_python
 ```
 
-Default Login:
+### Without mise
 
+```bash
+brew install libsodium
 ```
-username = admin
-password = changeme
+
+Then build and run:
+
+```bash
+cmake -S . -B build
+cmake --build build
+python src/python/main.py
+```
+
+## Windows build
+
+### With mise
+
+One-time vcpkg setup:
+
+```bash
+# clones vcpkg into C:\vcpkg
+mise run setup_vcpkg
+
+mise run build_python_win
+```
+
+### Without mise
+
+One-time vcpkg setup:
+
+```bash
+git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+C:\vcpkg\bootstrap-vcpkg.bat
+```
+
+Then build and run:
+
+```bash
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+cmake --build build --config Release
+python src/python/main.py
 ```
