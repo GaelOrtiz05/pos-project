@@ -66,7 +66,8 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("getUser", &Login::getUser)
       .def("getIsAdmin", &Login::getIsAdmin)
       .def("togglePrivileges", &Login::togglePrivileges)
-      .def("getListOfUsers", &Login::getListOfUsers);
+      .def("getListOfUsers", &Login::getListOfUsers)
+      .def("searchUser", &Login::searchUser);
 
   py::class_<Database>(handle, "Database")
       .def(py::init<>())

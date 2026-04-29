@@ -9,10 +9,21 @@ add_subdirectory(libraries/SQLiteCpp)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
-# pybind11_add_module(pos_backend src/cpp/bridge.cpp)
-pybind11_add_module(pos_backend src/cpp/bridge.cpp src/cpp/db.cpp src/cpp/db_insert.cpp src/cpp/db_select.cpp)
+IF (UNIX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SODIUM REQUIRED IMPORTED_TARGET libsodium)
+    set(SODIUM_TARGET PkgConfig::SODIUM)
+ELSE ()
+ENDIF ()
 
-target_link_libraries(pos_backend PRIVATE SQLiteCpp sqlite3)
+
+pybind11_add_module(pos_backend src/cpp/bridge.cpp src/cpp/db.cpp src/cpp/db_insert.cpp src/cpp/db_select.cpp)
+target_link_libraries(pos_backend PRIVATE
+SQLiteCpp
+sqlite3
+pthread
+dl
+${SODIUM_TARGET})
 
 set_target_properties(pos_backend PROPERTIES 
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/src/python"
@@ -21,5 +32,5 @@ set_target_properties(pos_backend PROPERTIES
 )
 
 add_executable(pos_cpp src/cpp/main.cpp src/cpp/db.cpp src/cpp/db_insert.cpp src/cpp/db_select.cpp)
-target_link_libraries(pos_cpp PRIVATE SQLiteCpp sqlite3)
+target_link_libraries(pos_cpp PRIVATE SQLiteCpp sqlite3 ${SODIUM_TARGET})
 

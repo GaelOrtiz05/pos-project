@@ -1,20 +1,10 @@
 #ifndef LOGIN_HPP
 #define LOGIN_HPP
 
+#include "login_pass_hash.hpp"
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <iostream>
 #include <string>
-
-// things to implement
-// change user password/username
-
-// INSERT INTO <table> (<column1>, <column2>, ...) VALUES (?, ?, ...)
-//
-// SELECT <columns> FROM <table> WHERE <condition>
-//
-// UPDATE <table> SET <column> = <value> WHERE <condition>
-//
-// DELETE FROM <table> WHERE <condition>
 
 struct User {
   int id;
@@ -28,10 +18,6 @@ private:
   SQLite::Database db;
   void setupDatabase() {
 
-    // create table if it doesn't already exist
-    // id is unique and autoimcrements
-    // name and password must have a value
-    // is_admin is set to 0 by default
     db.exec("CREATE TABLE IF NOT EXISTS users ("
             "  id       INTEGER PRIMARY KEY AUTOINCREMENT,"
             "  name     TEXT NOT NULL,"
@@ -39,34 +25,22 @@ private:
             "  is_admin INTEGER DEFAULT 0"
             ")");
 
-    // adds admin user on database initialization
-    if (searchUser("admin") == false) {
-      addUser("admin", "changeme", true);
-    }
+    // if (searchUser("admin") == false) {
+    //   initializeAdminPassword();
+    // }
   }
 
-  // helper function
+public:
   bool searchUser(const std::string &name) {
 
-    // SELECT COUNT(*) - how many rows match
-    // FROM users - searches the users table
-    // WHERE name = ? - rows that match the name "?" (placeholder)
     SQLite::Statement query(db, "SELECT COUNT(*) FROM users WHERE name = ?");
-
-    // The first argument (1) fills in the ? placeholder with the value for the
-    // name parameter.
     query.bind(1, name);
-
-    // .executeStep() is used for select staments
-    // executeStep() runs query
-    // returns true if row already exists (username is taken)
     query.executeStep();
 
     // after running query, it returns a result table with one column
     // .getColumn(0) gets the result and getInt() makes sure it's an int.
     int count = query.getColumn(0).getInt();
 
-    // if count = 1, username exists
     if (count > 0) {
       return true;
     } else {
@@ -74,10 +48,16 @@ private:
     }
   }
 
-public:
   Login() : db("data/login.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
     setupDatabase();
   };
+
+  // void initializeAdminPassword() {
+  //   std::string password;
+  //   std::cout << "First-time setup. Set admin password: ";
+  //   std::cin >> password;
+  //   addUser("admin", password, true);
+  // }
 
   // if a parameter is not given for isAdmin, defaults to false
   bool addUser(const std::string &name, const std::string &password,
@@ -89,7 +69,15 @@ public:
       return false;
     };
 
-    // 2. insert user
+    // 2. hash password
+    char stored_hash[crypto_pwhash_STRBYTES];
+
+    if (hash_password(password.c_str(), stored_hash) != 0) {
+      std::cout << "hash failed\n";
+      return false;
+    }
+
+    // 3. insert user
     // if transaction fails, nothing happens
     SQLite::Transaction transaction(db);
 
@@ -101,7 +89,7 @@ public:
     // binds name
     insert.bind(1, name);
     // binds password
-    insert.bind(2, password);
+    insert.bind(2, stored_hash);
 
     insert.bind(3, isAdmin);
 
@@ -218,15 +206,14 @@ public:
       return false;
     }
 
-    std::string passwordCheck = statement.getColumn(0).getString();
+    std::string stored_hash = statement.getColumn(0).getString();
 
-    if (passwordCheck == password) {
-      std::cout << "login successful\n";
-      return true;
-    } else {
-      std::cout << "login failed\n";
+    if (!check_password(password.c_str(), stored_hash.c_str())) {
+      std::cout << "wrong password";
       return false;
     }
+    std::cout << "login successful\n";
+    return true;
   }
 
   User getUser(const std::string &name) {
@@ -265,95 +252,122 @@ public:
 
     return users;
   }
+};
 
-  void loginMenu() {
-    bool running = true;
-    std::string inputUsername = "";
-    std::string inputPassword = "";
-    int inputIsAdmin;
-    int input = 1;
+namespace {
+inline void add_user(Login &login) {
+  std::string inputUsername;
+  std::string inputPassword;
+  int inputIsAdmin;
+  std::cout << "Username: ";
+  std::cin >> inputUsername;
+  std::cout << "Password: ";
+  std::cin >> inputPassword;
+  std::cout << "Is Admin (1 = true, 0 = false): ";
+  std::cin >> inputIsAdmin;
+  login.addUser(inputUsername, inputPassword, inputIsAdmin);
+}
 
-    while (running) {
+inline void remove_user(Login &login) {
+  std::string inputUsername;
+  std::cout << "Username: ";
+  std::cin >> inputUsername;
+  login.removeUser(inputUsername);
+}
 
-      std::cout << "\nMENU\n"
-                << "1. Add user\n"
-                << "2. Remove user\n"
-                << "3. Login\n"
-                << "4. List users \n"
-                << "5. Toggle privileges\n"
-                << "6. Fetch Privileges\n"
-                << "7. Return User\n"
-                << "0. Quit\n"
-                << "Input: ";
+inline void login_user(Login &login) {
+  std::string inputUsername;
+  std::string inputPassword;
+  std::cout << "Username: ";
+  std::cin >> inputUsername;
+  std::cout << "Password: ";
+  std::cin >> inputPassword;
+  login.loginUser(inputUsername, inputPassword);
+}
 
-      std::cin >> input;
+inline void list_users(Login &login) {
+  // if you're curious
+  // https://stackoverflow.com/a/12702744
+  std::vector<User> users = login.getListOfUsers();
+  for (const User &i : users) {
+    std::cout << "username: " << i.name << "\n";
+  }
+}
 
-      switch (input) {
+inline void toggle_privileges(Login &login) {
+  std::string inputUsername;
+  std::cout << "Username: ";
+  std::cin >> inputUsername;
+  login.togglePrivileges(inputUsername);
+}
 
-      case 1: {
-        std::cout << "Username: ";
-        std::cin >> inputUsername;
-        std::cout << "Password: ";
-        std::cin >> inputPassword;
-        std::cout << "Is Admin (1 = true, 0 = false): ";
-        std::cin >> inputIsAdmin;
-        addUser(inputUsername, inputPassword, inputIsAdmin);
-        break;
-      }
-      case 2: {
-        std::cout << "Username: ";
-        std::cin >> inputUsername;
-        removeUser(inputUsername);
-        break;
-      }
-      case 3: {
-        std::cout << "Username: ";
-        std::cin >> inputUsername;
-        std::cout << "Password: ";
-        std::cin >> inputPassword;
-        loginUser(inputUsername, inputPassword);
-        break;
-      }
-      case 4: {
-        // if you're curious
-        // https://stackoverflow.com/a/12702744
-        std::vector<User> users = getListOfUsers();
-        for (const User &i : users) {
-          std::cout << "username: " << i.name << "\n";
-        }
-        break;
-      }
-      case 5: {
-        std::cout << "Username: ";
-        std::cin >> inputUsername;
-        togglePrivileges(inputUsername);
-        break;
-      }
-      case 6: {
-        std::cout << "Username: ";
-        std::cin >> inputUsername;
-        getIsAdmin(inputUsername);
-        break;
-      }
-      case 7: {
-        std::cout << "Username: ";
-        std::cin >> inputUsername;
-        User user = getUser(inputUsername);
-        std::cout << "id: " << user.id << " username: " << user.name
-                  << " password: " << user.password
-                  << " is_admin: " << user.isAdmin << "\n";
-        break;
-      }
-      case 0: {
-        running = false;
-        break;
-      }
-      default: {
-        std::cout << "Invalid Input\n";
-      }
-      }
+inline void fetch_privileges(Login &login) {
+  std::string inputUsername;
+  std::cout << "Username: ";
+  std::cin >> inputUsername;
+  login.getIsAdmin(inputUsername);
+}
+
+inline void return_user(Login &login) {
+  std::string inputUsername;
+  std::cout << "Username: ";
+  std::cin >> inputUsername;
+  User user = login.getUser(inputUsername);
+  std::cout << "id: " << user.id << " username: " << user.name
+            << " password: " << user.password << " is_admin: " << user.isAdmin
+            << "\n";
+}
+
+inline void print_headers() {
+  std::cout << "\nMENU\n"
+            << "1. Add user\n"
+            << "2. Remove user\n"
+            << "3. Login\n"
+            << "4. List users \n"
+            << "5. Toggle privileges\n"
+            << "6. Fetch Privileges\n"
+            << "7. Return User\n"
+            << "0. Quit\n"
+            << "Input: ";
+}
+} // namespace
+
+inline void login_menu(Login &login) {
+  bool running = true;
+  int input = 1;
+
+  while (running) {
+    print_headers();
+    std::cin >> input;
+    switch (input) {
+    case 1:
+      add_user(login);
+      break;
+    case 2:
+      remove_user(login);
+      break;
+    case 3:
+      login_user(login);
+      break;
+    case 4:
+      list_users(login);
+      break;
+    case 5:
+      toggle_privileges(login);
+      break;
+    case 6:
+      fetch_privileges(login);
+      break;
+    case 7:
+      return_user(login);
+      break;
+    case 0:
+      running = false;
+      break;
+    default:
+      std::cout << "Invalid Input\n";
     }
   }
-};
+}
 
 #endif

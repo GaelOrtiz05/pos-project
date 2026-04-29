@@ -112,14 +112,18 @@ void Database::MenuInitialization() {
               (13, 'Orange Juice'         , 3.99, 4, 1);
 
             INSERT INTO ingredients (id, name, stock) VALUES
-              (1, 'Beef Patty'    , 100),
-              (2, 'Chicken Patty' , 100),
-              (3, 'Bun'           , 100),
-              (4, 'Lettuce'       , 100),
-              (5, 'Tomato'        , 100),
-              (6, 'Pickles'       , 100),
-              (7, 'Cheese'        , 100),
-              (8, 'Bacon'         , 100);
+              (1 , 'Beef Patty'    , 100),
+              (2 , 'Chicken Patty' , 100),
+              (3 , 'Bun'           , 100),
+              (4 , 'Lettuce'       , 100),
+              (5 , 'Tomato'        , 100),
+              (6 , 'Pickles'       , 100),
+              (7 , 'Cheese'        , 100),
+              (8 , 'Bacon'         , 100),
+              (9 , 'Ketchup'       , 100),
+              (10, 'Mayonnaise'    , 100),
+              (11, 'Mustard'       , 100);
+
 
             INSERT INTO item_ingredients (item_id, ingredient_id, is_removable, price_change) VALUES
              -- Burger

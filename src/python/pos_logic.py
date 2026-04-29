@@ -7,15 +7,41 @@ class POSLogic:
     def __init__(self):
         self.logic = pos_backend.Login()
         self.data = pos_backend.Database()
+        self.add_employee_feedback: "QLabel | None" = None
+        self.remove_employee_feedback: "QLabel | None" = None
+        self.inventory_feedback: "QLabel | None" = None
+        self.current_user = None
+        self.items = []
+        self.combos = []
+        self.cart = []
+
+    def initialize(self, username):
+        self.current_user = self.logic.getUser(username)
+        self.items = self.data.getItems()
+        self.combos = self.data.getCombos()
+        self.cart = []
+
+    def show_home_screen(self) -> None: ...
+    def show_manager_menu(self) -> None: ...
+    def update_cart(self) -> None: ...
+    def disp_manage_inventory_menu(self) -> None: ...
 
     def login_event_handler(self, username, password,layout): # Authenticate login
         username = username.text()
         password = password.text()
-        if self.logic.loginUser(username, password) is True:
-            self.current_user = self.logic.getUser(username)
-            self.items = self.data.getItems()
-            self.combos = self.data.getCombos()
-            self.cart = []
+
+        login_success = False
+
+        users = self.logic.getListOfUsers()
+
+        if len(users) == 0:
+            self.logic.addUser(username, password, True)
+            login_success = True
+        elif self.logic.loginUser(username, password) is True:
+            login_success = True
+
+        if login_success == True:
+            self.initialize(username)
             self.show_home_screen()
         else:
             error_label = QLabel('Incorrect User or Password')

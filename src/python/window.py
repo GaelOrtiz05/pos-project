@@ -94,10 +94,21 @@ class MainWindow(QMainWindow, POSLogic):
 
 
             # QPushButton() = Button
-            login_button = self.create_button('Login','green',300,50)
+            login_button_label = 'Login'
+
+            if len(self.logic.getListOfUsers()) == 0:
+                login_button_label = 'Register'
+                first_time_label = QLabel('will become the admin account.')
+                first_time_label.setFixedSize(300,50)
+                first_time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                first_time_label.setStyleSheet("background-color: black ; border-radius: 1px; font-size: 15px; color:")
+                layout.addWidget(first_time_label,6,0,1,2)
+
+            login_button = self.create_button(login_button_label, 'green',300,50)
             layout.addWidget(login_button,4,0,1,2)
+
             quit_button = self.create_button('Quit','red',300,50)
-            layout.addWidget(quit_button,6,0,1,2)
+            layout.addWidget(quit_button,5,0,1,2)
 
             login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
             quit_button.clicked.connect(lambda: self.close_program())        
