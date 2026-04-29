@@ -9,3 +9,16 @@ run = "cmake -S . -B build && cmake --build build && ./build/pos_cpp"
 
 [tasks.build_python]
 run = "cmake -S . -B build && cmake --build build && python src/python/main.py"
+
+[tasks.setup_vcpkg]
+run = [
+    "git clone https://github.com/microsoft/vcpkg.git C:\\vcpkg",
+    "C:\\vcpkg\\bootstrap-vcpkg.bat"
+]
+
+[tasks.build_python_win]
+run = [
+    "cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows",
+    "cmake --build build --config Release",
+    "python src/python/main.py",
+]

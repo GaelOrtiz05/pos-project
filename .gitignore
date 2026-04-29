@@ -7,3 +7,4 @@ stubs/
 src/python/*.pyd
 src/python/*.pdb
 *.db
+*.dll
