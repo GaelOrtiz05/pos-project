@@ -143,6 +143,13 @@ class POSLogic:
         self.data.purchase(order_items, total)
         self.cart = []
         self.update_cart()
+    #item avalability:
+    def item_available(self, item):
+        ingredients = self.data.getItemIngredients(item.id)
+        for ing in ingredients:
+            if ing.stock <= 0:
+                return False
+        return True
 
     def confirm_item(self, item):
         self.show_home_screen()
@@ -183,6 +190,7 @@ class POSLogic:
         if int(text) > 200: # max capacity
             self.inventory_feedback.setText("Inventory Cannot Exceed 200.")
             self.inventory_feedback.show()
+            self.data.setIngredientStock(increase, ingredient.name, 200)
             return
         
         self.data.setIngredientStock(increase, ingredient.name, int(text)) #send to cpp db
