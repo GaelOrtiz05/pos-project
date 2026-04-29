@@ -435,38 +435,44 @@ class MainWindow(QMainWindow, POSLogic):
 
     #Loads main grid with items from the items table based on category_id
     #Category 0 = all, 1 = entre, 2 = sides, 3 = dessert, 4 = drinks
-    def load_grid(self,category = 0):                
+    def load_grid(self, category=0):                
         for item in reversed(range(self.grid.count())):
             widget = self.grid.takeAt(item).widget()
             if widget:
                 widget.deleteLater()
-        
         list_buttons = []
-        
         self.items = self.data.getItems()
-
-        # print (f"{range(self.data.getItemCount())} is the range")
-        # print(f"category is {category}")
-
+        # create buttons
         for idx, item in enumerate(self.items):
-            btn = self.create_button((f"{item.name}"),'#1e1530',300,150)
+            # check if item is available
+            ingredients = self.data.getItemIngredients(item.id) 
+            available = True #assume available by default
+            for ingredient in ingredients:
+                if ingredient.stock <= 0:
+                    available = False
+                    break
+            # create butotns now
+            if available:
+                btn = self.create_button(f"{item.name}", '#1e1530', 300, 150) #clicable
+                btn.clicked.connect(lambda _, x=item: self.disp_ingredients_menu(x))
+            else:
+                btn = self.create_button(f"{item.name}", 'gray', 300, 150)
+                btn.setEnabled(False) #cant click
             list_buttons.append(btn)
-            list_buttons[idx].clicked.connect(lambda _, x=item: self.disp_ingredients_menu(x))
         row = 0
         col = 0
+        # place buttons
         for idx, item in enumerate(self.items):
             if (item.categoryId == category or category == 0):
                 if (col < 4):
                     self.grid.addWidget(list_buttons[idx], row, col)
-                    # print(f"added {item.name} to grid. index is {idx}")
                     col += 1
                 else:
                     col = 0
                     row += 1
                     self.grid.addWidget(list_buttons[idx], row, col)
-                    # print(f"added {item.name} to grid. index is {idx}")
                     col += 1
- 
+    
 
     def clear_cart(self): 
         for i in reversed(range(self.cart_items_layout.count())):
