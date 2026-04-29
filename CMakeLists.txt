@@ -14,6 +14,8 @@ IF (UNIX)
     pkg_check_modules(SODIUM REQUIRED IMPORTED_TARGET libsodium)
     set(SODIUM_TARGET PkgConfig::SODIUM)
 ELSE ()
+    find_package(unofficial-sodium CONFIG REQUIRED)
+    set(SODIUM_TARGET unofficial-sodium::sodium)
 ENDIF ()
 
 
@@ -21,9 +23,8 @@ pybind11_add_module(pos_backend src/cpp/bridge.cpp src/cpp/db.cpp src/cpp/db_ins
 target_link_libraries(pos_backend PRIVATE
 SQLiteCpp
 sqlite3
-pthread
-dl
-${SODIUM_TARGET})
+${SODIUM_TARGET}
+)
 
 set_target_properties(pos_backend PROPERTIES 
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/src/python"
