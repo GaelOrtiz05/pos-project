@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QHBoxLayout,
     QGraphicsDropShadowEffect,
+    QSizePolicy,
     
 )
 
@@ -127,7 +128,7 @@ class MainWindow(QMainWindow, POSLogic):
 
         # Row for the categories
         top_row = QHBoxLayout()
-        top_row.setSpacing(10)
+        top_row.setSpacing(20)
 
         all_items = self.create_button('All', '#1e1530', 150, 50)
         all_items.clicked.connect(lambda: self.load_grid(0))
@@ -189,7 +190,7 @@ class MainWindow(QMainWindow, POSLogic):
         # Bottom section (items + cart)
         #-----------------------------------------------------------------------------------------    
         bottom_row = QHBoxLayout()
-        bottom_row.setSpacing(20)
+        bottom_row.setSpacing(25)
 
         # LEFT SIDE (scroll box)
         bottom_row.addWidget(scroll, 3)  
@@ -200,8 +201,7 @@ class MainWindow(QMainWindow, POSLogic):
         self.cart_layout.setContentsMargins(12, 12, 12, 12)
         self.cart_layout.setSpacing(12)
         cart_widget.setFixedWidth(420)
-        cart_widget.setStyleSheet("background-color: #1e1530; border-radius: 14px;")
-
+        cart_widget.setStyleSheet("background-color: #1e1530; border-radius: 18px; border: 1px;")
         # cart title
         cart_title = QLabel("Cart")
         cart_title.setFixedHeight(50)
@@ -220,17 +220,11 @@ class MainWindow(QMainWindow, POSLogic):
         self.cart_items_layout.setSpacing(8)
         self.cart_items_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.cart_item_row_height = 52
-        self.cart_visible_rows = 4
-        visible_rows_height = (
-            (self.cart_item_row_height * self.cart_visible_rows)
-            + (self.cart_items_layout.spacing() * (self.cart_visible_rows - 1))
-            + 20
-        )
-        self.cart_scroll.setFixedHeight(visible_rows_height)
+        self.cart_scroll.setMinimumHeight(350)
+        self.cart_scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.cart_scroll.setWidget(self.cart_container)
         self.cart_layout.addWidget(self.cart_scroll, 1)
-
+        self.cart_layout.addStretch()
         # footer with persistent total + checkout action
         footer_widget = QWidget()
         footer_layout = QVBoxLayout(footer_widget)
@@ -249,6 +243,7 @@ class MainWindow(QMainWindow, POSLogic):
 
         footer_layout.addWidget(self.total_label)
         footer_layout.addWidget(checkout_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        footer_widget.setFixedHeight(190)
         self.cart_layout.addWidget(footer_widget)
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
 
@@ -502,7 +497,7 @@ class MainWindow(QMainWindow, POSLogic):
             row_layout.setContentsMargins(0, 0, 0, 0)
             row_layout.setSpacing(8)
             label = QLabel(display)
-            label.setFixedHeight(self.cart_item_row_height)
+            label.setMinimumHeight(52)
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             label.setFont(self.create_font(18))
             label.setStyleSheet("background-color: #1e1530; color: white; border: 1px solid #374151; border-radius: 12px; padding: 8px;")
@@ -520,9 +515,7 @@ class MainWindow(QMainWindow, POSLogic):
             empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             empty_label.setFont(self.create_font(16))
             empty_label.setStyleSheet("background-color: transparent; color: #a0a0a0;")
-            self.cart_items_layout.addStretch()
-            self.cart_items_layout.addWidget(empty_label)
-            self.cart_items_layout.addStretch()
+            self.cart_items_layout.addWidget(empty_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         total = self.calculate_cart_total()
         self.total_label.setText(f"Total: ${total:.2f}")
