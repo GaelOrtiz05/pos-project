@@ -1,6 +1,6 @@
 #include "db.hpp"
 
-std::vector<Category> Database::getCategories() {
+std::vector<Category> Database::Get_Vector_Categories() {
   SQLite::Statement query(db,
                           "SELECT id, name FROM categories ORDER BY id ASC");
   std::vector<Category> categories;
@@ -13,7 +13,7 @@ std::vector<Category> Database::getCategories() {
   return categories;
 }
 
-int Database::getCategoryIdByName(std::string &name) {
+int Database::Get_CategoryID_By_Name(std::string &name) {
   SQLite::Statement query(db, "SELECT id FROM categories WHERE name = ?");
   query.bind(1, name);
 
@@ -24,7 +24,7 @@ int Database::getCategoryIdByName(std::string &name) {
   return query.getColumn(0).getInt();
 }
 
-std::vector<Ingredient> Database::getIngredients() {
+std::vector<Ingredient> Database::Get_Vector_Ingredients() {
   SQLite::Statement query(
       db, "SELECT id, name, stock FROM ingredients ORDER BY id ASC");
   std::vector<Ingredient> ingredients;
@@ -38,7 +38,7 @@ std::vector<Ingredient> Database::getIngredients() {
   return ingredients;
 }
 
-std::vector<Item> Database::getCombos() {
+std::vector<Item> Database::Get_Vector_Combos() {
   SQLite::Statement query(db,
                           "SELECT id, name, price FROM combos ORDER BY id ASC");
   std::vector<Item> combos;
@@ -52,7 +52,7 @@ std::vector<Item> Database::getCombos() {
   return combos;
 }
 
-std::vector<Item> Database::getItems() {
+std::vector<Item> Database::Get_Vector_Items() {
   SQLite::Statement query(db, R"SQL(
                           SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
                           FROM items i JOIN categories c ON i.category_id = c.id
@@ -73,7 +73,7 @@ std::vector<Item> Database::getItems() {
   return items;
 }
 
-Item Database::getItem(int itemId) {
+Item Database::Get_Struct_Item(int itemId) {
   SQLite::Statement query(db, R"SQL(
                           SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
                           FROM items i JOIN categories c ON i.category_id = c.id
@@ -90,7 +90,7 @@ Item Database::getItem(int itemId) {
   return i;
 }
 
-std::vector<Item> Database::getItemsByCategory(std::string &name) {
+std::vector<Item> Database::Get_Vector_Items_By_Category(std::string &name) {
   SQLite::Statement query(db, R"SQL(
                       SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
                       FROM items i JOIN categories c ON i.category_id = c.id 
@@ -114,7 +114,7 @@ std::vector<Item> Database::getItemsByCategory(std::string &name) {
   return items;
 }
 
-std::vector<ItemIngredient> Database::getItemIngredients(int itemId) {
+std::vector<ItemIngredient> Database::Get_Vector_ItemIngredients_by_ItemID(int itemId) {
   SQLite::Statement query(db, R"SQL(
                           SELECT ing.id, ing.name, ing.stock, ii.is_removable, ii.price_change
                           FROM ingredients ing JOIN item_ingredients ii ON ing.id = ii.ingredient_id
@@ -136,7 +136,7 @@ std::vector<ItemIngredient> Database::getItemIngredients(int itemId) {
   return itemIngredients;
 }
 
-std::vector<ComboItem> Database::getComboItems(int comboId) {
+std::vector<ComboItem> Database::Get_Vector_ComboItems_by_ComboID(int comboId) {
   SQLite::Statement query(db, R"SQL(
                           SELECT i.id, i.name, i.price, i.in_stock
                           FROM items i
@@ -160,7 +160,7 @@ std::vector<ComboItem> Database::getComboItems(int comboId) {
   return comboItems;
 }
 
-std::vector<Order> Database::getOrders() {
+std::vector<Order> Database::Get_Vector_Orders() {
   SQLite::Statement query(db,
                           "SELECT id, time, total FROM orders ORDER BY id ASC");
   std::vector<Order> orders;
@@ -174,7 +174,7 @@ std::vector<Order> Database::getOrders() {
   return orders;
 }
 
-std::vector<OrderItem> Database::getOrderItemsById(int orderId) {
+std::vector<OrderItem> Database::Get_Vector_OrderItems_By_OrderID(int orderId) {
   SQLite::Statement query(db, R"SQL(
                           SELECT order_id, item_id, item_name, item_price, count
                           FROM order_items

@@ -1,13 +1,13 @@
 #include "SQLiteCpp/Statement.h"
 #include "db.hpp"
 
-void Database::insertCategory(const std::string &name) {
+void Database::Insert_Into_Category_Table(const std::string &name) {
   SQLite::Statement insert(db, "INSERT INTO categories (name) VALUES(?)");
   insert.bind(1, name);
   insert.exec();
 }
 
-void Database::insertIngredient(const std::string &name, double price,
+void Database::Insert_Into_Ingredient_Table(const std::string &name, double price,
                                 int stock) {
   SQLite::Statement insert(
       db, "INSERT INTO ingredients (name, price, stock) VALUES (?,?,?)");
@@ -17,7 +17,7 @@ void Database::insertIngredient(const std::string &name, double price,
   insert.exec();
 }
 
-void Database::insertItem(const std::string &name, double price,
+void Database::Insert_Into_Item_Table(const std::string &name, double price,
                           int categoryId) {
   SQLite::Statement insert(
       db, "INSERT INTO items (name, price, category_id) VALUES (?,?,?)");
@@ -27,14 +27,14 @@ void Database::insertItem(const std::string &name, double price,
   insert.exec();
 }
 
-void Database::insertCombo(const std::string &name, double price) {
+void Database::Insert_Into_Combo_Table(const std::string &name, double price) {
   SQLite::Statement insert(db, "INSERT INTO combos (name, price) VALUES (?,?)");
   insert.bind(1, name);
   insert.bind(2, price);
   insert.exec();
 }
 
-void Database::joinIngredientItem(int ingredientId, int itemId, int isRemovable,
+void Database::Combine_Into_IngredientItem_Table(int ingredientId, int itemId, int isRemovable,
                                   double priceChange) {
   SQLite::Statement insert(
       db, "INSERT INTO item_ingredients (item_id, "
@@ -46,7 +46,7 @@ void Database::joinIngredientItem(int ingredientId, int itemId, int isRemovable,
   insert.exec();
 }
 
-void Database::joinComboItem(int comboId, int itemId) {
+void Database::Combine_Into_ComboItem_Table(int comboId, int itemId) {
   SQLite::Statement insert(
       db, "INSERT INTO combo_items (combo_id, item_id) VALUES (?,?)");
 
@@ -55,8 +55,8 @@ void Database::joinComboItem(int comboId, int itemId) {
   insert.exec();
 }
 
-bool Database::decrementStock(int itemId) {
-  std::vector<ItemIngredient> ingredients = getItemIngredients(itemId);
+bool Database::Decrement_Ingredient_Stock_Of_Item(int itemId) {
+  std::vector<ItemIngredient> ingredients = Get_Vector_ItemIngredients_by_ItemID(itemId);
 
   for (const auto &ing : ingredients) {
     if (ing.stock < 1)
@@ -74,8 +74,8 @@ bool Database::decrementStock(int itemId) {
   return true;
 }
 
-bool Database::incrementStock(int itemId) {
-  std::vector<ItemIngredient> ingredients = getItemIngredients(itemId);
+bool Database::Increment_Ingredient_Stock_Of_Item(int itemId) {
+  std::vector<ItemIngredient> ingredients = Get_Vector_ItemIngredients_by_ItemID(itemId);
 
   SQLite::Statement increment(
       db, "UPDATE ingredients SET stock = stock + 1 WHERE id = ?");
@@ -88,7 +88,7 @@ bool Database::incrementStock(int itemId) {
   return true;
 }
 
-void Database::setIngredientStock(bool increase, const std::string &name,
+void Database::Inc_Dec_Ingredient_Stock(bool increase, const std::string &name,
                                   double val) {
   if (increase) {
     SQLite::Statement query(
@@ -105,7 +105,7 @@ void Database::setIngredientStock(bool increase, const std::string &name,
   }
 }
 
-void Database::addCheckout(int itemId) {
+void Database::Add_Item_Into_Checkout_Table(int itemId) {
   SQLite::Statement query(
       db, "INSERT INTO checkout(item_id, item_name, item_price) "
           "SELECT id, name, price FROM items WHERE id = ?");
@@ -113,7 +113,7 @@ void Database::addCheckout(int itemId) {
   query.exec();
 }
 
-void Database::purchase(const std::vector<OrderItem> &items, double total) {
+void Database::Process_Purchase(const std::vector<OrderItem> &items, double total) {
   SQLite::Transaction tx(db);
 
   SQLite::Statement insertOrderId(db, R"SQL(

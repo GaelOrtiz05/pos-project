@@ -72,42 +72,45 @@ public:
   Database();
 
   // initialization
-  void setupDatabase();
-  void MenuInitialization();
-  void purchase(const std::vector<OrderItem> &items, double total);
+  void Setup_Database();
+  void Initalize_Menu();
+  void Process_Purchase(const std::vector<OrderItem> &items, double total);
 
   // insert
-  void insertCategory(const std::string &name);
-  void insertIngredient(const std::string &name, double price, int stock = 100);
-  void insertItem(const std::string &name, double price, int categoryId);
-  void insertCombo(const std::string &name, double price);
-  void joinIngredientItem(int ingredientId, int itemId, int isRemovable,
-                          double priceChange = 0.0);
-  void joinComboItem(int comboId, int itemId);
-  void addCheckout(int itemId);
-  std::vector<Order> getOrders();
+  void Insert_Into_Category_Table(const std::string &name);
+  void Insert_Into_Ingredient_Table(const std::string &name, double price, int stock = 100);
+  void Insert_Into_Item_Table(const std::string &name, double price, int categoryId);
+  void Insert_Into_Combo_Table(const std::string &name, double price);
+  
+  void Combine_Into_IngredientItem_Table(int ingredientId, int itemId, int isRemovable,
+                                         double priceChange = 0.0);
+  void Combine_Into_ComboItem_Table(int comboId, int itemId);
+  void Add_Item_Into_Checkout_Table(int itemId);
+  std::vector<Order> Get_Vector_Orders();
 
   // update
-  bool incrementIngredientStock(int ingredientId, int stock);
-  bool decrementIngredientStock(int ingredientId, int stock);
-  bool incrementIngredientStock(int ingredientId);
-  bool decrementIngredientStock(int ingredientId);
-  void setIngredientStock(bool increase, const std::string &name,
+  //bool incrementIngredientStock(int ingredientId, int stock); unused?
+  //bool decrementIngredientStock(int ingredientId, int stock); unused?
+  //bool incrementIngredientStock(int ingredientId);
+  //bool decrementIngredientStock(int ingredientId);
+  //DELETE ON MONDAY 5/4/26 IF NOT NEEDED
+
+  void Inc_Dec_Ingredient_Stock(bool increase, const std::string &name,
                           double val = 1);
-  bool decrementStock(int itemId);
-  bool incrementStock(int itemId);
+  bool Decrement_Ingredient_Stock_Of_Item(int itemId);
+  bool Increment_Ingredient_Stock_Of_Item(int itemId);
 
   // select
-  int getCategoryIdByName(std::string &name);
-  std::vector<Category> getCategories();
-  std::vector<Ingredient> getIngredients();
-  std::vector<Item> getCombos();
-  std::vector<Item> getItems();
-  Item getItem(int itemId);
-  std::vector<Item> getItemsByCategory(std::string &name);
-  std::vector<ItemIngredient> getItemIngredients(int itemId);
-  std::vector<ComboItem> getComboItems(int comboId);
-  std::vector<OrderItem> getOrderItemsById(int orderId);
+  int Get_CategoryID_By_Name(std::string &name);
+  std::vector<Category> Get_Vector_Categories();
+  std::vector<Ingredient> Get_Vector_Ingredients();
+  std::vector<Item> Get_Vector_Combos();
+  std::vector<Item> Get_Vector_Items();
+  Item Get_Struct_Item(int itemId);
+  std::vector<Item> Get_Vector_Items_By_Category(std::string &name);
+  std::vector<ItemIngredient> Get_Vector_ItemIngredients_by_ItemID(int itemId);
+  std::vector<ComboItem> Get_Vector_ComboItems_by_ComboID(int comboId);
+  std::vector<OrderItem> Get_Vector_OrderItems_By_OrderID(int orderId);
 };
 
 void database_menu(Database &db);

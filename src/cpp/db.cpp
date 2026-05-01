@@ -4,11 +4,11 @@ Database::Database()
     : db("data/pos.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
   // db.exec("PRAGMA foreign_keys = ON");
 
-  setupDatabase();
-  MenuInitialization();
+  Setup_Database();
+  Initalize_Menu();
 }
 
-void Database::setupDatabase() {
+void Database::Setup_Database() {
   db.exec(R"SQL(            
     CREATE TABLE IF NOT EXISTS categories (
       id                        INTEGER PRIMARY KEY AUTOINCREMENT,                                                                                                                     
@@ -85,7 +85,7 @@ inline bool is_initialized(SQLite::Database &db) {
 
 } // namespace
 
-void Database::MenuInitialization() {
+void Database::Initalize_Menu() {
   if (!is_initialized(db)) {
     db.exec(R"SQL(
   BEGIN TRANSACTION;
@@ -177,14 +177,14 @@ void Database::MenuInitialization() {
 
 namespace {
 inline void print_categories(Database &db) {
-  std::vector<Category> outputCategories = db.getCategories();
+  std::vector<Category> outputCategories = db.Get_Vector_Categories();
   std::cout << "Categories\n";
   for (const auto &c : outputCategories) {
     std::cout << "Category: " << c.name << "\n";
   }
 }
 inline void print_items(Database &db) {
-  std::vector<Item> outputItems = db.getItems();
+  std::vector<Item> outputItems = db.Get_Vector_Items();
   std::cout << "Items\n";
 
   for (const auto &i : outputItems) {
@@ -193,7 +193,7 @@ inline void print_items(Database &db) {
 }
 
 inline void print_ingredients(Database &db) {
-  std::vector<Ingredient> outputIngredients = db.getIngredients();
+  std::vector<Ingredient> outputIngredients = db.Get_Vector_Ingredients();
   std::cout << "Ingredients: \n";
   for (const auto &i : outputIngredients) {
     std::cout << "Id: " << i.id << ", ";
@@ -208,7 +208,7 @@ inline void print_item_ingredients(Database &db) {
   std::cin >> inputItemId;
 
   std::vector<ItemIngredient> itemIngredients =
-      db.getItemIngredients(inputItemId);
+      db.Get_Vector_ItemIngredients_by_ItemID(inputItemId);
 
   for (const auto &ii : itemIngredients) {
     std::cout << "Id: " << ii.id << ", ";
@@ -219,7 +219,7 @@ inline void print_item_ingredients(Database &db) {
 }
 
 inline void print_combos(Database &db) {
-  std::vector<Item> outputCombos = db.getCombos();
+  std::vector<Item> outputCombos = db.Get_Vector_Combos();
   std::cout << "Combos: \n";
 
   for (const auto &c : outputCombos) {
@@ -234,7 +234,7 @@ inline void print_combo_items(Database &db) {
   std::cout << "Combo #: \n";
   std::cin >> inputCombo;
 
-  std::vector<ComboItem> outputComboItems = db.getComboItems(inputCombo);
+  std::vector<ComboItem> outputComboItems = db.Get_Vector_ComboItems_by_ComboID(inputCombo);
 
   for (const auto &c : outputComboItems) {
     std::cout << "Id: " << c.id << ", ";
@@ -245,7 +245,7 @@ inline void print_combo_items(Database &db) {
 }
 
 inline void print_orders(Database &db) {
-  std::vector<Order> allOrders = db.getOrders();
+  std::vector<Order> allOrders = db.Get_Vector_Orders();
   std::cout << "All Orders:\n";
 
   for (const auto &o : allOrders) {
@@ -258,7 +258,7 @@ inline void print_order_items(Database &db) {
   int orderId;
   std::cout << "Order ID: \n";
   std::cin >> orderId;
-  std::vector<OrderItem> orderItems = db.getOrderItemsById(orderId);
+  std::vector<OrderItem> orderItems = db.Get_Vector_OrderItems_By_OrderID(orderId);
   std::cout << "Order Items for order " << orderId << ":\n";
 
   for (const auto &oi : orderItems) {
