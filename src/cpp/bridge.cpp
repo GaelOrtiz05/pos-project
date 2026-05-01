@@ -61,13 +61,13 @@ PYBIND11_MODULE(pos_backend, handle) {
 
   py::class_<Login>(handle, "Login")
       .def(py::init<>())
-      .def("addUser", &Login::addUser)
-      .def("removeUser", &Login::removeUser)
-      .def("loginUser", &Login::loginUser)
-      .def("getUser", &Login::getUser)
-      .def("getIsAdmin", &Login::getIsAdmin)
-      .def("getListOfUsers", &Login::getListOfUsers)
-      .def("searchUser", &Login::searchUser);
+      .def("addUser", &Login::Add_User_To_Table)
+      .def("removeUser", &Login::Remove_User_From_Table)
+      .def("loginUser", &Login::Process_Login_User)
+      .def("getUser", &Login::Get_User)
+      .def("getIsAdmin", &Login::Get_User_IsAdmin)
+      .def("getListOfUsers", &Login::Get_Vector_Users)
+      .def("searchUser", &Login::User_Exists);
 
   py::class_<Database>(handle, "Database")
       .def(py::init<>())

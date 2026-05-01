@@ -17,48 +17,48 @@ struct User {
 
 class Login {
 private:
-  SQLite::Database db;
-  void setupDatabase() {
+  SQLite::Database LOGIN_DB;
 
-    db.exec("CREATE TABLE IF NOT EXISTS users ("
+  void Setup_Database() {
+
+    LOGIN_DB.exec("CREATE TABLE IF NOT EXISTS users ("
             "  id       INTEGER PRIMARY KEY AUTOINCREMENT,"
             "  name     TEXT NOT NULL,"
             "  password TEXT NOT NULL,"
             "  role     INTEGER DEFAULT 0"
             ")");
 
-    // if (searchUser("admin") == false) {
+    // if (User_Exists("admin") == false) {
     //   initializeAdminPassword();
     // }
   }
 
 public:
-  bool searchUser(const std::string &name) {
+  bool User_Exists(const std::string &name) {
 
-    SQLite::Statement query(db, "SELECT COUNT(*) FROM users WHERE name = ?");
-    query.bind(1, name);
-    query.executeStep();
+    SQLite::Statement user_count(LOGIN_DB, "SELECT COUNT(*) FROM users WHERE name = ?");
+    user_count.bind(1, name);
+    user_count.executeStep();
 
-    // after running query, it returns a result table with one column
+    // after running user_count, it returns a result table with one column
     // .getColumn(0) gets the result and getInt() makes sure it's an int.
-    int count = query.getColumn(0).getInt();
+    int count_of_users = user_count.getColumn(0).getInt();
 
-    if (count > 0) {
+    if (count_of_users > 0) {
       return true;
     } else {
       return false;
     }
   }
 
-  Login() : db("data/login.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
-    setupDatabase();
+  Login() : LOGIN_DB("data/login.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+    Setup_Database();
   };
 
-  bool addUser(const std::string &name, const std::string &password,
-               const int role = 0) {
+  bool Add_User_To_Table(const std::string &name, const std::string &password,const int role = 0) {
 
     // 1. check if name is already taken
-    if (searchUser(name) == true) {
+    if (User_Exists(name) == true) {
       std::cout << "Username " << name << "already taken.\n";
       return false;
     };
@@ -73,13 +73,12 @@ public:
 
     // 3. insert user
     // if transaction fails, nothing happens
-    SQLite::Transaction transaction(db);
+    SQLite::Transaction transaction(LOGIN_DB);
 
     // similiar statement as last time
-    SQLite::Statement insert(
-        db, "INSERT INTO users (name, password, role) VALUES (?, ?, ?)");
+    SQLite::Statement insert(LOGIN_DB, "INSERT INTO users (name, password, role) VALUES (?, ?, ?)");
     // id is handeld by AUTOINCREMENT
-
+    
     // binds name
     insert.bind(1, name);
     // binds password
@@ -97,39 +96,39 @@ public:
     return true;
   }
 
-  bool removeUser(const std::string &name, const int requesterRole) {
+  bool Remove_User_From_Table(const std::string &name, const int role_of_requestor) {
 
-    SQLite::Statement roleQuery(db, "SELECT role FROM users WHERE name = ?");
-    roleQuery.bind(1, name);
+    SQLite::Statement role_query(LOGIN_DB, "SELECT role FROM users WHERE name = ?");
+    role_query.bind(1, name);
 
-    if (!roleQuery.executeStep()) {
+    if (!role_query.executeStep()) {
       std::cout << "Username " << name << "not found.\n";
       return false;
     }
 
-    int targetRole = roleQuery.getColumn(0).getInt();
+    int role_of_removee = role_query.getColumn(0).getInt();
 
-    if (targetRole >= 2) {
+    if (role_of_removee >= 2) {
       std::cout << "Owner cannot be removed.\n";
       return false;
     }
 
-    if (requesterRole <= targetRole) {
+    if (role_of_requestor <= role_of_removee) {
       std::cout << "Insufficient privileges to remove " << name << ".\n";
       return false;
     }
 
-    SQLite::Transaction transaction(db);
+    SQLite::Transaction transaction(LOGIN_DB);
 
-    SQLite::Statement del(db, "DELETE FROM users WHERE name = ?");
-
-    del.bind(1, name);
+    SQLite::Statement delete_query(LOGIN_DB, "DELETE FROM users WHERE name = ?");
+  
+    delete_query.bind(1, name);
 
     // .exec() returns amount of rows changed
     // should be 1 if user is deleted
-    int changed = del.exec();
+    int rows_changed = delete_query.exec();
 
-    if (changed == 0) {
+    if (rows_changed == 0) {
       std::cout << "Username " << name << "not found.\n";
       return false;
     }
@@ -140,29 +139,29 @@ public:
     return true;
   }
 
-  bool getIsAdmin(const std::string &name) {
+  bool Get_User_IsAdmin(const std::string &name) {
 
-    if (searchUser(name) == false) {
+    if (User_Exists(name) == false) {
       std::cout << "Username does not exist";
       return false;
     }
 
-    SQLite::Statement query(db, "SELECT role FROM users WHERE name = ?");
+    SQLite::Statement role_query(LOGIN_DB, "SELECT role FROM users WHERE name = ?");
 
-    query.bind(1, name);
+    role_query.bind(1, name);
 
     // we can validate input without searchUser because this is a select query
     // otherwise, we use searchUser
-    bool userExists = query.executeStep();
+    bool userExists = role_query.executeStep();
 
     if (!userExists) {
       std::cout << "Username " << name << " not found.\n";
       return false;
     }
 
-    int role = query.getColumn(0).getInt();
+    int user_role = role_query.getColumn(0).getInt();
 
-    if (role >= 1) {
+    if (user_role >= 1) {
       std::cout << "User " << name << " is an admin";
       return true;
     } else {
@@ -171,24 +170,23 @@ public:
     }
   }
 
-  bool loginUser(const std::string &name, const std::string &password) {
+  bool Process_Login_User(const std::string &name, const std::string &password) {
 
     // match name to password
-    SQLite::Statement statement(db,
-                                "SELECT password FROM users WHERE name = ?");
+    SQLite::Statement select_password(LOGIN_DB, "SELECT password FROM users WHERE name = ?");
 
-    statement.bind(1, name);
+    select_password.bind(1, name);
 
     // returns false if user doesn't exist
     // .executeStep() returns true if a row is fetched
-    bool userExists = statement.executeStep();
+    bool userExists = select_password.executeStep();
 
     if (!userExists) {
       std::cout << "Username " << name << "not found.\n";
       return false;
     }
 
-    std::string stored_hash = statement.getColumn(0).getString();
+    std::string stored_hash = select_password.getColumn(0).getString();
 
     if (!check_password(password.c_str(), stored_hash.c_str())) {
       std::cout << "wrong password";
@@ -198,100 +196,101 @@ public:
     return true;
   }
 
-  User getUser(const std::string &name) {
+  User Get_User(const std::string &name) {
 
-    SQLite::Statement query(db, "SELECT * FROM users WHERE name = ?");
+    SQLite::Statement select_user(LOGIN_DB, "SELECT * FROM users WHERE name = ?");
 
-    query.bind(1, name);
+    select_user.bind(1, name);
 
     // can't return false so throw error if user not found
-    if (!query.executeStep()) {
+    if (!select_user.executeStep()) {
       throw std::runtime_error("Username " + name + " not found");
     }
 
     User user;
 
-    user.id = query.getColumn(0).getInt();
-    user.name = query.getColumn(1).getString();
-    user.password = query.getColumn(2).getString();
-    user.role = query.getColumn(3).getInt();
+    user.id = select_user.getColumn(0).getInt();
+    user.name = select_user.getColumn(1).getString();
+    user.password = select_user.getColumn(2).getString();
+    user.role = select_user.getColumn(3).getInt();
 
     return user;
   }
 
-  std::vector<User> getListOfUsers() {
+  std::vector<User> Get_Vector_Users() {
 
-    SQLite::Statement query(
-        db, "SELECT name FROM users where id >=0 ORDER BY role DESC, name ASC");
+    SQLite::Statement select_user(
+        LOGIN_DB, "SELECT name FROM users where id >=0 ORDER BY role DESC, name ASC");
 
-    std::vector<User> users;
+    std::vector<User> vector_of_users;
 
-    while (query.executeStep()) {
-      // call getUser with the name fetched by query and add to vector
-      users.push_back(getUser(query.getColumn(0).getString()));
+    while (select_user.executeStep()) {
+      // call Get_User with the name fetched by query and add to vector
+      vector_of_users.push_back(Get_User(select_user.getColumn(0).getString()));
     }
 
-    return users;
+    return vector_of_users;
   }
 };
 
 namespace {
-inline void add_user(Login &login) {
-  std::string inputUsername;
-  std::string inputPassword;
-  int inputRole;
+inline void Add_User(Login &login) {
+  std::string input_username;
+  std::string input_password;
+  int input_role;
   std::cout << "Username: ";
-  std::cin >> inputUsername;
+  std::cin >> input_username;
   std::cout << "Password: ";
-  std::cin >> inputPassword;
+  std::cin >> input_password;
   std::cout << "Role (0 = employee, 1 = admin, 2 = owner): ";
-  std::cin >> inputRole;
-  login.addUser(inputUsername, inputPassword, inputRole);
+  std::cin >> input_role;
+  login.Add_User_To_Table(input_username, input_password, input_role);
 }
 
-inline void remove_user(Login &login) {
-  std::string inputUsername;
+inline void Remove_User(Login &login) {
+  std::string input_username;
   std::cout << "Username: ";
-  std::cin >> inputUsername;
-  login.removeUser(inputUsername, 2);
+  std::cin >> input_username;
+  login.Remove_User_From_Table(input_username, 2);
 }
 
-inline void login_user(Login &login) {
-  std::string inputUsername;
-  std::string inputPassword;
+inline void Login_User(Login &login) {
+  std::string input_username;
+  std::string input_password;
   std::cout << "Username: ";
-  std::cin >> inputUsername;
+  std::cin >> input_username;
   std::cout << "Password: ";
-  std::cin >> inputPassword;
-  login.loginUser(inputUsername, inputPassword);
+  std::cin >> input_password;
+  login.Process_Login_User(input_username, input_password);
 }
 
-inline void list_users(Login &login) {
+inline void List_Users(Login &login) {
   // if you're curious
   // https://stackoverflow.com/a/12702744
-  std::vector<User> users = login.getListOfUsers();
-  for (const User &i : users) {
-    std::cout << "username: " << i.name << "\n";
+  std::vector<User> vector_of_users = login.Get_Vector_Users();
+
+  for (const User &user : vector_of_users) {
+    std::cout << "username: " << user.name << "\n";
   }
 }
 
-inline void fetch_privileges(Login &login) {
-  std::string inputUsername;
+inline void Fetch_Privileges(Login &login) {
+  std::string input_username;
   std::cout << "Username: ";
-  std::cin >> inputUsername;
-  login.getIsAdmin(inputUsername);
+  std::cin >> input_username;
+  login.Get_User_IsAdmin(input_username);
 }
 
-inline void return_user(Login &login) {
-  std::string inputUsername;
+inline void Return_User(Login &login) {
+  std::string input_username;
   std::cout << "Username: ";
-  std::cin >> inputUsername;
-  User user = login.getUser(inputUsername);
+  std::cin >> input_username;
+  User user = login.Get_User(input_username);
   std::cout << "id: " << user.id << " username: " << user.name
             << " password: " << user.password << " role: " << user.role << "\n";
 }
 
-inline void print_headers() {
+inline void Print_Headers() {
   std::cout << "\nMENU\n"
             << "1. Add user\n"
             << "2. Remove user\n"
@@ -304,31 +303,32 @@ inline void print_headers() {
 }
 } // namespace
 
-inline void login_menu(Login &login) {
+inline void Login_Menu(Login &login) {
   bool running = true;
-  int input = 1;
+  int menu_selection = 1;
 
   while (running) {
-    print_headers();
-    std::cin >> input;
-    switch (input) {
+    Print_Headers();
+    std::cin >> menu_selection;
+    
+    switch (menu_selection) {
     case 1:
-      add_user(login);
+      Add_User(login);
       break;
     case 2:
-      remove_user(login);
+      Remove_User(login);
       break;
     case 3:
-      login_user(login);
+      Login_User(login);
       break;
     case 4:
-      list_users(login);
+      List_Users(login);
       break;
     case 5:
-      fetch_privileges(login);
+      Fetch_Privileges(login);
       break;
     case 6:
-      return_user(login);
+      Return_User(login);
       break;
     case 0:
       running = false;

@@ -273,7 +273,7 @@ inline void print_order_items(Database &db) {
   }
 }
 
-void print_headers() {
+void Print_Headers() {
   std::cout << "\nMENU\n"
             << "1. Get Categories\n"
             << "2. Get Items\n"
@@ -293,7 +293,7 @@ void database_menu(Database &db) {
   int menu_selection = 1;
 
   while (running) {
-    print_headers();
+    Print_Headers();
     std::cin >> menu_selection;
     switch (menu_selection) {
     case 1:

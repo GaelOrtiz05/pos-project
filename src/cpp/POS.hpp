@@ -45,7 +45,7 @@ public:
 
       case 2: {
         try {
-          login_menu(login);
+          Login_Menu(login);
           break;
         } catch (std::exception &e) {
           std::cerr << "error: " << e.what() << "\n";
