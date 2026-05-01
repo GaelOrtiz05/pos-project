@@ -74,10 +74,10 @@ void Database::Setup_Database() {
 
 namespace {
 inline bool is_initialized(SQLite::Database &db) {
-  SQLite::Statement query(db, "SELECT COUNT(*) FROM categories");
-  query.executeStep();
-  int count = query.getColumn(0).getInt();
-  if (count > 0) {
+  SQLite::Statement count_categories(db, "SELECT COUNT(*) FROM categories");
+  count_categories.executeStep();
+  int count_of_table_columns = count_categories.getColumn(0).getInt();
+  if (count_of_table_columns > 0) {
     return true;
   }
   return false;
@@ -177,95 +177,99 @@ void Database::Initalize_Menu() {
 
 namespace {
 inline void print_categories(Database &db) {
-  std::vector<Category> outputCategories = db.Get_Vector_Categories();
+  std::vector<Category> vector_categories = db.Get_Vector_Categories();
+
   std::cout << "Categories\n";
-  for (const auto &c : outputCategories) {
-    std::cout << "Category: " << c.name << "\n";
+  for (const auto &category : vector_categories) {
+    std::cout << "Category: " << category.name << "\n";
   }
 }
-inline void print_items(Database &db) {
-  std::vector<Item> outputItems = db.Get_Vector_Items();
-  std::cout << "Items\n";
 
-  for (const auto &i : outputItems) {
-    std::cout << "Item: " << i.name << "\n";
+inline void print_items(Database &db) {
+  std::vector<Item> vector_items = db.Get_Vector_Items();
+  
+  std::cout << "Items\n";
+  for (const auto &item : vector_items) {
+    std::cout << "Item: " << item.name << "\n";
   }
 }
 
 inline void print_ingredients(Database &db) {
-  std::vector<Ingredient> outputIngredients = db.Get_Vector_Ingredients();
+  std::vector<Ingredient> vector_ingredients = db.Get_Vector_Ingredients();
+  
   std::cout << "Ingredients: \n";
-  for (const auto &i : outputIngredients) {
-    std::cout << "Id: " << i.id << ", ";
-    std::cout << "Name: " << i.name << ", ";
-    std::cout << "Stock: " << i.stock << "\n";
+  for (const auto &ingredient : vector_ingredients) {
+    std::cout << "Id: " << ingredient.id << ", ";
+    std::cout << "Name: " << ingredient.name << ", ";
+    std::cout << "Stock: " << ingredient.stock << "\n";
   }
 }
 
 inline void print_item_ingredients(Database &db) {
   std::cout << "Item ID: \n";
-  int inputItemId;
-  std::cin >> inputItemId;
+  int input_ItemId;
+  std::cin >> input_ItemId;
 
-  std::vector<ItemIngredient> itemIngredients =
-      db.Get_Vector_ItemIngredients_by_ItemID(inputItemId);
+  std::vector<ItemIngredient> vector_itemIngredients = db.Get_Vector_ItemIngredients_by_ItemID(input_ItemId);
 
-  for (const auto &ii : itemIngredients) {
-    std::cout << "Id: " << ii.id << ", ";
-    std::cout << "Name: " << ii.name << ", ";
-    std::cout << "Is Removable: " << ii.isRemovable << ", ";
-    std::cout << "Price Change: " << ii.priceChange << "\n";
+  for (const auto &itemingredient : vector_itemIngredients) {
+    std::cout << "Id: " << itemingredient.id << ", ";
+    std::cout << "Name: " << itemingredient.name << ", ";
+    std::cout << "Is Removable: " << itemingredient.isRemovable << ", ";
+    std::cout << "Price Change: " << itemingredient.priceChange << "\n";
   }
 }
 
 inline void print_combos(Database &db) {
-  std::vector<Item> outputCombos = db.Get_Vector_Combos();
+  std::vector<Item> vector_outputCombos = db.Get_Vector_Combos();
   std::cout << "Combos: \n";
 
-  for (const auto &c : outputCombos) {
-    std::cout << "Id: " << c.id << ", ";
-    std::cout << "Name: " << c.name << ", ";
-    std::cout << "Price: " << c.price << "\n";
+  for (const auto &combo : vector_outputCombos) {
+    std::cout << "Id: " << combo.id << ", ";
+    std::cout << "Name: " << combo.name << ", ";
+    std::cout << "Price: " << combo.price << "\n";
   }
 }
 
 inline void print_combo_items(Database &db) {
-  int inputCombo;
+  int input_ComboID;
   std::cout << "Combo #: \n";
-  std::cin >> inputCombo;
+  std::cin >> input_ComboID;
 
-  std::vector<ComboItem> outputComboItems = db.Get_Vector_ComboItems_by_ComboID(inputCombo);
+  std::vector<ComboItem> vector_outputComboItems = db.Get_Vector_ComboItems_by_ComboID(input_ComboID);
 
-  for (const auto &c : outputComboItems) {
-    std::cout << "Id: " << c.id << ", ";
-    std::cout << "Name: " << c.name << ", ";
-    std::cout << "Price: " << c.price << ", ";
-    std::cout << "Available: " << c.inStock << "\n";
+  for (const auto &comboitem : vector_outputComboItems) {
+    std::cout << "Id: " << comboitem.id << ", ";
+    std::cout << "Name: " << comboitem.name << ", ";
+    std::cout << "Price: " << comboitem.price << ", ";
+    std::cout << "Available: " << comboitem.inStock << "\n";
   }
 }
 
 inline void print_orders(Database &db) {
-  std::vector<Order> allOrders = db.Get_Vector_Orders();
+  std::vector<Order> vector_allOrders = db.Get_Vector_Orders();
   std::cout << "All Orders:\n";
 
-  for (const auto &o : allOrders) {
-    std::cout << "Id: " << o.id << ", ";
-    std::cout << "Time " << o.time << ", ";
-    std::cout << "Total: " << o.total << "\n";
+  for (const auto &order : vector_allOrders) {
+    std::cout << "Id: " << order.id << ", ";
+    std::cout << "Time " << order.time << ", ";
+    std::cout << "Total: " << order.total << "\n";
   }
 }
-inline void print_order_items(Database &db) {
-  int orderId;
-  std::cout << "Order ID: \n";
-  std::cin >> orderId;
-  std::vector<OrderItem> orderItems = db.Get_Vector_OrderItems_By_OrderID(orderId);
-  std::cout << "Order Items for order " << orderId << ":\n";
 
-  for (const auto &oi : orderItems) {
-    std::cout << "Order Id: " << oi.orderId << ", ";
-    std::cout << "Name: " << oi.itemName << ", ";
-    std::cout << "Price: " << oi.itemPrice << ", ";
-    std::cout << "Count: " << oi.count << "\n";
+inline void print_order_items(Database &db) {
+  int input_orderId;
+  std::cout << "Order ID: \n";
+  std::cin >> input_orderId;
+  
+  std::vector<OrderItem> vector_orderItems = db.Get_Vector_OrderItems_By_OrderID(input_orderId);
+  std::cout << "Order Items for order " << input_orderId << ":\n";
+
+  for (const auto &orderitem : vector_orderItems) {
+    std::cout << "Order Id: " << orderitem.orderId << ", ";
+    std::cout << "Name: " << orderitem.itemName << ", ";
+    std::cout << "Price: " << orderitem.itemPrice << ", ";
+    std::cout << "Count: " << orderitem.count << "\n";
   }
 }
 
@@ -286,12 +290,12 @@ void print_headers() {
 
 void database_menu(Database &db) {
   bool running = true;
-  int input = 1;
+  int menu_selection = 1;
 
   while (running) {
     print_headers();
-    std::cin >> input;
-    switch (input) {
+    std::cin >> menu_selection;
+    switch (menu_selection) {
     case 1:
       print_categories(db);
       break;
