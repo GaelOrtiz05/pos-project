@@ -10,7 +10,9 @@ struct User {
   int id;
   std::string name;
   std::string password;
-  bool isAdmin;
+  int role; // 0 = emp, 1 = admin, 2 = owner
+
+  bool isAdmin() const { return role >= 1; }
 };
 
 class Login {
@@ -22,7 +24,7 @@ private:
             "  id       INTEGER PRIMARY KEY AUTOINCREMENT,"
             "  name     TEXT NOT NULL,"
             "  password TEXT NOT NULL,"
-            "  is_admin INTEGER DEFAULT 0"
+            "  role     INTEGER DEFAULT 0"
             ")");
 
     // if (searchUser("admin") == false) {
@@ -52,16 +54,8 @@ public:
     setupDatabase();
   };
 
-  // void initializeAdminPassword() {
-  //   std::string password;
-  //   std::cout << "First-time setup. Set admin password: ";
-  //   std::cin >> password;
-  //   addUser("admin", password, true);
-  // }
-
-  // if a parameter is not given for isAdmin, defaults to false
   bool addUser(const std::string &name, const std::string &password,
-               const bool isAdmin = false) {
+               const int role = 0) {
 
     // 1. check if name is already taken
     if (searchUser(name) == true) {
@@ -83,7 +77,7 @@ public:
 
     // similiar statement as last time
     SQLite::Statement insert(
-        db, "INSERT INTO users (name, password, is_admin) VALUES (?, ?, ?)");
+        db, "INSERT INTO users (name, password, role) VALUES (?, ?, ?)");
     // id is handeld by AUTOINCREMENT
 
     // binds name
@@ -91,7 +85,7 @@ public:
     // binds password
     insert.bind(2, stored_hash);
 
-    insert.bind(3, isAdmin);
+    insert.bind(3, role);
 
     // .exec() is for writes with insert,delete,update
     insert.exec();
@@ -103,7 +97,27 @@ public:
     return true;
   }
 
-  bool removeUser(const std::string &name) {
+  bool removeUser(const std::string &name, const int requesterRole) {
+
+    SQLite::Statement roleQuery(db, "SELECT role FROM users WHERE name = ?");
+    roleQuery.bind(1, name);
+
+    if (!roleQuery.executeStep()) {
+      std::cout << "Username " << name << "not found.\n";
+      return false;
+    }
+
+    int targetRole = roleQuery.getColumn(0).getInt();
+
+    if (targetRole >= 2) {
+      std::cout << "Owner cannot be removed.\n";
+      return false;
+    }
+
+    if (requesterRole <= targetRole) {
+      std::cout << "Insufficient privileges to remove " << name << ".\n";
+      return false;
+    }
 
     SQLite::Transaction transaction(db);
 
@@ -126,38 +140,6 @@ public:
     return true;
   }
 
-  bool togglePrivileges(const std::string &name) {
-
-    // 1. make sure username exists
-    if (searchUser(name) == false) {
-      std::cout << "Username does not exist\n";
-      return false;
-    }
-
-    // 2. toggle privileges
-    SQLite::Transaction transaction(db);
-
-    // is_admin = 1 - is_admin toggles between 1 and 0
-    // if is_admin = 0, 1 - 0 = 1
-    // if is_admin = 1, 1 - 1 = 0
-    SQLite::Statement update(
-        db, "UPDATE users SET is_admin = 1 - is_admin WHERE name = ?");
-
-    update.bind(1, name);
-
-    int changed = update.exec();
-
-    if (changed == 0) {
-      std::cout << "no change made\n";
-      return false;
-    }
-
-    transaction.commit();
-
-    std::cout << "privileges toggeled\n";
-    return true;
-  }
-
   bool getIsAdmin(const std::string &name) {
 
     if (searchUser(name) == false) {
@@ -165,7 +147,7 @@ public:
       return false;
     }
 
-    SQLite::Statement query(db, "SELECT is_admin FROM users WHERE name = ?");
+    SQLite::Statement query(db, "SELECT role FROM users WHERE name = ?");
 
     query.bind(1, name);
 
@@ -178,9 +160,9 @@ public:
       return false;
     }
 
-    bool isAdmin = query.getColumn(0).getInt();
+    int role = query.getColumn(0).getInt();
 
-    if (isAdmin) {
+    if (role >= 1) {
       std::cout << "User " << name << " is an admin";
       return true;
     } else {
@@ -232,7 +214,7 @@ public:
     user.id = query.getColumn(0).getInt();
     user.name = query.getColumn(1).getString();
     user.password = query.getColumn(2).getString();
-    user.isAdmin = query.getColumn(3).getInt();
+    user.role = query.getColumn(3).getInt();
 
     return user;
   }
@@ -240,8 +222,7 @@ public:
   std::vector<User> getListOfUsers() {
 
     SQLite::Statement query(
-        db,
-        "SELECT name FROM users where id >=0 ORDER BY is_admin DESC, name ASC");
+        db, "SELECT name FROM users where id >=0 ORDER BY role DESC, name ASC");
 
     std::vector<User> users;
 
@@ -258,21 +239,21 @@ namespace {
 inline void add_user(Login &login) {
   std::string inputUsername;
   std::string inputPassword;
-  int inputIsAdmin;
+  int inputRole;
   std::cout << "Username: ";
   std::cin >> inputUsername;
   std::cout << "Password: ";
   std::cin >> inputPassword;
-  std::cout << "Is Admin (1 = true, 0 = false): ";
-  std::cin >> inputIsAdmin;
-  login.addUser(inputUsername, inputPassword, inputIsAdmin);
+  std::cout << "Role (0 = employee, 1 = admin, 2 = owner): ";
+  std::cin >> inputRole;
+  login.addUser(inputUsername, inputPassword, inputRole);
 }
 
 inline void remove_user(Login &login) {
   std::string inputUsername;
   std::cout << "Username: ";
   std::cin >> inputUsername;
-  login.removeUser(inputUsername);
+  login.removeUser(inputUsername, 2);
 }
 
 inline void login_user(Login &login) {
@@ -294,13 +275,6 @@ inline void list_users(Login &login) {
   }
 }
 
-inline void toggle_privileges(Login &login) {
-  std::string inputUsername;
-  std::cout << "Username: ";
-  std::cin >> inputUsername;
-  login.togglePrivileges(inputUsername);
-}
-
 inline void fetch_privileges(Login &login) {
   std::string inputUsername;
   std::cout << "Username: ";
@@ -314,8 +288,7 @@ inline void return_user(Login &login) {
   std::cin >> inputUsername;
   User user = login.getUser(inputUsername);
   std::cout << "id: " << user.id << " username: " << user.name
-            << " password: " << user.password << " is_admin: " << user.isAdmin
-            << "\n";
+            << " password: " << user.password << " role: " << user.role << "\n";
 }
 
 inline void print_headers() {
@@ -324,9 +297,8 @@ inline void print_headers() {
             << "2. Remove user\n"
             << "3. Login\n"
             << "4. List users \n"
-            << "5. Toggle privileges\n"
-            << "6. Fetch Privileges\n"
-            << "7. Return User\n"
+            << "5. Fetch Privileges\n"
+            << "6. Return User\n"
             << "0. Quit\n"
             << "Input: ";
 }
@@ -353,12 +325,9 @@ inline void login_menu(Login &login) {
       list_users(login);
       break;
     case 5:
-      toggle_privileges(login);
-      break;
-    case 6:
       fetch_privileges(login);
       break;
-    case 7:
+    case 6:
       return_user(login);
       break;
     case 0:

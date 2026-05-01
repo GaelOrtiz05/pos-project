@@ -19,7 +19,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QGraphicsDropShadowEffect,
     QSizePolicy,
-    
 )
 
 #shortcuts, inputs, etc.
@@ -96,25 +95,42 @@ class MainWindow(QMainWindow, POSLogic):
 
             # QPushButton() = Button
             login_button_label = 'Login'
+            is_first_time = len(self.logic.getListOfUsers()) == 0
+            confirm_password_input = None
 
-            if len(self.logic.getListOfUsers()) == 0:
+            if is_first_time:
                 login_button_label = 'Register'
+
+                confirm_label = self.create_label("Confirm",'black',150,50)
+                layout.addWidget(confirm_label,4,0)
+
+                confirm_password_input = QLineEdit()
+                confirm_password_input.setMaximumSize(150,50)
+                confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password) 
+                layout.addWidget(confirm_password_input,4,1)
+                confirm_password_input.setStyleSheet("background-color: white ; border-radius: 5px; font-size: 25px; color:black")
+
                 first_time_label = QLabel('will become the admin account.')
                 first_time_label.setFixedSize(300,50)
                 first_time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 first_time_label.setStyleSheet("background-color: black ; border-radius: 1px; font-size: 15px; color:")
-                layout.addWidget(first_time_label,6,0,1,2)
+                layout.addWidget(first_time_label,7,0,1,2)
 
+            if is_first_time:
+                button_row = 5
+            else:
+                button_row = 4
             login_button = self.create_button(login_button_label, 'green',300,50)
-            layout.addWidget(login_button,4,0,1,2)
+            layout.addWidget(login_button,button_row,0,1,2)
 
             quit_button = self.create_button('Quit','red',300,50)
-            layout.addWidget(quit_button,5,0,1,2)
+            quit_row = button_row + 1
+            layout.addWidget(quit_button,quit_row,0,1,2)
 
-            login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout))
-            quit_button.clicked.connect(lambda: self.close_program())        
+            login_button.clicked.connect(lambda: self.login_event_handler(user_input, password_input, layout, confirm_password_input))
+            quit_button.clicked.connect(lambda: self.close_program())
 
-            self.bind_enter_key(lambda: self.login_event_handler(user_input, password_input, layout))
+            self.bind_enter_key(lambda: self.login_event_handler(user_input, password_input, layout, confirm_password_input))
 
     def show_home_screen(self):  # Main UI
 
@@ -265,26 +281,18 @@ class MainWindow(QMainWindow, POSLogic):
         title.setStyleSheet("color: white; background: transparent; margin-bottom: 10px;")
         layout.addWidget(title, 0, 0, 1, 2)
 
-        # Add employee Button
-        create_new_account_button = self.create_button('Add Employee','#1e1530',320,100)
-        layout.addWidget(create_new_account_button,2,0)
-        create_new_account_button.clicked.connect(self.show_add_employee_screen)
         # View employees button
         view_employees_button = self.create_button('View Employees','#1e1530',320,100)
-        layout.addWidget(view_employees_button,2,1)
+        layout.addWidget(view_employees_button,2,0)
         view_employees_button.clicked.connect(self.show_view_employees_screen)
-        # Remove employee button
-        remove_employee_button = self.create_button('Remove Employee','#1e1530',320,100)
-        layout.addWidget(remove_employee_button,3,0)
-        remove_employee_button.clicked.connect(self.show_remove_employee_screen)
         # View sales button
         view_sales_button = self.create_button('View Sales','#1e1530',320,100)
-        layout.addWidget(view_sales_button,3,1)
+        layout.addWidget(view_sales_button,2,1)
         view_sales_button.clicked.connect(self.disp_sales_menu)
         # Manager inventory button
         manage_inventory_button = self.create_button('Manage Inventory','#1e1530',660,100)
         manage_inventory_button.clicked.connect(self.disp_manage_inventory_menu)
-        layout.addWidget(manage_inventory_button,4,0,1,2)
+        layout.addWidget(manage_inventory_button,3,0,1,2)
 
         if self.manager_feedback_message:
             feedback_label = QLabel(self.manager_feedback_message)
@@ -292,56 +300,13 @@ class MainWindow(QMainWindow, POSLogic):
             feedback_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             feedback_label.setFont(self.create_font(15, 600))
             feedback_label.setStyleSheet("color: white; font-size: 15px; background-color: #0c401a; border-radius: 14px; padding: 8px;")
-            layout.addWidget(feedback_label, 5, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(feedback_label, 4, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
             self.manager_feedback_message = ""
 
         # Back Button
         back_button = self.create_button('Return','#540612',660,75)
-        layout.addWidget(back_button,6,0,1,2)
+        layout.addWidget(back_button,5,0,1,2)
         back_button.clicked.connect(self.show_home_screen)
-    def show_remove_employee_screen(self):  # Remove employee
-        remove_ui = QWidget()
-        self.setCentralWidget(remove_ui)
-        remove_ui.setStyleSheet("background-color: black;")
-
-        self.remove_employee_feedback = None
-
-        layout = QGridLayout(remove_ui)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.setHorizontalSpacing(20)
-        layout.setVerticalSpacing(18)
-        layout.setContentsMargins(40, 40, 40, 40)
-
-        # Title
-        title = self.create_label("Remove Employee", "", 400, 50)
-        title.setFont(self.create_font(25))
-
-        # Username
-        user_label = self.create_label("Username:", "", 140, 40)
-        user_input = QLineEdit()
-        user_input.setFixedSize(260, 40)
-        user_input.setStyleSheet("font-size: 18px; border-radius: 15px; background-color: white; color: black; padding-left: 12px;")
-
-        # Submit button
-        submit_button = self.create_button("Remove User", "green", 300, 50)
-        submit_button.clicked.connect(lambda: self.remove_employee_handler(user_input))
-        # Back button
-        back_button = self.create_button("Back", "red", 300, 50)
-        back_button.clicked.connect(self.show_manager_menu)
-        # Feedback label
-        self.remove_employee_feedback = QLabel("")
-        self.remove_employee_feedback.setFixedSize(360, 45)
-        self.remove_employee_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.remove_employee_feedback.setWordWrap(True)
-        self.remove_employee_feedback.setStyleSheet("color: white; font-size: 18px; background-color: transparent;")
-
-        # Layout
-        layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(user_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
-        layout.addWidget(user_input, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(submit_button, 2, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.remove_employee_feedback, 3, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(back_button, 4, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def show_view_employees_screen(self):
         employees_ui = QWidget()
@@ -367,17 +332,71 @@ class MainWindow(QMainWindow, POSLogic):
 
         self.users = self.logic.getListOfUsers()
         for user in self.users:
-            role = "Admin" if user.isAdmin else "Employee"
+            if user.role == 2:
+                role = "Owner"
+            elif user.role == 1:
+                role = "Admin"
+            else:
+                role = "Employee"
+            row_widget = QWidget()
+            row_layout = QHBoxLayout(row_widget)
+            row_layout.setContentsMargins(0, 0, 0, 0)
+            row_layout.setSpacing(8)
+
             user_label = self.create_label(f"{user.name} ({role})", '#2e302f', 500, 50)
-            list_layout.addWidget(user_label, alignment=Qt.AlignmentFlag.AlignCenter)
+            row_layout.addWidget(user_label)
+
+            if self.current_user.role > user.role and user.id != self.current_user.id:
+                remove_button = self.create_button("x", "red", 40, 40)
+                remove_button.clicked.connect(lambda _, n=user.name: self.confirm_remove_employee(n))
+                row_layout.addWidget(remove_button)
+
+            list_layout.addWidget(row_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
         list_layout.addStretch()
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
+        add_button = self.create_button('Add Employee', 'green', 300, 50)
+        add_button.clicked.connect(self.show_add_employee_screen)
+        main_layout.addWidget(add_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
         back_button = self.create_button('Back','red',300,50)
         back_button.clicked.connect(self.show_manager_menu)
         main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+    def confirm_remove_employee(self, name):
+        confirm_ui = QWidget()
+        self.setCentralWidget(confirm_ui)
+        confirm_ui.setStyleSheet("background-color: black;")
+
+        outer_layout = QVBoxLayout(confirm_ui)
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        outer_layout.addStretch()
+
+        card = QWidget()
+        card.setFixedSize(650, 260)
+        card.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+        card_layout = QGridLayout(card)
+        card_layout.setContentsMargins(20, 20, 20, 20)
+        card_layout.setHorizontalSpacing(16)
+        card_layout.setVerticalSpacing(16)
+
+        title = self.create_label(f"Remove {name}?", "", 360, 44)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(self.create_font(20, 600))
+        card_layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        confirm_button = self.create_button("Confirm", "green", 220, 48)
+        confirm_button.clicked.connect(lambda: self.view_remove_employee_handler(name))
+        card_layout.addWidget(confirm_button, 1, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        back_button = self.create_button("Back", "red", 220, 48)
+        back_button.clicked.connect(self.show_view_employees_screen)
+        card_layout.addWidget(back_button, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        outer_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
+        outer_layout.addStretch()
 
     def show_add_employee_screen(self):  # Add employee
         add_ui = QWidget()
@@ -418,7 +437,7 @@ class MainWindow(QMainWindow, POSLogic):
         self.bind_enter_key(lambda: self.submit_event_handler(user_input, pass_input, checkbox))
 
         back_button = self.create_button('Back', 'red', 300, 50)
-        back_button.clicked.connect(self.show_manager_menu)
+        back_button.clicked.connect(self.show_view_employees_screen)
 
         # Feedback
         self.add_employee_feedback = QLabel("")
@@ -435,8 +454,8 @@ class MainWindow(QMainWindow, POSLogic):
         layout.addWidget(pass_input, 2, 1, alignment=Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(checkbox, 3, 1, alignment=Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(submit_button, 4, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.add_employee_feedback, 5, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(back_button, 6, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(back_button, 5, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.add_employee_feedback, 6, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
 
     #Loads main grid with items from the items table based on category_id
     #Category 0 = all, 1 = entre, 2 = sides, 3 = dessert, 4 = drinks

@@ -12,7 +12,8 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def_readonly("id", &User::id)
       .def_readonly("name", &User::name)
       .def_readonly("password", &User::password)
-      .def_readonly("isAdmin", &User::isAdmin);
+      .def_readonly("role", &User::role)
+      .def_property_readonly("isAdmin", &User::isAdmin);
 
   py::class_<Category>(handle, "Category")
       .def_readonly("id", &Category::id)
@@ -65,7 +66,6 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("loginUser", &Login::loginUser)
       .def("getUser", &Login::getUser)
       .def("getIsAdmin", &Login::getIsAdmin)
-      .def("togglePrivileges", &Login::togglePrivileges)
       .def("getListOfUsers", &Login::getListOfUsers)
       .def("searchUser", &Login::searchUser);
 

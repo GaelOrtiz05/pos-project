@@ -8,7 +8,6 @@ class POSLogic:
         self.logic = pos_backend.Login()
         self.data = pos_backend.Database()
         self.add_employee_feedback: "QLabel | None" = None
-        self.remove_employee_feedback: "QLabel | None" = None
         self.inventory_feedback: "QLabel | None" = None
         self.current_user = None
         self.items = []
@@ -23,31 +22,49 @@ class POSLogic:
 
     def show_home_screen(self) -> None: ...
     def show_manager_menu(self) -> None: ...
+    def show_view_employees_screen(self) -> None: ...
     def update_cart(self) -> None: ...
     def disp_manage_inventory_menu(self) -> None: ...
 
-    def login_event_handler(self, username, password,layout): # Authenticate login
+    def login_event_handler(self, username, password, layout, confirm_password=None): # Authenticate login
         username = username.text()
         password = password.text()
+        if confirm_password is not None:
+            confirm = confirm_password.text()
+        else:
+            confirm = ""
 
         login_success = False
+        error_message = 'Incorrect User or Password'
 
         users = self.logic.getListOfUsers()
 
         if len(users) == 0:
-            self.logic.addUser(username, password, True)
-            login_success = True
+            if not username or not password:
+                error_message = 'Username and password are required.'
+            elif password != confirm:
+                error_message = 'Passwords do not match.'
+            else:
+                self.logic.addUser(username, password, 2)
+                login_success = True
         elif self.logic.loginUser(username, password) is True:
             login_success = True
 
         if login_success == True:
             self.initialize(username)
-            self.show_home_screen()
+            if self.current_user.isAdmin:
+                self.show_manager_menu()
+            else:
+                self.show_home_screen()
         else:
-            error_label = QLabel('Incorrect User or Password')
+            if len(users) == 0:
+                error_row = 8
+            else:
+                error_row = 6
+            error_label = QLabel(error_message)
             error_label.setFixedSize(300,50)
             error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            layout.addWidget(error_label,5,0,1,2)
+            layout.addWidget(error_label,error_row,0,1,2)
             error_label.setStyleSheet("background-color: black;font-size: 20px;border-radius: 10px; color: red;")
 
     def manager_event_handler(self):
@@ -59,30 +76,26 @@ class POSLogic:
         username_text = username.text().strip()
         password_text = password.text()
         is_admin = checkbox.isChecked()
+        if is_admin:
+            role = 1
+        else:
+            role = 0
 
         if not username_text or not password_text:
             self.show_add_employee_feedback("Username and password are required.", False)
             return
 
-        if self.logic.addUser(username_text, password_text, is_admin):
+        if self.logic.addUser(username_text, password_text, role):
             self.users = self.logic.getListOfUsers()
             self.manager_feedback_message = f"Added user '{username_text}'."
-            self.show_manager_menu()
+            self.show_view_employees_screen()
             return
 
         self.show_add_employee_feedback(f"Username '{username_text}' is already taken.", False)
 
-    def remove_employee_handler(self,username):
-        username = username.text().strip()
-        if not username:
-            self.remove_employee_feedback.setText("Enter a username.")
-            return
-
-        success = self.logic.removeUser(username)
-        if success:
-            self.remove_employee_feedback.setText("User removed successfully.")
-        else:
-            self.remove_employee_feedback.setText("User not found.")
+    def view_remove_employee_handler(self, name):
+        self.logic.removeUser(name, self.current_user.role)
+        self.show_view_employees_screen()
 
     def show_add_employee_feedback(self, message, success):
         if not self.add_employee_feedback:
