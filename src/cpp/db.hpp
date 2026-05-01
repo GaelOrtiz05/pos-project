@@ -95,7 +95,7 @@ public:
   //bool decrementIngredientStock(int ingredientId);
   //DELETE ON MONDAY 5/4/26 IF NOT NEEDED
 
-  void Inc_Dec_Ingredient_Stock(bool increase, const std::string &name,
+  void Inc_Dec_Ingredient_Stock(bool increase_isTRUE, const std::string &name,
                           double val = 1);
   bool Decrement_Ingredient_Stock_Of_Item(int itemId);
   bool Increment_Ingredient_Stock_Of_Item(int itemId);
