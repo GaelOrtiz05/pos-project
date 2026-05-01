@@ -95,11 +95,11 @@ void Database::Inc_Dec_Ingredient_Stock(bool increase_isTRUE, const std::string 
 }
 
 void Database::Add_Item_Into_Checkout_Table(int itemId) {
-  SQLite::Statement query(
+  SQLite::Statement insert(
       db, "INSERT INTO checkout(item_id, item_name, item_price) "
           "SELECT id, name, price FROM items WHERE id = ?");
-  query.bind(1, itemId);
-  query.exec();
+  insert.bind(1, itemId);
+  insert.exec();
 }
 
 void Database::Process_Purchase(const std::vector<OrderItem> &Vector_Of_Items, double total) {
@@ -111,19 +111,19 @@ void Database::Process_Purchase(const std::vector<OrderItem> &Vector_Of_Items, d
   insertOrderId.exec();
   int orderId = static_cast<int>(db.getLastInsertRowid());
 
-  SQLite::Statement Insert_Items_Into_OrderItems(db, R"SQL(
+  SQLite::Statement insert_items_into_OrderItems(db, R"SQL(
                                        INSERT INTO order_items (order_id, item_id, item_name, item_price, count)
                                        VALUES (?,?,?,?,?)
                                        )SQL");
 
   for (const auto &item : Vector_Of_Items) {
-    Insert_Items_Into_OrderItems.bind(1, orderId);
-    Insert_Items_Into_OrderItems.bind(2, item.itemId);
-    Insert_Items_Into_OrderItems.bind(3, item.itemName);
-    Insert_Items_Into_OrderItems.bind(4, item.itemPrice);
-    Insert_Items_Into_OrderItems.bind(5, item.count);
-    Insert_Items_Into_OrderItems.exec();
-    Insert_Items_Into_OrderItems.reset();
+    insert_items_into_OrderItems.bind(1, orderId);
+    insert_items_into_OrderItems.bind(2, item.itemId);
+    insert_items_into_OrderItems.bind(3, item.itemName);
+    insert_items_into_OrderItems.bind(4, item.itemPrice);
+    insert_items_into_OrderItems.bind(5, item.count);
+    insert_items_into_OrderItems.exec();
+    insert_items_into_OrderItems.reset();
   }
 
   tx.commit();
