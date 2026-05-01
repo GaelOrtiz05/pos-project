@@ -522,40 +522,82 @@ class MainWindow(QMainWindow, POSLogic):
     def disp_sales_menu(self):
         sales_ui = QWidget()
         self.setCentralWidget(sales_ui)
-        sales_ui.setStyleSheet("background-color: black;")
+        sales_ui.setStyleSheet("background-color: #0a0a0f;")
         layout = QGridLayout(sales_ui)
-        # Add employee Button
-        todays_sales = self.create_button('Sale Today','gray',300,50)
-        todays_sales.clicked.connect(lambda: self.disp_sales(1))
-        layout.addWidget(todays_sales,0,0)
-        weekly_sales = self.create_button('Sale This Week','gray',300,50)
-        weekly_sales.clicked.connect(lambda: self.disp_sales(2))
-        layout.addWidget(weekly_sales,0,1)
-        all_sales = self.create_button('All Sales','gray',300,50)
-        all_sales.clicked.connect(lambda: self.disp_sales(3))
-        layout.addWidget(all_sales,0,2)
+        layout.setSpacing(22)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title = QLabel("View Sales")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(self.create_font(30, 700))
+        title.setStyleSheet("color: white; background: transparent; margin-bottom: 10px;")
+        layout.addWidget(title, 0, 0, 1, 2)
 
-        back_button = self.create_button('Back','red',300,50)
+        # Add employee Button
+        todays_sales = self.create_button('Sale Today','#1e1530',350,100)
+        todays_sales.clicked.connect(lambda: self.disp_sales(1))
+        layout.addWidget(todays_sales,2,0)
+        weekly_sales = self.create_button('Sale This Week','#1e1530',350,100)
+        weekly_sales.clicked.connect(lambda: self.disp_sales(2))
+        layout.addWidget(weekly_sales,2,1)
+        all_sales = self.create_button('All Sales','#1e1530',350,100)
+        all_sales.clicked.connect(lambda: self.disp_sales(3))
+        layout.addWidget(all_sales,3,0)
+
+        back_button = self.create_button('Back','red',350,100)
         back_button.clicked.connect(self.show_manager_menu)
-        layout.addWidget(back_button,0,3)
+        layout.addWidget(back_button,3,1)
 
     def disp_sales(self,choice): # choice will be 1 2 or 3
+        # TITLE AND STUFF
         sales_ui = QWidget()
         self.setCentralWidget(sales_ui)
-        sales_ui.setStyleSheet("background-color: black;")
+        sales_ui.setStyleSheet("background-color: #0a0a0f;")
         layout = QGridLayout(sales_ui)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setSpacing(22)
+        #titles
+        title = QLabel("Sale History")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(self.create_font(30, 700))
+        title.setStyleSheet("color: white; background: transparent; margin-bottom: 10px;")
+        #LOGIC INFO AND SMALL GUI
         sales_info = self.get_sales(choice)
         sales_text = sales_info[0]
         total = sales_info[1]
-        sales_label = QLabel(sales_text)
-        sales_label.setStyleSheet("color: white; font-size: 18px;")
-
-        layout.addWidget(sales_label)
-        total_sales_label = self.create_label(f'Total Sale $:{total:.2f} ','black',400,150)
-        layout.addWidget(total_sales_label)
-        back_button = self.create_button('Back','red',300,50)
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+        container_layout.setSpacing(12)
+        container_layout.setContentsMargins(0, 0, 0, 0)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFixedSize(800, 800) 
+        scroll.setStyleSheet("QScrollArea{ border: none; background: transparent;}")
+        orders = sales_text.split("Order #")
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+        container_layout.setSpacing(12)
+        container_layout.setContentsMargins(0, 0, 0, 0)
+        # Loop to seprate orders. 
+        for order in orders:
+            if order.strip() == "":
+                continue
+            order = "Order #" + order
+            label = QLabel(order)
+            label.setWordWrap(True)
+            label.setFont(self.create_font(17, 500))
+            label.setAlignment(Qt.AlignmentFlag.AlignTop)
+            label.setStyleSheet("color: white; background-color: #1e1530; border: 1px solid #2f2750; border-radius: 18px; padding: 18px 16px; font-size: 17px;")
+            container_layout.addWidget(label)
+        container_layout.setSpacing(16)
+        scroll.setWidget(container)
+        total_sales_label = self.create_label(f'Total Sale $:{total:.2f} ','black',800,100)
+        back_button = self.create_button('Back','red',800,50)
         back_button.clicked.connect(self.disp_sales_menu)
-        layout.addWidget(back_button,0,3)
+        #PLACing lablels
+        layout.addWidget(title, 0, 0, 1, 2)
+        layout.addWidget(scroll, 1, 0, 1, 2)
+        layout.addWidget(total_sales_label, 2, 0, 1, 2)
+        layout.addWidget(back_button, 3, 0, 1, 2)
 
     def disp_ingredients_menu(self, item):
         ingredients_ui = QWidget()

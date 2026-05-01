@@ -228,7 +228,7 @@ class POSLogic:
                 elif choice == 3:  # All orders
                     include = True
                 if include:
-                    text += f"Order #{order.id} - Total: ${order.total:.2f}\n" # all orders
+                    text += f"Order #{order.id} \n Total: ${order.total:.2f} \n Date: {order_time.date()}\n" # all orders
                     items = self.data.getOrderItemsById(order.id)
                     for item in items:
                         text += f"   {item.itemName} x{item.count} - ${item.itemPrice:.2f}\n"
