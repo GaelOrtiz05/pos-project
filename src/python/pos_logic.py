@@ -109,6 +109,7 @@ class POSLogic:
         )
 
  #Adds an item to the checkout table based on item id.
+ 
     def add_to_cart(self, item):
         if self.data.decrementStock(item.id) == False:
             print(f"'{item.name}' cannot be added: out of stock.")
@@ -250,6 +251,8 @@ class POSLogic:
         order_info = [text,total_sales]
         return order_info
 
+    def Add_To_Cart(self, item):
+        print("test")
 
     #Closes the program.
     def close_program(self):

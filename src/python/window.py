@@ -133,7 +133,6 @@ class MainWindow(QMainWindow, POSLogic):
             self.bind_enter_key(lambda: self.login_event_handler(user_input, password_input, layout, confirm_password_input))
 
     def show_home_screen(self):  # Main UI
-
         home_widget = QWidget()
         self.setCentralWidget(home_widget)
         home_widget.setStyleSheet("background-color: #0a0a0f;")
@@ -146,42 +145,44 @@ class MainWindow(QMainWindow, POSLogic):
         top_row = QHBoxLayout()
         top_row.setSpacing(20)
 
-        all_items = self.create_button('All', '#1e1530', 150, 50)
-        all_items.clicked.connect(lambda: self.load_grid(0))
+        all_items_button = self.create_button('All', '#1e1530', 150, 50)
+        all_items_button.clicked.connect(lambda: self.Load_Grid_Of_Items(0))
 
-        entre_button = self.create_button('Entre', '#1e1530', 150, 50)
-        entre_button.clicked.connect(lambda: self.load_grid(1))
+        entrees_button = self.create_button('Entre', '#1e1530', 150, 50)
+        entrees_button.clicked.connect(lambda: self.Load_Grid_Of_Items(1))
 
         sides_button = self.create_button('Sides', '#1e1530', 150, 50)
-        sides_button.clicked.connect(lambda: self.load_grid(2))
+        sides_button.clicked.connect(lambda: self.Load_Grid_Of_Items(2))
 
-        dessert_button = self.create_button('Dessert', '#1e1530', 150, 50)
-        dessert_button.clicked.connect(lambda: self.load_grid(3))
+        desserts_button = self.create_button('Dessert', '#1e1530', 150, 50)
+        desserts_button.clicked.connect(lambda: self.Load_Grid_Of_Items(3))
 
-        drink_button = self.create_button('Drinks', '#1e1530', 150, 50)
-        drink_button.clicked.connect(lambda: self.load_grid(4))
+        drinks_button = self.create_button('Drinks', '#1e1530', 150, 50)
+        drinks_button.clicked.connect(lambda: self.Load_Grid_Of_Items(4))
         
         if self.current_user.isAdmin:
             manager_button = self.create_button('Manager', '#1e1530', 150, 50)
         
         logout_button = self.create_button('Logout', '#540612', 150, 50)
 
-        for button in [all_items, entre_button, sides_button, dessert_button, drink_button] + ([manager_button] if self.current_user.isAdmin else []) + [logout_button]:
+        for button in [all_items_button, entrees_button, sides_button, desserts_button, drinks_button] + ([manager_button] if self.current_user.isAdmin else []) + [logout_button]:
             top_row.addWidget(button)
         top_row.setAlignment(Qt.AlignmentFlag.AlignCenter) # centering the buttons
         # Disp username
         user_label = self.create_label(f"Logged in as: {self.current_user.name}",'#1e1530',500,50)
+        
         top_row.addStretch()
         top_row.addWidget(user_label)
         main_layout.addLayout(top_row)
+
         combo_row = QHBoxLayout()
         combo_row.setSpacing(30)
         #Displays Combo Buttons
-        combos = self.data.getCombos()
-        for combo in combos:
-            btn = self.create_button(f"{combo.name}", '#1e1530', 350, 120)
-            btn.clicked.connect(lambda _, c=combo: self.confirm_combo(c))
-            combo_row.addWidget(btn)
+        list_of_combos = self.data.getCombos()
+        for combo in list_of_combos:
+            button = self.create_button(f"{combo.name}", '#1e1530', 350, 120)
+            button.clicked.connect(lambda _, c=combo: self.confirm_combo(c))
+            combo_row.addWidget(button)
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(combo_row)
@@ -195,7 +196,7 @@ class MainWindow(QMainWindow, POSLogic):
         self.grid.setSpacing(15)
         
         #load grid with all items
-        self.load_grid(0)
+        self.Load_Grid_Of_Items(0)
         scroll.setWidget(container)
         
         # Bottom section (items + cart)
@@ -459,43 +460,39 @@ class MainWindow(QMainWindow, POSLogic):
 
     #Loads main grid with items from the items table based on category_id
     #Category 0 = all, 1 = entre, 2 = sides, 3 = dessert, 4 = drinks
-    def load_grid(self, category=0):                
+    def Load_Grid_Of_Items(self, category=0):                
         for item in reversed(range(self.grid.count())):
             widget = self.grid.takeAt(item).widget()
             if widget:
                 widget.deleteLater()
         list_buttons = []
-        self.items = self.data.getItems()
+
+        self.list_of_items = self.data.getItems()
         # create buttons
-        for idx, item in enumerate(self.items):
+        for idx, item in enumerate(self.list_of_items):
             # check if item is available
-            ingredients = self.data.getItemIngredients(item.id) 
-            available = True #assume available by default
-            for ingredient in ingredients:
-                if ingredient.stock <= 0:
-                    available = False
-                    break
-            # create butotns now
-            if available:
-                btn = self.create_button(f"{item.name}", '#1e1530', 300, 150) #clicable
-                btn.clicked.connect(lambda _, x=item: self.disp_ingredients_menu(x))
+            if (self.data.Check_Stock(item.id)==True):
+                button = self.create_button(f"{item.name}", '#1e1530', 300, 150) #clicable
+                button.clicked.connect(lambda _, x=item: self.disp_item_ingredients_menu(x))
             else:
-                btn = self.create_button(f"{item.name}", 'gray', 300, 150)
-                btn.setEnabled(False) #cant click
-            list_buttons.append(btn)
-        row = 0
-        col = 0
+                button = self.create_button(f"{item.name}\n (Unavailable)", 'gray', 300, 150)
+                button.setEnabled(False) #cant click
+            list_buttons.append(button)
+
+        grid_row = 0
+        grid_col = 0
+
         # place buttons
-        for idx, item in enumerate(self.items):
+        for idx, item in enumerate(self.list_of_items):
             if (item.categoryId == category or category == 0):
-                if (col < 4):
-                    self.grid.addWidget(list_buttons[idx], row, col)
-                    col += 1
+                if (grid_col < 4):
+                    self.grid.addWidget(list_buttons[idx], grid_row, grid_col)
+                    grid_col += 1
                 else:
-                    col = 0
-                    row += 1
-                    self.grid.addWidget(list_buttons[idx], row, col)
-                    col += 1
+                    grid_col = 0
+                    grid_row += 1
+                    self.grid.addWidget(list_buttons[idx], grid_row, grid_col)
+                    grid_col += 1
     
 
     def clear_cart(self): 
@@ -510,10 +507,12 @@ class MainWindow(QMainWindow, POSLogic):
 
         for index, i in enumerate(self.cart):
             display = self.get_cart_display_text(i)
+
             row_widget = QWidget()
             row_layout = QHBoxLayout(row_widget)
             row_layout.setContentsMargins(0, 0, 0, 0)
             row_layout.setSpacing(8)
+            
             label = QLabel(display)
             label.setMinimumHeight(60)
             label.setMaximumHeight(100)
@@ -538,6 +537,7 @@ class MainWindow(QMainWindow, POSLogic):
 
         total = self.calculate_cart_total()
         self.total_label.setText(f"Total: ${total:.2f}")
+    
     def disp_sales_menu(self):
         sales_ui = QWidget()
         self.setCentralWidget(sales_ui)
@@ -618,18 +618,18 @@ class MainWindow(QMainWindow, POSLogic):
         layout.addWidget(total_sales_label, 2, 0, 1, 2)
         layout.addWidget(back_button, 3, 0, 1, 2)
 
-    def disp_ingredients_menu(self, item):
-        ingredients_ui = QWidget()
-        self.setCentralWidget(ingredients_ui)
-        ingredients_ui.setStyleSheet("background-color: black;")
+    def disp_item_ingredients_menu(self, item):
+        item_ingredients_ui = QWidget()
+        self.setCentralWidget(item_ingredients_ui)
+        item_ingredients_ui.setStyleSheet("background-color: black;")
 
         # Outer layout fills the window, but centers a smaller card
-        outer_layout = QVBoxLayout(ingredients_ui)
-        outer_layout.setContentsMargins(0, 0, 0, 0)
-        outer_layout.addStretch()
+        background_layout = QVBoxLayout(item_ingredients_ui)
+        background_layout.setContentsMargins(0, 0, 0, 0)
+        background_layout.addStretch()
 
         card = QWidget()
-        card.setFixedSize(650, 260)  # make this smaller/larger as needed
+        card.setFixedSize(650, 400)  # make this smaller/larger as needed
         card.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
         card_layout = QGridLayout(card)
         card_layout.setContentsMargins(20, 20, 20, 20)
@@ -639,18 +639,71 @@ class MainWindow(QMainWindow, POSLogic):
         title = self.create_label(f"Customize {item.name}", "", 360, 44)
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setFont(self.create_font(20, 600))
+
         card_layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
 
+        ####################
+        self.list_of_ItemIngredients = self.data.getItemIngredients(item.id)
+        
+        
+        listed_ingredients = []
+        minus_button_list = []
+        plus_button_list = []
+
+
+
+        current_grid_row = last_grid_row = 1
+        for idx, ingredient in enumerate(self.list_of_ItemIngredients):    
+            ingredient_name = self.create_label(ingredient.name,"", 100, 40)
+            ingredient_name.setStyleSheet("color: white; font-size: 18px;")
+
+            ingredient_quantity = self.create_label(f"x{1}","", 100, 40)
+            ingredient_quantity.setStyleSheet("color: white; font-size: 18px;")
+            listed_ingredients.append(ingredient_quantity)
+
+            minus = self.create_button("-", "red", 34, 34)
+            minus_button_list.append(minus)
+            minus_button_list[idx].clicked.connect(lambda _, x=idx: listed_ingredients[x].setText(f"x{int(listed_ingredients[x].text()[1:]) - 1}"))
+
+            plus = self.create_button("+", "green", 34, 34)
+            plus_button_list.append(plus)
+            plus_button_list[idx].clicked.connect(lambda _, x=idx: listed_ingredients[x].setText(f"x{int(listed_ingredients[x].text()[1:]) + 1}"))
+            
+            if (ingredient.isRemovable):
+                card_layout.addWidget(ingredient_name, 1 + current_grid_row, 0)
+                card_layout.addWidget(ingredient_quantity, 1 + current_grid_row,1)                
+                card_layout.addWidget(minus, 1 + current_grid_row,2)
+                card_layout.addWidget(plus, 1 + current_grid_row,3) 
+                current_grid_row +=1
+                last_grid_row = 1 + current_grid_row
+            
+
         confirm_button = self.create_button("Confirm", "green", 220, 48)
-        confirm_button.clicked.connect(lambda: self.confirm_item(item))
-        card_layout.addWidget(confirm_button, 1, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+        confirm_button.clicked.connect(lambda: self.test_confirm(item))
+        if (confirm_button.clicked):
+            for idx, ingredient in enumerate(self.list_of_ItemIngredients):
+                print("test")
+
+
+
+        card_layout.addWidget(confirm_button, last_grid_row, 0, alignment=Qt.AlignmentFlag.AlignCenter)
 
         back_button = self.create_button("Back", "red", 220, 48)
         back_button.clicked.connect(self.show_home_screen)
-        card_layout.addWidget(back_button, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        card_layout.addWidget(back_button, last_grid_row, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        
 
-        outer_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
-        outer_layout.addStretch()
+
+
+
+
+
+
+
+       
+
+        background_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
+        background_layout.addStretch()
 
     def disp_manage_inventory_menu(self):
         manage_inventory_ui = QWidget()

@@ -82,21 +82,14 @@ public:
   void Insert_Into_Item_Table(const std::string &name, double price, int categoryId);
   void Insert_Into_Combo_Table(const std::string &name, double price);
   
-  void Combine_Into_IngredientItem_Table(int ingredientId, int itemId, int isRemovable,
-                                         double priceChange = 0.0);
+  void Combine_Into_IngredientItem_Table(int ingredientId, int itemId, int isRemovable, double priceChange = 0.0);
   void Combine_Into_ComboItem_Table(int comboId, int itemId);
   void Add_Item_Into_Checkout_Table(int itemId);
   std::vector<Order> Get_Vector_Orders();
 
-  // update
-  //bool incrementIngredientStock(int ingredientId, int stock); unused?
-  //bool decrementIngredientStock(int ingredientId, int stock); unused?
-  //bool incrementIngredientStock(int ingredientId);
-  //bool decrementIngredientStock(int ingredientId);
-  //DELETE ON MONDAY 5/4/26 IF NOT NEEDED
-
-  void Inc_Dec_Ingredient_Stock(bool increase_isTRUE, const std::string &name,
-                          double val = 1);
+  // update stock
+  bool Check_Ingredient_Stock_Of_Item(int itemID);
+  void Inc_Dec_Ingredient_Stock(bool increase_isTRUE, const std::string &name, double val = 1);
   bool Decrement_Ingredient_Stock_Of_Item(int itemId);
   bool Increment_Ingredient_Stock_Of_Item(int itemId);
 

@@ -46,6 +46,16 @@ void Database::Combine_Into_ComboItem_Table(int comboId, int itemId) {
   insert.exec();
 }
 
+bool Database::Check_Ingredient_Stock_Of_Item(int itemID) {
+  std::vector<ItemIngredient> vector_of_ingredients = Get_Vector_ItemIngredients_by_ItemID(itemID);
+  for (const auto &ingredient : vector_of_ingredients) {
+    if (ingredient.stock < 1) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool Database::Decrement_Ingredient_Stock_Of_Item(int itemId) {
   std::vector<ItemIngredient> Vector_Of_Ingredients = Get_Vector_ItemIngredients_by_ItemID(itemId);
 

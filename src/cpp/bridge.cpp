@@ -81,6 +81,7 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("getCombos", &Database::Get_Vector_Combos)
       .def("getItemsByCategory", &Database::Get_Vector_Items_By_Category)
       .def("getItemIngredients", &Database::Get_Vector_ItemIngredients_by_ItemID)
+      .def("Check_Stock", &Database::Check_Ingredient_Stock_Of_Item)
       .def("decrementStock", &Database::Decrement_Ingredient_Stock_Of_Item)
       .def("incrementStock", &Database::Increment_Ingredient_Stock_Of_Item)
       .def("getComboItems", &Database::Get_Vector_ComboItems_by_ComboID)
