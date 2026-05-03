@@ -27,6 +27,7 @@ PYBIND11_MODULE(pos_backend, handle) {
   py::class_<Item>(handle, "Item")
       .def_readonly("id", &Item::id)
       .def_readonly("name", &Item::name)
+      .def_readonly("image", &Item::image)
       .def_readonly("price", &Item::price)
       .def_readonly("inStock", &Item::inStock)
       .def_readonly("categoryId", &Item::categoryId)

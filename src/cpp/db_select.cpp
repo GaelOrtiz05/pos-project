@@ -2,7 +2,7 @@
 
 std::vector<Category> Database::Get_Vector_Categories() {
   SQLite::Statement get_categories(db, "SELECT id, name FROM categories ORDER BY id ASC");
-  
+
   std::vector<Category> vector_of_categories;
 
   while (get_categories.executeStep()) {
@@ -27,9 +27,9 @@ int Database::Get_CategoryID_By_Name(std::string &name) {
 
 std::vector<Ingredient> Database::Get_Vector_Ingredients() {
   SQLite::Statement get_ingredients(db, "SELECT id, name, stock FROM ingredients ORDER BY id ASC");
-  
+
   std::vector<Ingredient> vector_of_ingredients;
-  
+
   while (get_ingredients.executeStep()) {
     Ingredient ingredient;
     ingredient.id = get_ingredients.getColumn(0).getInt();
@@ -42,7 +42,7 @@ std::vector<Ingredient> Database::Get_Vector_Ingredients() {
 
 std::vector<Item> Database::Get_Vector_Combos() {
   SQLite::Statement get_combos(db, "SELECT id, name, price FROM combos ORDER BY id ASC");
-  
+
   std::vector<Item> vector_of_combos;
 
   while (get_combos.executeStep()) {
@@ -57,7 +57,7 @@ std::vector<Item> Database::Get_Vector_Combos() {
 
 std::vector<Item> Database::Get_Vector_Items() {
   SQLite::Statement get_items(db, R"SQL(
-                          SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
+                          SELECT i.id, i.name, i.image, i.price, i.in_stock, i.category_id, c.name
                           FROM items i JOIN categories c ON i.category_id = c.id
                           ORDER BY i.name ASC
                           )SQL");
@@ -68,10 +68,11 @@ std::vector<Item> Database::Get_Vector_Items() {
     Item item;
     item.id = get_items.getColumn(0).getInt();
     item.name = get_items.getColumn(1).getString();
-    item.price = get_items.getColumn(2).getDouble();
-    item.inStock = get_items.getColumn(3).getInt();
-    item.categoryId = get_items.getColumn(4).getInt();
-    item.categoryName = get_items.getColumn(5).getString();
+    item.image = get_items.getColumn(2).getString();
+    item.price = get_items.getColumn(3).getDouble();
+    item.inStock = get_items.getColumn(4).getInt();
+    item.categoryId = get_items.getColumn(5).getInt();
+    item.categoryName = get_items.getColumn(6).getString();
     vector_of_items.push_back(item);
   }
   return vector_of_items;
@@ -79,7 +80,7 @@ std::vector<Item> Database::Get_Vector_Items() {
 
 Item Database::Get_Struct_Item(int itemId) {
   SQLite::Statement get_item(db, R"SQL(
-                          SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
+                          SELECT i.id, i.name, i.image, i.price, i.in_stock, i.category_id, c.name
                           FROM items i JOIN categories c ON i.category_id = c.id
                           ORDER BY i.name ASC
                           )SQL");
@@ -87,17 +88,18 @@ Item Database::Get_Struct_Item(int itemId) {
   Item item;
   item.id = get_item.getColumn(0).getInt();
   item.name = get_item.getColumn(1).getString();
-  item.price = get_item.getColumn(2).getDouble();
-  item.inStock = get_item.getColumn(3).getInt();
-  item.categoryId = get_item.getColumn(4).getInt();
-  item.categoryName = get_item.getColumn(5).getString();
+  item.image = get_item.getColumn(2).getString();
+  item.price = get_item.getColumn(3).getDouble();
+  item.inStock = get_item.getColumn(4).getInt();
+  item.categoryId = get_item.getColumn(5).getInt();
+  item.categoryName = get_item.getColumn(6).getString();
   return item;
 }
 
 std::vector<Item> Database::Get_Vector_Items_By_Category(std::string &name) {
   SQLite::Statement get_items(db, R"SQL(
-                      SELECT i.id, i.name, i.price, i.in_stock, i.category_id, c.name 
-                      FROM items i JOIN categories c ON i.category_id = c.id 
+                      SELECT i.id, i.name, i.image, i.price, i.in_stock, i.category_id, c.name
+                      FROM items i JOIN categories c ON i.category_id = c.id
                       WHERE c.name = ?
                       ORDER BY i.name ASC
                       )SQL");
@@ -109,10 +111,11 @@ std::vector<Item> Database::Get_Vector_Items_By_Category(std::string &name) {
     Item item;
     item.id = get_items.getColumn(0).getInt();
     item.name = get_items.getColumn(1).getString();
-    item.price = get_items.getColumn(2).getDouble();
-    item.inStock = get_items.getColumn(3).getInt();
-    item.categoryId = get_items.getColumn(4).getInt();
-    item.categoryName = get_items.getColumn(5).getString();
+    item.image = get_items.getColumn(2).getString();
+    item.price = get_items.getColumn(3).getDouble();
+    item.inStock = get_items.getColumn(4).getInt();
+    item.categoryId = get_items.getColumn(5).getInt();
+    item.categoryName = get_items.getColumn(6).getString();
     vector_of_items.push_back(item);
   }
   return vector_of_items;
@@ -192,7 +195,7 @@ std::vector<OrderItem> Database::Get_Vector_OrderItems_By_OrderID(int orderId) {
   get_OrderItems.bind(1, orderId);
 
   std::vector<OrderItem> vector_of_orderItems;
-  
+
   while (get_OrderItems.executeStep()) {
     OrderItem orderitem;
     orderitem.orderId = get_OrderItems.getColumn(0).getInt();

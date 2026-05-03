@@ -9,54 +9,55 @@ Database::Database()
 }
 
 void Database::Setup_Database() {
-  db.exec(R"SQL(            
+  db.exec(R"SQL(
     CREATE TABLE IF NOT EXISTS categories (
-      id                        INTEGER PRIMARY KEY AUTOINCREMENT,                                                                                                                     
+      id                        INTEGER PRIMARY KEY AUTOINCREMENT,
       name                      TEXT NOT NULL
-    );                                                                                                                                                                                 
-                                                                                                                                                                                       
+    );
+
     CREATE TABLE IF NOT EXISTS items (
-      id                        INTEGER PRIMARY KEY AUTOINCREMENT,                                                                                                                     
+      id                        INTEGER PRIMARY KEY AUTOINCREMENT,
       name                      TEXT NOT NULL,
+      image                     TEXT,
       price                     REAL NOT NULL,
       category_id               INTEGER NOT NULL,
       in_stock                  INTEGER DEFAULT 1,
       FOREIGN KEY(category_id)  REFERENCES categories(id)
-    );                                                                                                                                                                                 
-   
-    CREATE TABLE IF NOT EXISTS ingredients (                                                                                                                                           
+    );
+
+    CREATE TABLE IF NOT EXISTS ingredients (
       id                        INTEGER PRIMARY KEY AUTOINCREMENT,
       name                      TEXT NOT NULL,
       stock                     INTEGER DEFAULT 100
-    );                                                                                                                                                                                 
-   
-    CREATE TABLE IF NOT EXISTS item_ingredients (                                                                                                                                      
+    );
+
+    CREATE TABLE IF NOT EXISTS item_ingredients (
       item_id                       INTEGER NOT NULL,
       ingredient_id                 INTEGER NOT NULL,
       is_removable                  INTEGER DEFAULT 0,
       price_change                  REAL NOT NULL,
-      PRIMARY KEY (item_id, ingredient_id),                                                                                                                                            
+      PRIMARY KEY (item_id, ingredient_id),
       FOREIGN KEY (item_id)         REFERENCES items(id),
-      FOREIGN KEY (ingredient_id)   REFERENCES ingredients(id)                                                                                                                         
-    );                                    
+      FOREIGN KEY (ingredient_id)   REFERENCES ingredients(id)
+    );
 
     CREATE TABLE IF NOT EXISTS combos (
       id                        INTEGER PRIMARY KEY AUTOINCREMENT,
-      name                      TEXT NOT NULL,                                                                                                                                         
+      name                      TEXT NOT NULL,
       price                     REAL NOT NULL
-    );                                                                                                                                                                                 
-                                          
+    );
+
     CREATE TABLE IF NOT EXISTS combo_items (
       combo_id                INTEGER NOT NULL,
       item_id                 INTEGER NOT NULL,
-      PRIMARY KEY (combo_id, item_id),                                                                                                                                                 
+      PRIMARY KEY (combo_id, item_id),
       FOREIGN KEY (combo_id)  REFERENCES combos(id),
-      FOREIGN KEY (item_id)   REFERENCES items(id)                                                                                                                                     
-    );                                    
+      FOREIGN KEY (item_id)   REFERENCES items(id)
+    );
 
     CREATE TABLE IF NOT EXISTS orders (
       id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-      time               STRING NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')), 
+      time               STRING NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
       total              REAL NOT NULL
       );
 
@@ -96,20 +97,20 @@ void Database::Initalize_Menu() {
               (3, 'Desserts'),
               (4, 'Drinks');
 
-            INSERT INTO items (id, name, price, category_id, in_stock) VALUES
-              (1,  'Burger'               , 5.99, 1, 1),
-              (2,  'Chicken Sandwich'     , 5.49, 1, 1),
-              (3,  'Cheese Burger'        , 6.49, 1, 1),
-              (4,  'French Fries'         , 1.49, 2, 1),
-              (5,  'Onion Rings'          , 1.69, 2, 1),
-              (6,  'Chocolate Cake Slice' , 0.99, 3, 1),
-              (7,  'Apple Pie'            , 1.89, 3, 1),
-              (8,  'Soda'                 , 1.49, 4, 1),
-              (9,  'Orange Soda'          , 1.49, 4, 1),
-              (10, 'Diet Soda'            , 1.39, 4, 1),
-              (11, 'Vanilla Shake'        , 3.99, 4, 1),
-              (12, 'Lemonade'             , 3.99, 4, 1),
-              (13, 'Orange Juice'         , 3.99, 4, 1);
+            INSERT INTO items (id, name, image, price, category_id, in_stock) VALUES
+              (1,  'Burger'               , 'data/images/burger.png', 5.99, 1, 1),
+              (2,  'Chicken Sandwich'     , 'data/images/chicken_sandwich.png', 5.49, 1, 1),
+              (3,  'Cheese Burger'        , 'data/images/cheese_burger.png', 6.49, 1, 1),
+              (4,  'French Fries'         , 'data/images/french_fries.png', 1.49, 2, 1),
+              (5,  'Onion Rings'          , 'data/images/onion_rings.png', 1.69, 2, 1),
+              (6,  'Chocolate Cake Slice' , 'data/images/chocolate_cake_slice.png', 0.99, 3, 1),
+              (7,  'Apple Pie'            , 'data/images/apple_pie.png', 1.89, 3, 1),
+              (8,  'Soda'                 , 'data/images/soda.png', 1.49, 4, 1),
+              (9,  'Orange Soda'          , 'data/images/orange_soda.png', 1.49, 4, 1),
+              (10, 'Diet Soda'            , 'data/images/diet_soda.png', 1.39, 4, 1),
+              (11, 'Vanilla Shake'        , 'data/images/vanilla_shake.png', 3.99, 4, 1),
+              (12, 'Lemonade'             , 'data/images/lemonade.png', 3.99, 4, 1),
+              (13, 'Orange Juice'         , 'data/images/orange_juice.png', 3.99, 4, 1);
 
             INSERT INTO ingredients (id, name, stock) VALUES
               (1 , 'Beef Patty'    , 100),
@@ -127,21 +128,21 @@ void Database::Initalize_Menu() {
 
             INSERT INTO item_ingredients (item_id, ingredient_id, is_removable, price_change) VALUES
              -- Burger
-               (1, 1, 0, 0.0), -- Beef Patty 
+               (1, 1, 0, 0.0), -- Beef Patty
                (1, 3, 0, 0.0), -- Bun
                (1, 4, 1, 0.0), -- Lettuce
                (1, 5, 1, 0.0), -- Tomato
                (1, 6, 1, 0.0), -- Pickles
 
             -- Chicken Sandwhich
-               (2, 2, 0, 0.0), -- Chicken Patty 
+               (2, 2, 0, 0.0), -- Chicken Patty
                (2, 3, 0, 0.0), -- Bun
                (2, 4, 1, 0.0), -- Lettuce
                (2, 5, 1, 0.0), -- Tomato
                (2, 6, 1, 0.0), -- Pickles
 
             -- Cheese Burger
-               (3, 1, 0, 0.0), -- Beef Patty 
+               (3, 1, 0, 0.0), -- Beef Patty
                (3, 3, 0, 0.0), -- Bun
                (3, 4, 1, 0.0), -- Lettuce
                (3, 5, 1, 0.0), -- Tomato
@@ -161,7 +162,7 @@ void Database::Initalize_Menu() {
               (1, 8), -- Soda
 
             -- Chicken Sandwhich Combo
-              (2, 2), -- Chicken Sandwich 
+              (2, 2), -- Chicken Sandwich
               (2, 4), -- French Fries
               (2, 8), -- Soda
 
@@ -187,7 +188,7 @@ inline void print_categories(Database &db) {
 
 inline void print_items(Database &db) {
   std::vector<Item> vector_items = db.Get_Vector_Items();
-  
+
   std::cout << "Items\n";
   for (const auto &item : vector_items) {
     std::cout << "Item: " << item.name << "\n";
@@ -196,7 +197,7 @@ inline void print_items(Database &db) {
 
 inline void print_ingredients(Database &db) {
   std::vector<Ingredient> vector_ingredients = db.Get_Vector_Ingredients();
-  
+
   std::cout << "Ingredients: \n";
   for (const auto &ingredient : vector_ingredients) {
     std::cout << "Id: " << ingredient.id << ", ";
@@ -261,7 +262,7 @@ inline void print_order_items(Database &db) {
   int input_orderId;
   std::cout << "Order ID: \n";
   std::cin >> input_orderId;
-  
+
   std::vector<OrderItem> vector_orderItems = db.Get_Vector_OrderItems_By_OrderID(input_orderId);
   std::cout << "Order Items for order " << input_orderId << ":\n";
 

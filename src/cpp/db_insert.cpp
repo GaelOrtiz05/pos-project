@@ -15,11 +15,12 @@ void Database::Insert_Into_Ingredient_Table(const std::string &name, double pric
   insert.exec();
 }
 
-void Database::Insert_Into_Item_Table(const std::string &name, double price, int categoryId) {
-  SQLite::Statement insert(db, "INSERT INTO items (name, price, category_id) VALUES (?,?,?)");
+void Database::Insert_Into_Item_Table(const std::string &name, const std::string &image, double price, int categoryId) {
+  SQLite::Statement insert(db, "INSERT INTO items (name, image, price, category_id) VALUES (?,?,?,?)");
   insert.bind(1, name);
-  insert.bind(2, price);
-  insert.bind(3, categoryId);
+  insert.bind(2, image);
+  insert.bind(3, price);
+  insert.bind(4, categoryId);
   insert.exec();
 }
 
