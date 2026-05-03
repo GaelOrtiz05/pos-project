@@ -165,9 +165,18 @@ class POSLogic:
                 return False
         return True
 
-    def confirm_item(self, item):
-        self.show_home_screen()
-        self.add_to_cart(item)
+    def confirm_item(self, item, label_list, id_list):
+        return_list = []
+        for idx, label in enumerate(label_list):
+            quantity = int(label.text()[1:])
+            for i in range(quantity):
+                return_list.append(id_list[idx])
+        print(return_list)
+        self.Add_To_Checkout(item.id, return_list)
+
+    def Add_To_Checkout(self, item, ingredient_list = []):
+        self.data.Add_Item_Into_Checkout_Tables(item, ingredient_list)
+
 
     def confirm_combo(self, combo):
         combo_items = self.data.getComboItems(combo.id)

@@ -813,60 +813,49 @@ class MainWindow(QMainWindow, POSLogic):
 
         ####################
         self.list_of_ItemIngredients = self.data.getItemIngredients(item.id)
-
-        listed_ingredients = []
+        
+        
+        ingredient_label_list = []
+        ingredient_id_list = []
         minus_button_list = []
         plus_button_list = []
 
         current_grid_row = last_grid_row = 1
-        for idx, ingredient in enumerate(self.list_of_ItemIngredients):
-            ingredient_name = self.create_label(ingredient.name, "", 100, 40)
+        for idx, ingredient in enumerate(self.list_of_ItemIngredients):    
+            ingredient_name = self.create_label(ingredient.name,"", 100, 40)
             ingredient_name.setStyleSheet("color: white; font-size: 18px;")
+            ingredient_id_list.append(ingredient.id)
+            print(f"INGREDIENT ID {ingredient.id} NAME {ingredient.name} REMOVABLE {ingredient.isRemovable}")
 
-            ingredient_quantity = self.create_label(f"x{1}", "", 100, 40)
-            ingredient_quantity.setStyleSheet("color: white; font-size: 18px;")
-            listed_ingredients.append(ingredient_quantity)
+            ingredient_label = self.create_label(f"x{1}","", 100, 40)
+            ingredient_label.setStyleSheet("color: white; font-size: 18px;")
+            ingredient_label_list.append(ingredient_label)
 
             minus = self.create_button("-", "red", 34, 34)
             minus_button_list.append(minus)
-            minus_button_list[idx].clicked.connect(
-                lambda _, x=idx: listed_ingredients[x].setText(
-                    f"x{int(listed_ingredients[x].text()[1:]) - 1}"
-                )
-            )
+            minus_button_list[idx].clicked.connect(lambda _, x=idx: [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) - 1}")] if int(ingredient_label_list[x].text()[1:])>0 else None)
 
             plus = self.create_button("+", "green", 34, 34)
             plus_button_list.append(plus)
-            plus_button_list[idx].clicked.connect(
-                lambda _, x=idx: listed_ingredients[x].setText(
-                    f"x{int(listed_ingredients[x].text()[1:]) + 1}"
-                )
-            )
-
-            if ingredient.isRemovable:
+            plus_button_list[idx].clicked.connect(lambda _, x=idx: [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) + 1}")] if int(ingredient_label_list[x].text()[1:])<2 else None)
+            
+            if (ingredient.isRemovable):
                 card_layout.addWidget(ingredient_name, 1 + current_grid_row, 0)
-                card_layout.addWidget(ingredient_quantity, 1 + current_grid_row, 1)
-                card_layout.addWidget(minus, 1 + current_grid_row, 2)
-                card_layout.addWidget(plus, 1 + current_grid_row, 3)
-                current_grid_row += 1
+                card_layout.addWidget(ingredient_label, 1 + current_grid_row,1)                
+                card_layout.addWidget(minus, 1 + current_grid_row,2)
+                card_layout.addWidget(plus, 1 + current_grid_row,3) 
+                current_grid_row +=1
                 last_grid_row = 1 + current_grid_row
-
+            
         confirm_button = self.create_button("Confirm", "green", 220, 48)
-        confirm_button.clicked.connect(lambda: self.test_confirm(item))
-        if confirm_button.clicked:
-            for idx, ingredient in enumerate(self.list_of_ItemIngredients):
-                print("test")
+        confirm_button.clicked.connect(lambda: self.confirm_item(item,ingredient_label_list, ingredient_id_list))
 
-        card_layout.addWidget(
-            confirm_button, last_grid_row, 0, alignment=Qt.AlignmentFlag.AlignCenter
-        )
+        card_layout.addWidget(confirm_button, last_grid_row, 0, alignment=Qt.AlignmentFlag.AlignCenter)
 
         back_button = self.create_button("Back", "red", 220, 48)
         back_button.clicked.connect(self.show_home_screen)
-        card_layout.addWidget(
-            back_button, last_grid_row, 1, alignment=Qt.AlignmentFlag.AlignCenter
-        )
-
+        card_layout.addWidget(back_button, last_grid_row, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        
         background_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
         background_layout.addStretch()
 

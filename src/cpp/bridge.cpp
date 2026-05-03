@@ -73,7 +73,7 @@ PYBIND11_MODULE(pos_backend, handle) {
   py::class_<Database>(handle, "Database")
       .def(py::init<>())
       .def("setIngredientStock", &Database::Inc_Dec_Ingredient_Stock)
-      .def("addCheckout", &Database::Add_Item_Into_Checkout_Table)
+      .def("Add_Item_Into_Checkout_Tables", &Database::Add_Item_Into_Checkout_Tables)
       .def("getCategories", &Database::Get_Vector_Categories)
       .def("getCategoryIdByName", &Database::Get_CategoryID_By_Name)
       .def("getItems", &Database::Get_Vector_Items)

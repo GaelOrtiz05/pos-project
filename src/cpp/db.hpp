@@ -85,7 +85,7 @@ public:
 
   void Combine_Into_IngredientItem_Table(int ingredientId, int itemId, int isRemovable, double priceChange = 0.0);
   void Combine_Into_ComboItem_Table(int comboId, int itemId);
-  void Add_Item_Into_Checkout_Table(int itemId);
+  void Add_Item_Into_Checkout_Tables(int itemId, const std::vector<int> ingredient_quantities = {});
   std::vector<Order> Get_Vector_Orders();
 
   // update stock

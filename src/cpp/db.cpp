@@ -59,7 +59,7 @@ void Database::Setup_Database() {
       id                 INTEGER PRIMARY KEY AUTOINCREMENT,
       time               STRING NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
       total              REAL NOT NULL
-      );
+    );
 
     CREATE TABLE IF NOT EXISTS order_items (
       id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +69,20 @@ void Database::Setup_Database() {
       item_price      DOUBLE NOT NULL,
       count           INTEGER NOT NULL,
       FOREIGN KEY (order_id) REFERENCES orders(id)
-      );
+    );
+
+    CREATE TABLE IF NOT EXISTS checkout_items (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id         INTEGER NOT NULL,
+      item_name       TEXT NOT NULL,
+      item_price      DOUBLE NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS checkout_ingredients (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id         INTEGER NOT NULL,
+      ingredient_id   INTEGER NOT NULL
+    );
   )SQL");
 }
 
