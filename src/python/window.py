@@ -818,7 +818,7 @@ class MainWindow(QMainWindow, POSLogic):
     def disp_item_ingredients_menu(self, item):
         item_ingredients_ui = QWidget()
         self.setCentralWidget(item_ingredients_ui)
-        item_ingredients_ui.setStyleSheet("background-color: black;")
+        item_ingredients_ui.setStyleSheet("background-color: #f3f4f6;")
 
         # Outer layout fills the window, but centers a smaller card
         background_layout = QVBoxLayout(item_ingredients_ui)
@@ -827,7 +827,7 @@ class MainWindow(QMainWindow, POSLogic):
 
         card = QWidget()
         card.setFixedSize(650, 400)  # make this smaller/larger as needed
-        card.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+        card.setStyleSheet("background-color: #0066ff; border-radius: 14px;")
         card_layout = QGridLayout(card)
         card_layout.setContentsMargins(20, 20, 20, 20)
         card_layout.setHorizontalSpacing(16)
@@ -875,12 +875,12 @@ class MainWindow(QMainWindow, POSLogic):
                 current_grid_row +=1
                 last_grid_row = 1 + current_grid_row
             
-        confirm_button = self.create_button("Confirm", "green", 220, 48)
+        confirm_button = self.create_button("Confirm", "#f3f4f6", 220, 48)
         confirm_button.clicked.connect(lambda: self.confirm_item(item,ingredient_label_list, ingredient_id_list))
 
         card_layout.addWidget(confirm_button, last_grid_row, 0, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        back_button = self.create_button("Back", "red", 220, 48)
+        back_button = self.create_button("Back", "#f3f4f6", 220, 48)
         back_button.clicked.connect(self.show_home_screen)
         card_layout.addWidget(back_button, last_grid_row, 1, alignment=Qt.AlignmentFlag.AlignCenter)
         
