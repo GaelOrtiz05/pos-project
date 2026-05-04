@@ -831,11 +831,11 @@ class MainWindow(QMainWindow, POSLogic):
             ingredient_label.setStyleSheet("color: white; font-size: 18px;")
             ingredient_label_list.append(ingredient_label)
 
-            minus = self.create_button("-", "red", 34, 34)
+            minus = self.create_button("-", "red", 60, 40)
             minus_button_list.append(minus)
             minus_button_list[idx].clicked.connect(lambda _, x=idx: [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) - 1}")] if int(ingredient_label_list[x].text()[1:])>0 else None)
 
-            plus = self.create_button("+", "green", 34, 34)
+            plus = self.create_button("+", "green", 60, 40)
             plus_button_list.append(plus)
             plus_button_list[idx].clicked.connect(lambda _, x=idx: [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) + 1}")] if int(ingredient_label_list[x].text()[1:])<2 else None)
             
