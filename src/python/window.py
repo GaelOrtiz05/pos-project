@@ -296,6 +296,13 @@ class MainWindow(QMainWindow, POSLogic):
         container = QWidget()
         self.grid = QGridLayout(container)
         self.grid.setSpacing(15)
+        self.grid.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        self.grid.setContentsMargins(15, 15, 15, 15)
+        # Prevent rows/columns from stretching to fill empty space
+        for i in range(10):
+            self.grid.setRowStretch(i, 0)
+            self.grid.setColumnStretch(i, 0)
+        container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # load grid with all items
         self.Load_Grid_Of_Items(0)
