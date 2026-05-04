@@ -8,3 +8,4 @@ src/python/*.pyd
 src/python/*.pdb
 *.db
 *.dll
+temp_mds

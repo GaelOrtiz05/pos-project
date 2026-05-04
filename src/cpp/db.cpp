@@ -113,12 +113,12 @@ void Database::Initalize_Menu() {
             INSERT INTO items (id, name, image, price, category_id, in_stock) VALUES
               (1,  'Burger'               , 'data/images/burger.png', 5.99, 1, 1),
               (2,  'Chicken Sandwich'     , 'data/images/chicken_sandwich.png', 5.49, 1, 1),
-              (3,  'Cheese Burger'        , 'data/images/CheeseBurger_POS.png', 6.49, 1, 1),
+              (3,  'Cheese Burger'        , 'data/images/roblox_burger.png', 6.49, 1, 1),
               (4,  'French Fries'         , 'data/images/french_fries.png', 1.49, 2, 1),
               (5,  'Onion Rings'          , 'data/images/onion_rings.png', 1.69, 2, 1),
               (6,  'Chocolate Cake Slice' , 'data/images/chocolate_cake_slice.png', 0.99, 3, 1),
               (7,  'Apple Pie'            , 'data/images/apple_pie.png', 1.89, 3, 1),
-              (8,  'Soda'                 , 'data/images/soda.png', 1.49, 4, 1),
+              (8,  'Bloxy Soda'           , 'data/images/bloxy_cola.png', 1.49, 4, 1),
               (9,  'Orange Soda'          , 'data/images/orange_soda.png', 1.49, 4, 1),
               (10, 'Diet Soda'            , 'data/images/diet_soda.png', 1.39, 4, 1),
               (11, 'Vanilla Shake'        , 'data/images/vanilla_shake.png', 3.99, 4, 1),
@@ -224,7 +224,8 @@ inline void print_item_ingredients(Database &db) {
   int input_ItemId;
   std::cin >> input_ItemId;
 
-  std::vector<ItemIngredient> vector_itemIngredients = db.Get_Vector_ItemIngredients_by_ItemID(input_ItemId);
+  std::vector<ItemIngredient> vector_itemIngredients =
+      db.Get_Vector_ItemIngredients_by_ItemID(input_ItemId);
 
   for (const auto &itemingredient : vector_itemIngredients) {
     std::cout << "Id: " << itemingredient.id << ", ";
@@ -250,7 +251,8 @@ inline void print_combo_items(Database &db) {
   std::cout << "Combo #: \n";
   std::cin >> input_ComboID;
 
-  std::vector<ComboItem> vector_outputComboItems = db.Get_Vector_ComboItems_by_ComboID(input_ComboID);
+  std::vector<ComboItem> vector_outputComboItems =
+      db.Get_Vector_ComboItems_by_ComboID(input_ComboID);
 
   for (const auto &comboitem : vector_outputComboItems) {
     std::cout << "Id: " << comboitem.id << ", ";
@@ -276,7 +278,8 @@ inline void print_order_items(Database &db) {
   std::cout << "Order ID: \n";
   std::cin >> input_orderId;
 
-  std::vector<OrderItem> vector_orderItems = db.Get_Vector_OrderItems_By_OrderID(input_orderId);
+  std::vector<OrderItem> vector_orderItems =
+      db.Get_Vector_OrderItems_By_OrderID(input_orderId);
   std::cout << "Order Items for order " << input_orderId << ":\n";
 
   for (const auto &orderitem : vector_orderItems) {
