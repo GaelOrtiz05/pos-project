@@ -208,18 +208,34 @@ class POSLogic:
     def update_ingredient_stock(self, ingredient, stock_input, increase=True): #works with disp_manage_inventory
         text = stock_input.text().strip()
 
-        if not text or not text.isdigit(): #fail safe for wrong input
-            return  
-        if int(text) > 200: # max capacity
+        if text == "": #fail safe for empty input
+            self.inventory_feedback.setText("Enter a stock amount.")
+            self.inventory_feedback.show()
+            return
+
+        if not text.isdigit(): #fail safe for wrong input
+            self.inventory_feedback.setText("Invalid input. Enter a whole number.")
+            self.inventory_feedback.show()
+            return
+
+        amount = int(text)
+
+        if increase and ingredient.stock + amount > 200: # max capacity
             self.inventory_feedback.setText("Inventory Cannot Exceed 200.")
             self.inventory_feedback.show()
-            self.data.setIngredientStock(increase, ingredient.name, 200)
             return
-        
-        self.data.setIngredientStock(increase, ingredient.name, int(text)) #send to cpp db
-        self.disp_manage_inventory_menu()
-        self.inventory_feedback.hide()
 
+        if not increase and ingredient.stock - amount < 0:
+            self.inventory_feedback.setText("Inventory Cannot Go Below 0.")
+            self.inventory_feedback.show()
+            return
+
+        self.data.setIngredientStock(increase, ingredient.name, amount) #send to cpp db
+
+        self.inventory_feedback.setText("Inventory Updated.")
+        self.inventory_feedback.show()
+
+        self.disp_manage_inventory_menu()
     def calculate_cart_total(self):
         total = 0.0
         for item in self.cart:
