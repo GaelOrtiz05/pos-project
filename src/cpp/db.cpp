@@ -113,7 +113,7 @@ void Database::Initalize_Menu() {
             INSERT INTO items (id, name, image, price, category_id, in_stock) VALUES
               (1,  'Burger'               , 'data/images/burger.png', 5.99, 1, 1),
               (2,  'Chicken Sandwich'     , 'data/images/chicken_sandwich.png', 5.49, 1, 1),
-              (3,  'Cheese Burger'        , 'data/images/cheese_burger.png', 6.49, 1, 1),
+              (3,  'Cheese Burger'        , 'data/images/CheeseBurger_POS.png', 6.49, 1, 1),
               (4,  'French Fries'         , 'data/images/french_fries.png', 1.49, 2, 1),
               (5,  'Onion Rings'          , 'data/images/onion_rings.png', 1.69, 2, 1),
               (6,  'Chocolate Cake Slice' , 'data/images/chocolate_cake_slice.png', 0.99, 3, 1),

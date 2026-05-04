@@ -104,9 +104,7 @@ class POSLogic:
         color = "#0c401a" if success else "#7a1010"
         self.add_employee_feedback.setText(message)
         self.add_employee_feedback.setStyleSheet(
-            f"color: white; font-size: 18px; background-color: {color}; "
-            "border-radius: 10px; padding: 6px;"
-        )
+            f"color: white; font-size: 18px; background-color: white; ""border-radius: 10px; padding: 6px;")
 
  #Adds an item to the checkout table based on item id.
  
@@ -238,7 +236,7 @@ class POSLogic:
         
     def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
         total_sales = 0
-        text = 'lol \n'
+        text = ' \n'
         orders = self.data.getOrders() # reading orders
         current_time = datetime.now() #getting current time from sys
 
