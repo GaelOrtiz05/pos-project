@@ -173,7 +173,8 @@ class POSLogic:
                 return_list.append(id_list[idx])
         print(return_list)
         self.Add_To_Checkout(item.id, return_list)
-        
+        self.show_home_screen()
+        self.add_to_cart(item)
 
     def Add_To_Checkout(self, item, ingredient_list = []):
         self.data.Add_Item_Into_Checkout_Tables(item, ingredient_list)
