@@ -14,6 +14,7 @@ class POSLogic:
         self.combos = []
         self.cart = []
         self.cart_list = []
+        self.cart_count = 0
 
     def initialize(self, username):
         self.current_user = self.logic.getUser(username)
@@ -125,15 +126,25 @@ class POSLogic:
             for i in range(quantity):
                 return_list.append(id_list[idx])
         print(return_list)
-        self.add_to_checkout_tables(item.id, return_list)
-        self.add_to_cart(item)
+        self.add_to_checkout_tables(item, return_list)
         self.show_home_screen()
 
+        #temporary
         list_ = self.data.get_Checkout_Items()
         print(f"The items in checkout are: {[item.name for item in list_]}")
+        ##########
 
     def add_to_checkout_tables(self, item, ingredient_list = []):
-        self.data.Add_Item_Into_Checkout_Tables(item, ingredient_list)
+        self.cart_count += 1
+        self.data.Add_Item_Into_Checkout_Tables(item.id, ingredient_list,self.cart_count)
+        self.add_to_cart(item)
+
+    def remove_from_checkout_tables(checkout_id):
+        self.data.Remove_From_Checkout_Tables(checkout_id)
+    
+    
+    
+
 
     def add_to_cart(self, item):
         existing_items = next((i for i in self.cart if i["itemId"] == item.id and not i["isCombo"]), None)
@@ -162,7 +173,7 @@ class POSLogic:
     def remove_cart_item(self, index):
         if index < 0 or index >= len(self.cart):
             return
-        self.data.incrementStock(self.cart[index]["id"])
+        self.data.incrementStock(self.cart[index]["itemId"])
         if self.cart[index]["count"] > 1:
             self.cart[index]["count"] -= 1
         else:

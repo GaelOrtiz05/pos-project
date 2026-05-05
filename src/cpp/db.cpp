@@ -72,14 +72,14 @@ void Database::Setup_Database() {
     );
 
     CREATE TABLE IF NOT EXISTS checkout_items (
-      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      checkout_id     INTEGER PRIMARY KEY AUTOINCREMENT,
       item_id         INTEGER NOT NULL,
       item_name       TEXT NOT NULL,
       item_price      DOUBLE NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS checkout_ingredients (
-      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      checkout_id     INTEGER NOT NULL,
       item_id         INTEGER NOT NULL,
       ingredient_id   INTEGER NOT NULL
     );

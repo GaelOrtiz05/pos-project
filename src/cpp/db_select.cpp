@@ -222,4 +222,15 @@ std::vector<Item> Database::Get_Vector_Checkout_items() {
   return list_of_items_in_checkout;
 }
 
+bool Database::Remove_Item_From_Checkout_Tables(int checkoutID) {
+  SQLite::Statement remove_ingredients(db,"DELETE FROM checkout_ingredients WHERE checkout_id = ?");
+  remove_ingredients.bind(1,checkoutID);
+  remove_ingredients.exec(); 
+
+  SQLite::Statement remove_items(db, "DELETE FROM checkout_items WHERE checkout_id = ?");
+  remove_items.bind(1,checkoutID);
+  remove_items.exec();
+  
+  return true;
+}
 

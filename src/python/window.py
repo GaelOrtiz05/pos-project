@@ -694,8 +694,8 @@ class MainWindow(QMainWindow, POSLogic):
     def update_cart(self):
         self.clear_cart()
 
-        for index, i in enumerate(self.cart):
-            display = self.get_cart_display_text(i)
+        for index, item in enumerate(self.cart):
+            display = self.get_cart_display_text(item)
 
             row_widget = QWidget()
             row_layout = QHBoxLayout(row_widget)

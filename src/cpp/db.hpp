@@ -84,7 +84,7 @@ public:
 
   void Combine_Into_IngredientItem_Table(int ingredientId, int itemId, int isRemovable, double priceChange = 0.0);
   void Combine_Into_ComboItem_Table(int comboId, int itemId);
-  void Add_Item_Into_Checkout_Tables(int itemId, const std::vector<int> ingredient_quantities = {});
+  void Add_Item_Into_Checkout_Tables(int itemId, const std::vector<int> ingredient_quantities = {}, int checkout_ID=1);
   std::vector<Order> Get_Vector_Orders();
 
   // update stock
@@ -106,6 +106,7 @@ public:
   std::vector<OrderItem> Get_Vector_OrderItems_By_OrderID(int orderId);
   std::vector<Item> Get_Vector_Checkout_items();
   //std::vector<Ingredient> Get_Vector_Checkout_Ingredients_By_ItemID(int itemId);
+  bool Remove_Item_From_Checkout_Tables(int checkoutID);
 };
 
 void database_menu(Database &db);
