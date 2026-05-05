@@ -138,18 +138,22 @@ class MainWindow(QMainWindow, POSLogic):
         # put the container in the main window
         self.setCentralWidget(central)
         central.setStyleSheet(
-            "background-color: black;"
+            "background-color: #ffffff;"
         )  # Chaning the background color
+
         # creating a grid layour inside the container
         layout = QGridLayout(central)
         layout.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # PUTTING EVERYTHING IN THE MIDDLE/CENTER
+        layout.setHorizontalSpacing(14)
+        layout.setVerticalSpacing(14)
+
         # now making a label
-        pos_label = self.create_label("Point of Sale System", "black", 300, 50)
+        pos_label = self.create_label("Point of Sale System", "#111827", 300, 50)
         pos_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        user_label = self.create_label("Username", "black", 150, 50)
-        pass_label = self.create_label("Password", "black", 150, 50)
+        user_label = self.create_label("Username", "#111827", 150, 50)
+        pass_label = self.create_label("Password", "#111827", 150, 50)
 
         layout.addWidget(pos_label, 0, 0, 2, 2)
         layout.addWidget(user_label, 2, 0)
@@ -160,7 +164,7 @@ class MainWindow(QMainWindow, POSLogic):
         user_input.setMaximumSize(150, 50)
         layout.addWidget(user_input, 2, 1)
         user_input.setStyleSheet(
-            "background-color: white ; border-radius: 5px; font-size: 25px;color: black"
+            "background-color: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 18px; color: #111827; padding: 6px;"
         )
 
         password_input = QLineEdit()
@@ -168,7 +172,7 @@ class MainWindow(QMainWindow, POSLogic):
         password_input.setEchoMode(QLineEdit.EchoMode.Password)  # ***
         layout.addWidget(password_input, 3, 1)
         password_input.setStyleSheet(
-            "background-color: white ; border-radius: 5px; font-size: 25px; color:black"
+            "background-color: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 18px; color: #111827; padding: 6px;"
         )
 
         # QPushButton() = Button
@@ -179,7 +183,7 @@ class MainWindow(QMainWindow, POSLogic):
         if is_first_time:
             login_button_label = "Register"
 
-            confirm_label = self.create_label("Confirm", "black", 150, 50)
+            confirm_label = self.create_label("Confirm", "#111827", 150, 50)
             layout.addWidget(confirm_label, 4, 0)
 
             confirm_password_input = QLineEdit()
@@ -187,14 +191,14 @@ class MainWindow(QMainWindow, POSLogic):
             confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
             layout.addWidget(confirm_password_input, 4, 1)
             confirm_password_input.setStyleSheet(
-                "background-color: white ; border-radius: 5px; font-size: 25px; color:black"
+                "background-color: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 18px; color: #111827; padding: 6px;"
             )
 
             first_time_label = QLabel("will become the admin account.")
             first_time_label.setFixedSize(300, 50)
             first_time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             first_time_label.setStyleSheet(
-                "background-color: black ; border-radius: 1px; font-size: 15px; color:"
+                "background-color: transparent; border-radius: 1px; font-size: 14px; color: #6b7280;"
             )
             layout.addWidget(first_time_label, 7, 0, 1, 2)
 
@@ -202,10 +206,11 @@ class MainWindow(QMainWindow, POSLogic):
             button_row = 5
         else:
             button_row = 4
-        login_button = self.create_button(login_button_label, "green", 300, 50)
+
+        login_button = self.create_button(login_button_label, "#2563eb", 300, 50)
         layout.addWidget(login_button, button_row, 0, 1, 2)
 
-        quit_button = self.create_button("Quit", "red", 300, 50)
+        quit_button = self.create_button("Quit", "#2563eb", 300, 50)
         quit_row = button_row + 1
         layout.addWidget(quit_button, quit_row, 0, 1, 2)
 
@@ -222,10 +227,12 @@ class MainWindow(QMainWindow, POSLogic):
             )
         )
 
+
+
     def show_home_screen(self):  # Main UI
         home_widget = QWidget()
         self.setCentralWidget(home_widget)
-        home_widget.setStyleSheet("background-color: #0a0a0f;")
+        home_widget.setStyleSheet("background-color: #ffffff;")
 
         main_layout = QVBoxLayout(home_widget)
         main_layout.setContentsMargins(15, 15, 15, 15)
@@ -233,27 +240,27 @@ class MainWindow(QMainWindow, POSLogic):
 
         # Row for the categories
         top_row = QHBoxLayout()
-        top_row.setSpacing(20)
+        top_row.setSpacing(12)
 
-        all_items_button = self.create_button("All", "#1e1530", 150, 50)
-        all_items_button.clicked.connect(lambda: self.load_grid_of_items(0))
+        all_items_button = self.create_button("All", "#2563eb", 150, 50)
+        all_items_button.clicked.connect(lambda: self.Load_Grid_Of_Items(0))
 
-        entrees_button = self.create_button("Entre", "#1e1530", 150, 50)
-        entrees_button.clicked.connect(lambda: self.load_grid_of_items(1))
+        entrees_button = self.create_button("Entre", "#2563eb", 150, 50)
+        entrees_button.clicked.connect(lambda: self.Load_Grid_Of_Items(1))
 
-        sides_button = self.create_button("Sides", "#1e1530", 150, 50)
-        sides_button.clicked.connect(lambda: self.load_grid_of_items(2))
+        sides_button = self.create_button("Sides", "#2563eb", 150, 50)
+        sides_button.clicked.connect(lambda: self.Load_Grid_Of_Items(2))
 
-        desserts_button = self.create_button("Dessert", "#1e1530", 150, 50)
-        desserts_button.clicked.connect(lambda: self.load_grid_of_items(3))
+        desserts_button = self.create_button("Dessert", "#2563eb", 150, 50)
+        desserts_button.clicked.connect(lambda: self.Load_Grid_Of_Items(3))
 
-        drinks_button = self.create_button("Drinks", "#1e1530", 150, 50)
-        drinks_button.clicked.connect(lambda: self.load_grid_of_items(4))
+        drinks_button = self.create_button("Drinks", "#2563eb", 150, 50)
+        drinks_button.clicked.connect(lambda: self.Load_Grid_Of_Items(4))
 
         if self.current_user.isAdmin:
-            manager_button = self.create_button("Manager", "#1e1530", 150, 50)
+            manager_button = self.create_button("Manager", "#2563eb", 150, 50)
 
-        logout_button = self.create_button("Logout", "#540612", 150, 50)
+        logout_button = self.create_button("Logout", "#f3f4f6", 150, 50)
 
         for button in (
             [
@@ -267,10 +274,12 @@ class MainWindow(QMainWindow, POSLogic):
             + [logout_button]
         ):
             top_row.addWidget(button)
+
         top_row.setAlignment(Qt.AlignmentFlag.AlignCenter)  # centering the buttons
+
         # Disp username
         user_label = self.create_label(
-            f"Logged in as: {self.current_user.name}", "#1e1530", 500, 50
+            f"Logged in as: {self.current_user.name}", "#111827", 500, 50
         )
 
         top_row.addStretch()
@@ -278,30 +287,40 @@ class MainWindow(QMainWindow, POSLogic):
         main_layout.addLayout(top_row)
 
         combo_row = QHBoxLayout()
-        combo_row.setSpacing(30)
+        combo_row.setSpacing(20)
+
         # Displays Combo Buttons
         list_of_combos = self.data.getCombos()
         for combo in list_of_combos:
-            button = self.create_button(f"{combo.name}", "#1e1530", 350, 120)
+            button = self.create_button(f"{combo.name}", "#f3f4f6", 260, 120)
+            button.setStyleSheet("QPushButton {background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 18px; font-weight: 600;} QPushButton:hover {background-color: #e5e7eb; color: #0066ff;} QPushButton:pressed {background-color: #dbeafe; padding-top: 10px;}")
             button.clicked.connect(lambda _, c=combo: self.confirm_combo(c))
             combo_row.addWidget(button)
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addLayout(combo_row)
+
         # ------------------------------------------------------------------------------------------
         # Scroll Box - main combo items will be here
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("background-color: black; border: none;")
+        scroll.setStyleSheet(
+            "QScrollArea {background-color: #ffffff; border: none;} QScrollBar:vertical {width: 8px; background: transparent;} QScrollBar::handle:vertical {background: #d1d5db; border-radius: 4px;}"
+        )
+
         container = QWidget()
+        container.setStyleSheet("background-color: #ffffff;")
+
         self.grid = QGridLayout(container)
-        self.grid.setSpacing(15)
+        self.grid.setSpacing(12)
         self.grid.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         self.grid.setContentsMargins(15, 15, 15, 15)
+
         # Prevent rows/columns from stretching to fill empty space
         for i in range(10):
             self.grid.setRowStretch(i, 0)
             self.grid.setColumnStretch(i, 0)
+
         container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # load grid with all items
@@ -311,37 +330,38 @@ class MainWindow(QMainWindow, POSLogic):
         # Bottom section (items + cart)
         # -----------------------------------------------------------------------------------------
         bottom_row = QHBoxLayout()
-        bottom_row.setSpacing(25)
+        bottom_row.setSpacing(20)
+
         # LEFT SIDE (scroll box)
-        bottom_row.addWidget(scroll, 3)
+        bottom_row.addWidget(scroll, 2)
+
         # RIGHT SIDE (cart panel)
         cart_widget = QWidget()
         self.cart_layout = QVBoxLayout(cart_widget)
-        self.cart_layout.setContentsMargins(12, 12, 12, 12)
+        self.cart_layout.setContentsMargins(14, 14, 14, 14)
         self.cart_layout.setSpacing(12)
-        cart_widget.setFixedWidth(420)
+
+        cart_widget.setFixedWidth(600)
         cart_widget.setStyleSheet(
-            "background-color: #1e1530; border-radius: 22px; border: 1px solid #2a2a3a;"
-        )
+            "background-color: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;")
+
         # cart title
-        cart_title = QLabel("Cart")
-        cart_title.setFixedHeight(50)
+        cart_title = QLabel("Current Sale")
+        cart_title.setFixedHeight(45)
         cart_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cart_title.setFont(self.create_font(20, 600))
-        cart_title.setStyleSheet(
-            "background-color: #1e1530; border: 1px solid #374151; color: white; border-radius: 12px;"
-        )
+        cart_title.setStyleSheet("background-color: transparent; color: #111827; border: none; font-size: 20px; font-weight: 600;")
+
         self.cart_layout.addWidget(cart_title)
 
         # scroll wheel to handle more items
         self.cart_scroll = QScrollArea()
         self.cart_scroll.setWidgetResizable(True)
-        self.cart_scroll.setStyleSheet(
-            (
-                "QScrollArea { background-color: transparent; border: none; } QScrollBar:vertical { width: 8px; background: transparent; } QScrollBar::handle:vertical { background: #374151; border-radius: 4px; }"
-            )
-        )
+        self.cart_scroll.setStyleSheet("QScrollArea {background-color: white; border: 1px solid #e5e7eb; border-radius: 6px;} QScrollBar:vertical {width: 8px; background: transparent;} QScrollBar::handle:vertical {background: #d1d5db; border-radius: 4px;}")
+
         self.cart_container = QWidget()
+        self.cart_container.setStyleSheet("background-color: white;")
+
         self.cart_items_layout = QVBoxLayout(self.cart_container)
         self.cart_items_layout.setContentsMargins(10, 10, 10, 10)
         self.cart_items_layout.setSpacing(8)
@@ -351,30 +371,33 @@ class MainWindow(QMainWindow, POSLogic):
         self.cart_scroll.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
+
         self.cart_scroll.setWidget(self.cart_container)
         self.cart_layout.addWidget(self.cart_scroll, 1)
         self.cart_layout.addStretch()
+
         # footer with persistent total + checkout action
         footer_widget = QWidget()
+        footer_widget.setStyleSheet("background-color: transparent;")
+
         footer_layout = QVBoxLayout(footer_widget)
         footer_layout.setContentsMargins(0, 0, 0, 0)
         footer_layout.setSpacing(10)
 
         self.total_label = QLabel("Total: $0.00")
-        self.total_label.setFixedHeight(58)
+        self.total_label.setFixedHeight(52)
         self.total_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.total_label.setFont(self.create_font(24, 600))
-        self.total_label.setStyleSheet(
-            "background-color: #16a34a; color: white; border: 2px solid #16a34a; border-radius: 14px;"
-        )
+        self.total_label.setFont(self.create_font(22, 600))
+        self.total_label.setStyleSheet("background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; font-weight: 600;")
 
-        checkout_button = self.create_button("Checkout", "#16a34a", 320, 90)
+        checkout_button = self.create_button("Checkout", "#0066ff", 320, 70)
         checkout_button.clicked.connect(self.checkout)
-
         footer_layout.addWidget(self.total_label)
         footer_layout.addWidget(checkout_button, alignment=Qt.AlignmentFlag.AlignCenter)
-        footer_widget.setFixedHeight(190)
+
+        footer_widget.setFixedHeight(150)
         self.cart_layout.addWidget(footer_widget)
+
         bottom_row.addWidget(cart_widget, 1)  # smaller than scroll
 
         # add the scroll and cart to main layout
@@ -382,17 +405,17 @@ class MainWindow(QMainWindow, POSLogic):
 
         # Logout button functionality
         logout_button.clicked.connect(self.show_login_screen)
+
         if self.current_user.isAdmin:
             manager_button.clicked.connect(lambda: self.manager_event_handler())
 
         self.update_cart()  # to update cart each time we go back to home screen, so it doesn't show old items after purchase
-
     # manager functions
     def show_manager_menu(self):  # Admins
 
         manager_ui = QWidget()
         self.setCentralWidget(manager_ui)
-        manager_ui.setStyleSheet("background-color: #0a0a0f;")
+        manager_ui.setStyleSheet("background-color: #f9fafb;")
         layout = QGridLayout(manager_ui)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(22)
@@ -407,19 +430,17 @@ class MainWindow(QMainWindow, POSLogic):
 
         # View employees button
         view_employees_button = self.create_button(
-            "View Employees", "#1e1530", 320, 100
+            "View Employees", "#2563eb", 320, 100
         )
         layout.addWidget(view_employees_button, 2, 0)
         view_employees_button.clicked.connect(self.show_view_employees_screen)
         # View sales button
-        view_sales_button = self.create_button("View Sales", "#1e1530", 320, 100)
+        view_sales_button = self.create_button("View Sales", "#2563eb", 320, 100)
         layout.addWidget(view_sales_button, 2, 1)
         view_sales_button.clicked.connect(self.display_sales_menu)
         # Manager inventory button
-        manage_inventory_button = self.create_button(
-            "Manage Inventory", "#1e1530", 660, 100
-        )
-        manage_inventory_button.clicked.connect(self.display_manage_inventory_menu)
+        manage_inventory_button = self.create_button("Manage Inventory", "#2563eb", 660, 100)
+        manage_inventory_button.clicked.connect(self.disp_manage_inventory_menu)
         layout.addWidget(manage_inventory_button, 3, 0, 1, 2)
 
         if self.manager_feedback_message:
@@ -427,23 +448,21 @@ class MainWindow(QMainWindow, POSLogic):
             feedback_label.setFixedSize(660, 50)
             feedback_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             feedback_label.setFont(self.create_font(15, 600))
-            feedback_label.setStyleSheet(
-                "color: white; font-size: 15px; background-color: #0c401a; border-radius: 14px; padding: 8px;"
-            )
+            feedback_label.setStyleSheet("color: white; font-size: 15px; background-color: #0c401a; border-radius: 14px; padding: 8px;")
             layout.addWidget(
                 feedback_label, 4, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter
             )
             self.manager_feedback_message = ""
 
         # Back Button
-        back_button = self.create_button("Return", "#540612", 660, 75)
+        back_button = self.create_button("Return", "2563eb", 660, 75)
         layout.addWidget(back_button, 5, 0, 1, 2)
         back_button.clicked.connect(self.show_home_screen)
 
     def show_view_employees_screen(self):
         employees_ui = QWidget()
         self.setCentralWidget(employees_ui)
-        employees_ui.setStyleSheet("background-color: black;")
+        employees_ui.setStyleSheet("background-color: #f9fafb;")
 
         main_layout = QVBoxLayout(employees_ui)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -456,7 +475,7 @@ class MainWindow(QMainWindow, POSLogic):
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("background-color: black; border: none;")
+        scroll.setStyleSheet("background-color: #f9fafb; border: none;")
 
         container = QWidget()
         list_layout = QVBoxLayout(container)
@@ -475,7 +494,8 @@ class MainWindow(QMainWindow, POSLogic):
             row_layout.setContentsMargins(0, 0, 0, 0)
             row_layout.setSpacing(8)
 
-            user_label = self.create_label(f"{user.name} ({role})", "#2e302f", 500, 50)
+            user_label = self.create_label(f"{user.name} ({role})", "#f9fafb", 500, 50)
+            user_label.setStyleSheet("background-color: #2563eb; color: white; border-radius: 8px; padding: 10px; font-size: 18px; font-weight: 600;")
             row_layout.addWidget(user_label)
 
             if self.current_user.role > user.role and user.id != self.current_user.id:
@@ -491,11 +511,11 @@ class MainWindow(QMainWindow, POSLogic):
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
-        add_button = self.create_button("Add Employee", "green", 300, 50)
+        add_button = self.create_button("Add Employee", "#2563eb", 300, 50)
         add_button.clicked.connect(self.show_add_employee_screen)
         main_layout.addWidget(add_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        back_button = self.create_button("Back", "red", 300, 50)
+        back_button = self.create_button("Back", "#2563eb", 300, 50)
         back_button.clicked.connect(self.show_manager_menu)
         main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
@@ -537,7 +557,7 @@ class MainWindow(QMainWindow, POSLogic):
     def show_add_employee_screen(self):  # Add employee
         add_ui = QWidget()
         self.setCentralWidget(add_ui)
-        add_ui.setStyleSheet("background-color: black;")
+        add_ui.setStyleSheet("background-color: #f9fafb;")
 
         layout = QGridLayout(add_ui)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -546,11 +566,11 @@ class MainWindow(QMainWindow, POSLogic):
         layout.setContentsMargins(40, 40, 40, 40)
 
         # Title
-        title = self.create_label("Add Employee", "", 400, 50)
+        title = self.create_label("Add Employee", "#111827", 400, 50)
         title.setFont(self.create_font(25))
 
         # Username
-        user_label = self.create_label("Username:", "", 140, 40)
+        user_label = self.create_label("Username:", "#111827", 140, 40)
         user_input = QLineEdit()
         user_input.setFixedSize(260, 40)
         user_input.setStyleSheet(
@@ -558,7 +578,7 @@ class MainWindow(QMainWindow, POSLogic):
         )
 
         # Password
-        pass_label = self.create_label("Password:", "", 140, 40)
+        pass_label = self.create_label("Password:", "#111827", 140, 40)
         pass_input = QLineEdit()
         pass_input.setEchoMode(QLineEdit.EchoMode.Password)
         pass_input.setFixedSize(260, 40)
@@ -568,10 +588,10 @@ class MainWindow(QMainWindow, POSLogic):
 
         # Checkbox
         checkbox = QCheckBox("Admin")
-        checkbox.setStyleSheet("color: white; font-size: 18px;")
+        checkbox.setStyleSheet("color: #2563eb; font-size: 18px;")
 
         # Buttons
-        submit_button = self.create_button("Add User", "green", 300, 50)
+        submit_button = self.create_button("Add User", "#2563eb", 300, 50)
         submit_button.clicked.connect(
             lambda: self.submit_event_handler(user_input, pass_input, checkbox)
         )
@@ -580,7 +600,7 @@ class MainWindow(QMainWindow, POSLogic):
             lambda: self.submit_event_handler(user_input, pass_input, checkbox)
         )
 
-        back_button = self.create_button("Back", "red", 300, 50)
+        back_button = self.create_button("Back", "#2563eb", 300, 50)
         back_button.clicked.connect(self.show_view_employees_screen)
 
         # Feedback
@@ -589,7 +609,7 @@ class MainWindow(QMainWindow, POSLogic):
         self.add_employee_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.add_employee_feedback.setWordWrap(True)
         self.add_employee_feedback.setStyleSheet(
-            "color: white; font-size: 18px; background-color: transparent;"
+        "color: #111827; font-size: 18px; background-color: transparent; font-weight: 600;"
         )
 
         # Layout
@@ -622,22 +642,31 @@ class MainWindow(QMainWindow, POSLogic):
             if widget:
                 widget.deleteLater()
         list_buttons = []
-
         self.list_of_items = self.data.getItems()
         # create buttons
         for idx, item in enumerate(self.list_of_items):
             # check if item is available
             if self.data.Check_Stock(item.id) == True:
                 image_path = item.image
+
                 if image_path and not os.path.isabs(image_path):
                     image_path = os.path.join(BASE_DIR, image_path)
-                
-                button = self.create_button(f"{item.name}", "#1e1530", 300, 150, image_path)  # clicable
-                button.clicked.connect(lambda _, x=item: self.display_item_ingredients_menu(x))
-            
+
+                button = self.create_button(
+                    f"{item.name}", "#f3f4f6", 250, 250, image_path
+                )  # clicable
+
+                button.setStyleSheet(
+                    "QPushButton {background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 15px; font-weight: 600;} QPushButton:hover {background-color: #e5e7eb; color: #0066ff;} QPushButton:pressed {background-color: #dbeafe; padding-top: 10px;}")
+                button.clicked.connect(
+                    lambda _, x=item: self.disp_item_ingredients_menu(x))
             else:
-                button = self.create_button(f"{item.name}\n (Unavailable)", "gray", 300, 150)
+                button = self.create_button(
+                    f"{item.name}\n(Unavailable)", "#e5e7eb", 150, 150)
+
+                button.setStyleSheet("QPushButton {background-color: #e5e7eb; color: #9ca3af; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 15px; font-weight: 600;}")
                 button.setEnabled(False)  # cant click
+
             list_buttons.append(button)
 
         grid_row = 0
@@ -679,10 +708,9 @@ class MainWindow(QMainWindow, POSLogic):
             label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             label.setFont(self.create_font(18))
             label.setStyleSheet(
-                "background-color: #1e1530; color: white; border: 1px solid #374151; border-radius: 12px; padding: 8px;"
-            )
+                "background-color: #0066ff; color: white; border: 1px solid #374151; border-radius: 10px; padding: 8px;")
 
-            remove_button = self.create_button("x", "red", 40, 40)
+            remove_button = self.create_button("x", "#2563eb", 40, 40)
             remove_button.clicked.connect(lambda _, x=index: self.remove_cart_item(x))
 
             row_layout.addWidget(label, 1)
@@ -694,10 +722,8 @@ class MainWindow(QMainWindow, POSLogic):
             empty_label = QLabel("No items in cart")
             empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             empty_label.setFont(self.create_font(16))
-            empty_label.setStyleSheet("background-color: transparent; color: #a0a0a0;")
-            self.cart_items_layout.addWidget(
-                empty_label, alignment=Qt.AlignmentFlag.AlignCenter
-            )
+            empty_label.setStyleSheet("background-color: transparent; color: #0066ff;")
+            self.cart_items_layout.addWidget(empty_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         total = self.calculate_cart_total()
         self.total_label.setText(f"Total: ${total:.2f}")
@@ -705,7 +731,7 @@ class MainWindow(QMainWindow, POSLogic):
     def display_sales_menu(self):
         sales_ui = QWidget()
         self.setCentralWidget(sales_ui)
-        sales_ui.setStyleSheet("background-color: #0a0a0f;")
+        sales_ui.setStyleSheet("background-color: #f9fafb;")
         layout = QGridLayout(sales_ui)
         layout.setSpacing(22)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -718,17 +744,17 @@ class MainWindow(QMainWindow, POSLogic):
         layout.addWidget(title, 0, 0, 1, 2)
 
         # Add employee Button
-        todays_sales = self.create_button("Sale Today", "#1e1530", 350, 100)
-        todays_sales.clicked.connect(lambda: self.display_sales(1))
+        todays_sales = self.create_button("Sale Today", "#2563eb", 350, 100)
+        todays_sales.clicked.connect(lambda: self.disp_sales(1))
         layout.addWidget(todays_sales, 2, 0)
-        weekly_sales = self.create_button("Sale This Week", "#1e1530", 350, 100)
-        weekly_sales.clicked.connect(lambda: self.display_sales(2))
+        weekly_sales = self.create_button("Sale This Week", "#2563eb", 350, 100)
+        weekly_sales.clicked.connect(lambda: self.disp_sales(2))
         layout.addWidget(weekly_sales, 2, 1)
-        all_sales = self.create_button("All Sales", "#1e1530", 350, 100)
-        all_sales.clicked.connect(lambda: self.display_sales(3))
+        all_sales = self.create_button("All Sales", "#2563eb", 350, 100)
+        all_sales.clicked.connect(lambda: self.disp_sales(3))
         layout.addWidget(all_sales, 3, 0)
 
-        back_button = self.create_button("Back", "red", 350, 100)
+        back_button = self.create_button("Back", "2563eb", 350, 100)
         back_button.clicked.connect(self.show_manager_menu)
         layout.addWidget(back_button, 3, 1)
 
@@ -736,7 +762,7 @@ class MainWindow(QMainWindow, POSLogic):
         # TITLE AND STUFF
         sales_ui = QWidget()
         self.setCentralWidget(sales_ui)
-        sales_ui.setStyleSheet("background-color: #0a0a0f;")
+        sales_ui.setStyleSheet("background-color: #f9fafb;")
         layout = QGridLayout(sales_ui)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(22)
@@ -773,17 +799,15 @@ class MainWindow(QMainWindow, POSLogic):
             label.setWordWrap(True)
             label.setFont(self.create_font(17, 500))
             label.setAlignment(Qt.AlignmentFlag.AlignTop)
-            label.setStyleSheet(
-                "color: white; background-color: #1e1530; border: 1px solid #2f2750; border-radius: 18px; padding: 18px 16px; font-size: 17px;"
-            )
+            label.setStyleSheet("color: black; background-color: #f9fafb; border: 1px solid #2f2750; border-radius: 18px; padding: 18px 16px; font-size: 17px;")
             container_layout.addWidget(label)
         container_layout.setSpacing(16)
         scroll.setWidget(container)
         total_sales_label = self.create_label(
             f"Total Sale $:{total:.2f} ", "black", 800, 100
         )
-        back_button = self.create_button("Back", "red", 800, 50)
-        back_button.clicked.connect(self.display_sales_menu)
+        back_button = self.create_button("Back", "#0066ff", 800, 50)
+        back_button.clicked.connect(self.disp_sales_menu)
         # PLACing lablels
         layout.addWidget(title, 0, 0, 1, 2)
         layout.addWidget(scroll, 1, 0, 1, 2)
@@ -796,7 +820,7 @@ class MainWindow(QMainWindow, POSLogic):
     def display_item_ingredients_menu(self, item):
         item_ingredients_ui = QWidget()
         self.setCentralWidget(item_ingredients_ui)
-        item_ingredients_ui.setStyleSheet("background-color: black;")
+        item_ingredients_ui.setStyleSheet("background-color: #f3f4f6;")
 
         # Outer layout fills the window, but centers a smaller card
         background_layout = QVBoxLayout(item_ingredients_ui)
@@ -805,7 +829,7 @@ class MainWindow(QMainWindow, POSLogic):
 
         card = QWidget()
         card.setFixedSize(650, 400)  # make this smaller/larger as needed
-        card.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+        card.setStyleSheet("background-color: #0066ff; border-radius: 14px;")
         card_layout = QGridLayout(card)
         card_layout.setContentsMargins(20, 20, 20, 20)
         card_layout.setHorizontalSpacing(16)
@@ -835,14 +859,14 @@ class MainWindow(QMainWindow, POSLogic):
             ingredient_label.setStyleSheet("color: white; font-size: 18px;")
             ingredient_label_list.append(ingredient_label)
 
-            minus_button = self.create_button("-", "red", 60, 40)
+            minus_button = self.create_button("-", "2563eb", 60, 40)
             minus_button_list.append(minus_button)
             minus_button_list[idx].clicked.connect(lambda _, x=idx: 
                                                    [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) - 1}")] 
                                                    if int(ingredient_label_list[x].text()[1:])>0 
                                                    else None)
 
-            plus_button = self.create_button("+", "green", 60, 40)
+            plus_button = self.create_button("+", "2563eb", 60, 40)
             plus_button_list.append(plus_button)
             plus_button_list[idx].clicked.connect(lambda _, x=idx: 
                                                   [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) + 1}")] 
@@ -857,12 +881,12 @@ class MainWindow(QMainWindow, POSLogic):
                 current_grid_row +=1
                 last_grid_row = 1 + current_grid_row
             
-        confirm_button = self.create_button("Confirm", "green", 220, 48)
+        confirm_button = self.create_button("Confirm", "#f3f4f6", 220, 48)
         confirm_button.clicked.connect(lambda: self.confirm_item(item,ingredient_label_list, ingredient_id_list))
 
         card_layout.addWidget(confirm_button, last_grid_row, 0, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        back_button = self.create_button("Back", "red", 220, 48)
+        back_button = self.create_button("Back", "#f3f4f6", 220, 48)
         back_button.clicked.connect(self.show_home_screen)
         card_layout.addWidget(back_button, last_grid_row, 1, alignment=Qt.AlignmentFlag.AlignCenter)
         
@@ -875,48 +899,60 @@ class MainWindow(QMainWindow, POSLogic):
     def display_manage_inventory_menu(self):
         manage_inventory_ui = QWidget()
         self.setCentralWidget(manage_inventory_ui)
-        manage_inventory_ui.setStyleSheet("background-color: black;")
+        manage_inventory_ui.setStyleSheet("background-color: #ffffff;")
 
         main_layout = QVBoxLayout(manage_inventory_ui)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(16)
 
         title = self.create_label("manage inventory", "", 450, 50)
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setFont(self.create_font(25, 600))
+        title.setStyleSheet("color: #111827; background-color: transparent;")
         main_layout.addWidget(title, alignment=Qt.AlignmentFlag.AlignCenter)
+
         # scrollable area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("background-color: black; border: none;")
+        scroll.setStyleSheet("QScrollArea {background-color: #ffffff; border: none;} QScrollBar:vertical {width: 8px; background: transparent;} QScrollBar::handle:vertical {background: #d1d5db; border-radius: 4px;}")
 
         container = QWidget()
+        container.setStyleSheet("background-color: #ffffff;")
+
         list_layout = QVBoxLayout(container)
+        list_layout.setContentsMargins(10, 10, 10, 10)
         list_layout.setSpacing(12)
 
         inventory_items = self.data.getIngredients()  # reading from cpp
 
         for ingredient in inventory_items:  # going through the list
             row_widget = QWidget()
-            row_widget.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+            row_widget.setStyleSheet("background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;")
             row_layout = QHBoxLayout(row_widget)
+            row_layout.setContentsMargins(14, 12, 14, 12)
+            row_layout.setSpacing(12)
 
-            name_label = self.create_label(f"{ingredient.name}", "#2e302f", 250, 50)
-            stock_label = self.create_label(
-                f"Stock: {ingredient.stock}", "#2e302f", 160, 50
-            )
+            name_label = self.create_label(f"{ingredient.name}", "#ffffff", 250, 50)
+            name_label.setStyleSheet("color: #f9fafb; background-color: #2563eb; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 18px; font-weight: 600;")
+
+            stock_label = self.create_label(f"Stock: {ingredient.stock}", "#ffffff", 160, 50)
+            stock_label.setStyleSheet("color: #f9fafb; background-color: #2563eb; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 18px; font-weight: 600;")
+
             # text edits
             stock_input = QLineEdit()
             stock_input.setFixedSize(140, 45)
-            stock_input.setStyleSheet(
-                "background-color: white; color: black; border-radius: 10px; font-size: 18px;"
-            )
+            stock_input.setStyleSheet("background-color: #ffffff; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 18px; padding: 6px;")
+
             # set button
-            Increase_button = self.create_button("Increase", "green", 160, 45)
+            Increase_button = self.create_button("Increase", "#2563eb", 160, 45)
             Increase_button.clicked.connect(
                 lambda _, ing=ingredient, inp=stock_input: self.update_ingredient_stock(
                     ing, inp, increase=True
                 )
             )
-            Decrease_button = self.create_button("Decrease", "red", 160, 45)
+
+            Decrease_button = self.create_button("Decrease", "#2563eb", 160, 45)
+            Decrease_button.setStyleSheet("QPushButton {background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 18px; font-weight: 600;} QPushButton:hover {background-color: #e5e7eb; color: #0066ff;} QPushButton:pressed {background-color: #dbeafe; padding-top: 10px;}")
             Decrease_button.clicked.connect(
                 lambda _, ing=ingredient, inp=stock_input: self.update_ingredient_stock(
                     ing, inp, increase=False
@@ -934,13 +970,18 @@ class MainWindow(QMainWindow, POSLogic):
 
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
+
         # back button
-        back_button = self.create_button("Back", "red", 300, 50)
+        back_button = self.create_button("Back", "f3f4f6", 300, 50)
+        back_button.setStyleSheet("QPushButton {background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 18px; font-weight: 600;} QPushButton:hover {background-color: #e5e7eb; color: #0066ff;} QPushButton:pressed {background-color: #dbeafe; padding-top: 10px;}")
         back_button.clicked.connect(self.show_manager_menu)
         main_layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.inventory_feedback = self.create_label("", "red", 400, 40)
+        self.inventory_feedback = self.create_label("", "transparent", 400, 40)
         self.inventory_feedback.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.inventory_feedback.setStyleSheet("color: #111827; background-color: transparent; border: none; font-weight: 600;")
+        self.inventory_feedback.hide()
+
         main_layout.addWidget(self.inventory_feedback)
 
     # MODULE FUNCTIONS: BUTTON, LABEL, AND FONT
@@ -961,31 +1002,26 @@ class MainWindow(QMainWindow, POSLogic):
         btn.setFixedSize(width, height)
         btn.setCursor(Qt.CursorShape.PointingHandCursor)
         btn.setFont(font)
-        btn.setStyleSheet(
-            f"QPushButton {{background-color: {color}; color: white; border: 1px solid #2a2a3a; border-radius: 14px; padding: 10px 18px; font-size: 20px; font-weight: 600;}} QPushButton:hover {{background-color: #1d4ed8;}} QPushButton:pressed {{background-color: #1e40af; padding-top: 12px;}}"
-        )
+
+        text_color = "white" if color == "#2563eb" else "#111827"
+
+        btn.setStyleSheet(f"QPushButton {{background-color: {color}; color: {text_color}; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 14px; font-size: 18px; font-weight: 600;}} QPushButton:hover {{background-color: #0052cc; color: white;}} QPushButton:pressed {{background-color: #0047b3; padding-top: 10px;}}")
+
         shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(22)
+        shadow.setBlurRadius(10)
         shadow.setXOffset(0)
-        shadow.setYOffset(6)
-        shadow.setColor(QColor(0, 0, 0, 120))
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 35))
         btn.setGraphicsEffect(shadow)
 
         return btn
 
-    def create_label(self, text, color="#1f2937", width=300, height=55):
+
+    def create_label(self, text, color="white", width=300, height=55):
         label = QLabel(text)
         label.setFixedSize(width, height)
         label.setFont(self.create_font(18, QFont.Weight.Medium))
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        label.setStyleSheet(
-            f"QLabel {{background-color: {color}; color: white; border: 1px solid #374151; border-radius: 14px; padding: 8px; font-size: 18px;}}"
-        )
-        shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(18)
-        shadow.setXOffset(0)
-        shadow.setYOffset(4)
-        shadow.setColor(QColor(0, 0, 0, 100))
-        label.setGraphicsEffect(shadow)
+        label.setStyleSheet(f"QLabel {{background-color: transparent; color: {color}; border: none; padding: 4px; font-size: 18px;}}")
 
         return label
