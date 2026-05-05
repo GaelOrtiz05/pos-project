@@ -440,7 +440,7 @@ class MainWindow(QMainWindow, POSLogic):
         view_sales_button.clicked.connect(self.display_sales_menu)
         # Manager inventory button
         manage_inventory_button = self.create_button("Manage Inventory", "#2563eb", 660, 100)
-        manage_inventory_button.clicked.connect(self.disp_manage_inventory_menu)
+        manage_inventory_button.clicked.connect(self.display_manage_inventory_menu)
         layout.addWidget(manage_inventory_button, 3, 0, 1, 2)
 
         if self.manager_feedback_message:
@@ -659,7 +659,7 @@ class MainWindow(QMainWindow, POSLogic):
                 button.setStyleSheet(
                     "QPushButton {background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 15px; font-weight: 600;} QPushButton:hover {background-color: #e5e7eb; color: #0066ff;} QPushButton:pressed {background-color: #dbeafe; padding-top: 10px;}")
                 button.clicked.connect(
-                    lambda _, x=item: self.disp_item_ingredients_menu(x))
+                    lambda _, x=item: self.display_item_ingredients_menu(x))
             else:
                 button = self.create_button(
                     f"{item.name}\n(Unavailable)", "#e5e7eb", 150, 150)

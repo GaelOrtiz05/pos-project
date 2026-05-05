@@ -222,6 +222,4 @@ std::vector<Item> Database::Get_Vector_Checkout_items() {
   return list_of_items_in_checkout;
 }
 
-std::vector<Ingredient> Database::Get_Vector_Checkout_Ingredients_By_ItemID(int itemId) {
-  
-}
+

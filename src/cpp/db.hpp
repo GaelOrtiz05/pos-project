@@ -105,7 +105,7 @@ public:
   std::vector<ComboItem> Get_Vector_ComboItems_by_ComboID(int comboId);
   std::vector<OrderItem> Get_Vector_OrderItems_By_OrderID(int orderId);
   std::vector<Item> Get_Vector_Checkout_items();
-  std::vector<Ingredient> Get_Vector_Checkout_Ingredients_By_ItemID(int itemId);
+  //std::vector<Ingredient> Get_Vector_Checkout_Ingredients_By_ItemID(int itemId);
 };
 
 void database_menu(Database &db);

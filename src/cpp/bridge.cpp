@@ -89,6 +89,6 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("purchase", &Database::Process_Purchase)
       .def("getOrders", &Database::Get_Vector_Orders)
       .def("getOrderItemsById", &Database::Get_Vector_OrderItems_By_OrderID)
-      .def("get_Checkout_Items", &Database::Get_Vector_Checkout_items)
-      .def("get_Checkout_Ingredients_By_ItemID", &Database::Get_Vector_Checkout_Ingredients_By_ItemID);
+      .def("get_Checkout_Items", &Database::Get_Vector_Checkout_items);
+      //.def("get_Checkout_Ingredients_By_ItemID", &Database::Get_Vector_Checkout_Ingredients_By_ItemID);
 }
