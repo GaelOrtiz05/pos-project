@@ -14,6 +14,7 @@ class POSLogic:
         self.combos = []
         self.cart = []
         self.checkout_ids = []
+        self.checkoutID_counter = 0
 
     def initialize(self, username):
         self.current_user = self.logic.getUser(username)
@@ -110,52 +111,65 @@ class POSLogic:
         )
 
     #Cart methods
-    def confirm_item(self, item, quantity_label_list, id_list):
+    def confirm_item(self, item, quantities, id_list):
         return_list = []
-        for idx, label in enumerate(quantity_label_list):
-            quantity = int(label.text()[1:])
+        for idx, quantity in enumerate(quantities):
             for i in range(quantity):
                 return_list.append(id_list[idx])
+
         print(return_list)
         self.add_to_checkout_tables(item, return_list)
         self.show_home_screen()
-
         #temporary
         list_ = self.data.get_Checkout_Items()
         print(f"The items in checkout are: {[item.name for item in list_]}")
+        print(self.checkoutID_counter)
         ##########
 
     def add_to_checkout_tables(self, item, ingredient_list = []):
-        num_items_in_cart = len(self.checkout_ids)
-        print(f"range of cart: {num_items_in_cart}")
-        self.checkout_ids.append(num_items_in_cart+1) 
-        self.data.Add_Item_Into_Checkout_Tables(item.id, ingredient_list,num_items_in_cart+1)
-        print(f"range of cart: {len(self.checkout_ids)}")
-        print(f"cart IDS: {self.checkout_ids}")
-        self.add_to_cart(item)
+        self.checkoutID_counter +=1
 
-    def remove_from_checkout_tables(self,checkout_id):
-        self.data.Remove_From_Checkout_Tables(checkout_id)
+        self.checkout_ids.append(self.checkoutID_counter) 
+        self.data.Add_Item_Into_Checkout_Tables(item.id, ingredient_list,self.checkoutID_counter)
+        self.add_to_cart(item,self.checkoutID_counter)
 
-    
-    def add_to_cart(self, item):
+    def add_to_cart(self, item, checkout_id = 0):
+
         existing_items = next((item_ for item_ in self.cart 
-                               if item_["itemId"] == item.id 
+                               if item_["itemID"] == item.id 
                                and not item_["isCombo"] 
                                and not item_["isAdjusted"]), None)
         
         if existing_items:
             existing_items["count"] += 1
         else:
-            self.cart.append({"itemId": item.id,
+            self.cart.append({"checkoutID": checkout_id,
+                              "itemID": item.id,
                             "name": item.name,
+                            "subtitle": "",
                             "price": item.price,
                             "count": 1,
                             "isCombo": False,
-                            "isAdjusted": False})
-        print(f"Cart after adding: {self.cart}")
-        #self.update_cart()
-        
+                            "isAdjusted": False})        
+        if hasattr(self, 'cart_items_layout'):
+            self.update_cart()
+
+    def remove_from_checkout_tables(self,checkout_id):
+        self.data.Remove_From_Checkout_Tables(checkout_id)
+
+        index = next((i for i ,item in enumerate(self.cart) if item["checkoutID"] == checkout_id),None)
+        if index is None: return
+
+        if self.cart[index]["count"] > 1:
+            self.cart[index]["count"] -= 1
+        else:
+            self.cart.pop(index)
+            self.checkout_ids.remove(checkout_id)
+        self.update_cart()
+        print(f"cart list {self.cart}")
+        print(f"checkout id list {self.checkout_ids}")
+
+
     def get_cart_display_text(self, item):
         item_count = item["count"]
 
@@ -172,23 +186,12 @@ class POSLogic:
 
         
 
-    #Clears the current cart display.
-    def remove_cart_item(self, index):
-        if index < 0 or index >= len(self.cart):
-            return
-        self.data.incrementStock(self.cart[index]["itemId"])
-        if self.cart[index]["count"] > 1:
-            self.cart[index]["count"] -= 1
-        else:
-            self.cart.pop(index)
-        self.update_cart()
-
     def checkout(self):
         list_of_order_items = []
         final_total = 0.0
         for item in self.cart:
                 order_item = pos_backend.OrderItem()
-                order_item.itemId = item["id"]
+                order_item.itemId = item["itemID"]
                 order_item.itemName = item["name"]
                 order_item.itemPrice = item["price"]
                 order_item.count = item['count']

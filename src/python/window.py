@@ -1,6 +1,7 @@
 # access files
 import os
 import platform
+from functools import partial
 
 # access environment
 import sys
@@ -685,48 +686,56 @@ class MainWindow(QMainWindow, POSLogic):
                     grid_col += 1
 
     def clear_cart(self):
-        for i in reversed(range(self.cart_items_layout.count())):
-            widget = self.cart_items_layout.takeAt(i).widget()
-            if widget:
-                widget.deleteLater()
+        if self.cart_items_layout is not None:
+            while self.cart_items_layout.count():
+                item = self.cart_items_layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                    widget.deleteLater()
 
     # adds item to the cart display.
     def update_cart(self):
-        self.clear_cart()
 
-        for index, item in enumerate(self.cart):
-            display = self.get_cart_display_text(item)
+        try:
+            self.clear_cart()
 
-            row_widget = QWidget()
-            row_layout = QHBoxLayout(row_widget)
-            row_layout.setContentsMargins(0, 0, 0, 0)
-            row_layout.setSpacing(8)
+            for index, item in enumerate(self.cart):
+                display = self.get_cart_display_text(item)
 
-            label = QLabel(display)
-            label.setMinimumHeight(60)
-            label.setMaximumHeight(100)
-            label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-            label.setFont(self.create_font(18))
-            label.setStyleSheet(
-                "background-color: #0066ff; color: white; border: 1px solid #374151; border-radius: 10px; padding: 8px;")
+                row_widget = QWidget()
+                row_layout = QHBoxLayout(row_widget)
+                row_layout.setContentsMargins(0, 0, 0, 0)
+                row_layout.setSpacing(8)
 
-            remove_button = self.create_button("x", "#2563eb", 40, 40)
-            remove_button.clicked.connect(lambda _, x=index: self.remove_cart_item(x))
+                label = QLabel(display)
+                label.setMinimumHeight(60)
+                label.setMaximumHeight(100)
+                label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+                label.setFont(self.create_font(18))
+                label.setStyleSheet(
+                    "background-color: #0066ff; color: white; border: 1px solid #374151; border-radius: 10px; padding: 8px;")
 
-            row_layout.addWidget(label, 1)
-            row_layout.addWidget(remove_button)
+                remove_button = self.create_button("x", "#2563eb", 40, 40)
+                remove_button.clicked.connect(partial(self.remove_from_checkout_tables, item["checkoutID"]))
 
-            self.cart_items_layout.addWidget(row_widget)
+                row_layout.addWidget(label, 1)
+                row_layout.addWidget(remove_button)
 
-        if len(self.cart) == 0:
-            empty_label = QLabel("No items in cart")
-            empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            empty_label.setFont(self.create_font(16))
-            empty_label.setStyleSheet("background-color: transparent; color: #0066ff;")
-            self.cart_items_layout.addWidget(empty_label, alignment=Qt.AlignmentFlag.AlignCenter)
+                self.cart_items_layout.addWidget(row_widget)
 
-        total = self.calculate_cart_total()
-        self.total_label.setText(f"Total: ${total:.2f}")
+            if len(self.cart) == 0:
+                empty_label = QLabel("No items in cart")
+                empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                empty_label.setFont(self.create_font(16))
+                empty_label.setStyleSheet("background-color: transparent; color: #0066ff;")
+                self.cart_items_layout.addWidget(empty_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+            total = self.calculate_cart_total()
+            self.total_label.setText(f"Total: ${total:.2f}")
+        except RuntimeError as e:
+            print(f"RuntimeError in update_cart: {e}")
+        
 
     def display_sales_menu(self):
         sales_ui = QWidget()
@@ -882,7 +891,9 @@ class MainWindow(QMainWindow, POSLogic):
                 last_grid_row = 1 + current_grid_row
             
         confirm_button = self.create_button("Confirm", "#f3f4f6", 220, 48)
-        confirm_button.clicked.connect(lambda: self.confirm_item(item,ingredient_label_list, ingredient_id_list))
+        confirm_button.clicked.connect(lambda: self.confirm_item(item,
+                                                                 [int(label.text()[1:]) for label in ingredient_label_list],
+                                                                 ingredient_id_list))
 
         card_layout.addWidget(confirm_button, last_grid_row, 0, alignment=Qt.AlignmentFlag.AlignCenter)
 

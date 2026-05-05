@@ -105,13 +105,11 @@ void Database::Add_Item_Into_Checkout_Tables(int itemID, const std::vector<int> 
           "SELECT id, name, price FROM items WHERE id = ?");
   insert.bind(1, itemID);
   insert.exec();
-  std::cout << "Item id: " << itemID << std::endl;
 
   SQLite::Statement insert_ingredient(
     db,"INSERT INTO checkout_ingredients(checkout_id,item_id, ingredient_id) "
       "VALUES (?,?,?)");
       for (const auto &ingredientID : ingredient_id_list) {
-        std:: cout << "Ingredient id: " << ingredientID << std::endl;
         insert_ingredient.bind(1, checkout_ID);
         insert_ingredient.bind(2, itemID);
         insert_ingredient.bind(3, ingredientID);
