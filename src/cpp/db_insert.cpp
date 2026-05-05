@@ -1,12 +1,6 @@
 #include "SQLiteCpp/Statement.h"
 #include "db.hpp"
 
-void Database::Insert_Into_Category_Table(const std::string &name) {
-  SQLite::Statement insert(db, "INSERT INTO categories (name) VALUES(?)");
-  insert.bind(1, name);
-  insert.exec();
-}
-
 void Database::Insert_Into_Ingredient_Table(const std::string &name, double price, int stock) {
   SQLite::Statement insert(db, "INSERT INTO ingredients (name, price, stock) VALUES (?,?,?)");
   insert.bind(1, name);

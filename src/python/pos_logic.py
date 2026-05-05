@@ -13,6 +13,7 @@ class POSLogic:
         self.items = []
         self.combos = []
         self.cart = []
+        self.cart_list = []
 
     def initialize(self, username):
         self.current_user = self.logic.getUser(username)
@@ -24,7 +25,7 @@ class POSLogic:
     def show_manager_menu(self) -> None: ...
     def show_view_employees_screen(self) -> None: ...
     def update_cart(self) -> None: ...
-    def disp_manage_inventory_menu(self) -> None: ...
+    def display_manage_inventory_menu(self) -> None: ...
 
     def login_event_handler(self, username, password, layout, confirm_password=None): # Authenticate login
         username = username.text()
@@ -108,28 +109,54 @@ class POSLogic:
             "border-radius: 10px; padding: 6px;"
         )
 
- #Adds an item to the checkout table based on item id.
- 
+
+
+
+
+
+
+
+
+
+    def confirm_item(self, item, quantity_label_list, id_list):
+        return_list = []
+        for idx, label in enumerate(quantity_label_list):
+            quantity = int(label.text()[1:])
+            for i in range(quantity):
+                return_list.append(id_list[idx])
+        print(return_list)
+        self.add_to_checkout_tables(item.id, return_list)
+        self.add_to_cart(item)
+        self.show_home_screen()
+
+        list_ = self.data.get_Checkout_Items()
+        print(f"The items in checkout are: {[item.name for item in list_]}")
+
+    def add_to_checkout_tables(self, item, ingredient_list = []):
+        self.data.Add_Item_Into_Checkout_Tables(item, ingredient_list)
+
     def add_to_cart(self, item):
-        if self.data.decrementStock(item.id) == False:
-            print(f"'{item.name}' cannot be added: out of stock.")
-            return
+        existing_items = next((i for i in self.cart if i["itemId"] == item.id and not i["isCombo"]), None)
+        
+        if existing_items:
+            existing_items["count"] += 1
+        else:
+            self.cart.append({"itemId": item.id,
+                            "name": item.name,
+                            "price": item.price,
+                            "count": 1,
+                            "isCombo": False})
+        print(f"Cart after adding: {self.cart}")
+        #self.update_cart()
+        
 
-        for i in self.cart:
-            if i["id"] == item.id and not i["isCombo"]:
-                i["count"] += 1
-                print(f"item count: {i['count']}")
-                self.update_cart()
-                return
+    
+    def UPDATE_CART(self, cart_list):
+        checkout_list = self.data.get_Checkout_Items()
 
-        self.cart.append({"id": item.id,
-                          "name": item.name,
-                          "price": item.price,
-                          "count": 1, # amount in cart 
-                          "isCombo": 0
-                          })
+        print("test")
 
-        self.update_cart()
+        
 
     #Clears the current cart display.
     def remove_cart_item(self, index):
@@ -143,62 +170,40 @@ class POSLogic:
         self.update_cart()
 
     def checkout(self):
-        order_items = []
-        total = 0.0
-        for i in self.cart:
-                oi = pos_backend.OrderItem()
-                oi.itemId = i["id"]
-                oi.itemName = i["name"]
-                oi.itemPrice = i["price"]
-                oi.count = i['count']
-                print(f"item count: {i['count']}")
-                order_items.append(oi)
-                total += i["price"] * i["count"]
-        self.data.purchase(order_items, total)
+        list_of_order_items = []
+        final_total = 0.0
+        for item in self.cart:
+                order_item = pos_backend.OrderItem()
+                order_item.itemId = item["id"]
+                order_item.itemName = item["name"]
+                order_item.itemPrice = item["price"]
+                order_item.count = item['count']
+                print(f"item count: {item['count']}")
+                list_of_order_items.append(order_item)
+                final_total += item["price"] * item["count"]
+
+        self.data.purchase(list_of_order_items, final_total)
         self.cart = []
         self.update_cart()
-    #item avalability:
-    def item_available(self, item):
-        ingredients = self.data.getItemIngredients(item.id)
-        for ing in ingredients:
-            if ing.stock <= 0:
-                return False
-        return True
-
-    def confirm_item(self, item, label_list, id_list):
-        return_list = []
-        for idx, label in enumerate(label_list):
-            quantity = int(label.text()[1:])
-            for i in range(quantity):
-                return_list.append(id_list[idx])
-        print(return_list)
-        self.Add_To_Checkout(item.id, return_list)
-        self.show_home_screen()
-        self.add_to_cart(item)
-
-    def Add_To_Checkout(self, item, ingredient_list = []):
-        self.data.Add_Item_Into_Checkout_Tables(item, ingredient_list)
+    
 
 
     def confirm_combo(self, combo):
         combo_items = self.data.getComboItems(combo.id)
 
-        for ci in combo_items:
-            for ing in self.data.getItemIngredients(ci.id):
-                if ing.stock < 1:
-                    print(f"'{combo.name}' cannot be added: '{ing.name}' is out of stock.")
+        for comboItem in combo_items:
+            for ingredient in self.data.getItemIngredients(comboItem.id):
+                if ingredient.stock < 1:
+                    print(f"'{combo.name}' cannot be added: '{ingredient.name}' is out of stock.")
                     return
 
-        for ci in combo_items:
-            self.data.decrementStock(ci.id)
-
-        for i in self.cart:
-            if i["id"] == combo.id and i["isCombo"]:
-                i["count"] += 1
+        for item in self.cart:
+            if item["id"] == combo.id and item["isCombo"]:
+                item["count"] += 1
                 self.show_home_screen()
                 return
 
-        subtitle = ", ".join(ci.name for ci in combo_items)
+        subtitle = ", ".join(comboItem.name for comboItem in combo_items)
         self.cart.append({"id": combo.id,
                           "name": combo.name,
                           "subtitle": subtitle,
@@ -208,18 +213,18 @@ class POSLogic:
         self.show_home_screen()
 
     def update_ingredient_stock(self, ingredient, stock_input, increase=True): #works with disp_manage_inventory
-        text = stock_input.text().strip()
+        stock_input_text = stock_input.text().strip()
 
-        if not text or not text.isdigit(): #fail safe for wrong input
+        if not stock_input_text or not stock_input_text.isdigit(): #fail safe for wrong input
             return  
-        if int(text) > 200: # max capacity
+        if int(stock_input_text) > 200: # max capacity
             self.inventory_feedback.setText("Inventory Cannot Exceed 200.")
             self.inventory_feedback.show()
             self.data.setIngredientStock(increase, ingredient.name, 200)
             return
         
-        self.data.setIngredientStock(increase, ingredient.name, int(text)) #send to cpp db
-        self.disp_manage_inventory_menu()
+        self.data.setIngredientStock(increase, ingredient.name, int(stock_input_text)) #send to cpp db
+        self.display_manage_inventory_menu()
         self.inventory_feedback.hide()
 
     def calculate_cart_total(self):
@@ -238,11 +243,11 @@ class POSLogic:
         
     def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
         total_sales = 0
-        text = 'lol \n'
-        orders = self.data.getOrders() # reading orders
+        order_into_text = 'lol \n'
+        list_of_orders = self.data.getOrders() # reading orders
         current_time = datetime.now() #getting current time from sys
 
-        for order in orders:
+        for order in list_of_orders:
                 order_time = datetime.fromisoformat(order.time)  #checking & getting orders time
                 include = False
                 if choice == 1:  # today
@@ -253,17 +258,15 @@ class POSLogic:
                 elif choice == 3:  # All orders
                     include = True
                 if include:
-                    text += f"Order #{order.id} \n Total: ${order.total:.2f} \n Date: {order_time.date()}\n" # all orders
-                    items = self.data.getOrderItemsById(order.id)
-                    for item in items:
-                        text += f"   {item.itemName} x{item.count} - ${item.itemPrice:.2f}\n"
-                    text += "\n"
+                    order_into_text += f"Order #{order.id} \n Total: ${order.total:.2f} \n Date: {order_time.date()}\n" # all orders
+                    list_of_orderitems = self.data.getOrderItemsById(order.id)
+                    for item in list_of_orderitems:
+                        order_into_text += f"   {item.itemName} x{item.count} - ${item.itemPrice:.2f}\n"
+                    order_into_text += "\n"
                     total_sales += order.total
-        order_info = [text,total_sales]
-        return order_info
 
-    def Add_To_Cart(self, item):
-        print("test")
+        list_of_order_info = [order_into_text,total_sales]
+        return list_of_order_info
 
     #Closes the program.
     def close_program(self):

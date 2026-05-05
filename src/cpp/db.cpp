@@ -35,7 +35,7 @@ void Database::Setup_Database() {
       item_id                       INTEGER NOT NULL,
       ingredient_id                 INTEGER NOT NULL,
       is_removable                  INTEGER DEFAULT 0,
-      price_change                  REAL NOT NULL,
+      price_change                  REAL NOT NULL DEFAULT 0.0,
       PRIMARY KEY (item_id, ingredient_id),
       FOREIGN KEY (item_id)         REFERENCES items(id),
       FOREIGN KEY (ingredient_id)   REFERENCES ingredients(id)
