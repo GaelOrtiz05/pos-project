@@ -11,7 +11,7 @@ from pos_logic import POSLogic
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # shortcuts, inputs, etc.
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QTimer
 from PySide6.QtGui import QColor, QFont, QFontMetrics, QGuiApplication, QIcon, QKeySequence, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap, QShortcut
 
 # Easier access to GUI elements
@@ -118,6 +118,8 @@ class MainWindow(QMainWindow, POSLogic):
         QMainWindow.__init__(self)
         POSLogic.__init__(self)
         self.manager_feedback_message = ""
+        self.current_category = 0
+        self._resize_timer = None
         screen = QGuiApplication.primaryScreen()
         size = screen.availableGeometry()
         window_length = size.width()
@@ -145,6 +147,19 @@ class MainWindow(QMainWindow, POSLogic):
             enter_shortcut = QShortcut(QKeySequence(key), self)
             enter_shortcut.activated.connect(handler)
             self._enter_shortcuts.append(enter_shortcut)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        try:
+            if hasattr(self, 'grid') and self.grid is not None and hasattr(self, 'scroll') and self.scroll is not None:
+                if self._resize_timer is not None:
+                    self._resize_timer.stop()
+                self._resize_timer = QTimer(self)
+                self._resize_timer.setSingleShot(True)
+                self._resize_timer.timeout.connect(lambda: self.load_grid_of_items(self.current_category))
+                self._resize_timer.start(200)
+        except RuntimeError:
+            pass
 
     def show_login_screen(self):  # Login Screen
         # creating a container
@@ -246,7 +261,7 @@ class MainWindow(QMainWindow, POSLogic):
     def show_home_screen(self):  # Main UI
         home_widget = QWidget()
         self.setCentralWidget(home_widget)
-        home_widget.setStyleSheet("background-color: #ffffff;")
+        home_widget.setStyleSheet("background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f8fafc, stop:1 #e2e8f0);")
 
         main_layout = QVBoxLayout(home_widget)
         main_layout.setContentsMargins(15, 15, 15, 15)
@@ -257,19 +272,19 @@ class MainWindow(QMainWindow, POSLogic):
         top_row.setSpacing(12)
 
         all_items_button = self.create_button("All", "#2563eb", 150, 50)
-        all_items_button.clicked.connect(lambda: self.Load_Grid_Of_Items(0))
+        all_items_button.clicked.connect(lambda: self.load_grid_of_items(0))
 
         entrees_button = self.create_button("Entre", "#2563eb", 150, 50)
-        entrees_button.clicked.connect(lambda: self.Load_Grid_Of_Items(1))
+        entrees_button.clicked.connect(lambda: self.load_grid_of_items(1))
 
         sides_button = self.create_button("Sides", "#2563eb", 150, 50)
-        sides_button.clicked.connect(lambda: self.Load_Grid_Of_Items(2))
+        sides_button.clicked.connect(lambda: self.load_grid_of_items(2))
 
         desserts_button = self.create_button("Dessert", "#2563eb", 150, 50)
-        desserts_button.clicked.connect(lambda: self.Load_Grid_Of_Items(3))
+        desserts_button.clicked.connect(lambda: self.load_grid_of_items(3))
 
         drinks_button = self.create_button("Drinks", "#2563eb", 150, 50)
-        drinks_button.clicked.connect(lambda: self.Load_Grid_Of_Items(4))
+        drinks_button.clicked.connect(lambda: self.load_grid_of_items(4))
 
         if self.current_user.isAdmin:
             manager_button = self.create_button("Manager", "#2563eb", 150, 50)
@@ -317,13 +332,14 @@ class MainWindow(QMainWindow, POSLogic):
         # ------------------------------------------------------------------------------------------
         # Scroll Box - main combo items will be here
         scroll = QScrollArea()
+        self.scroll = scroll
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet(
-            "QScrollArea {background-color: #ffffff; border: none;} QScrollBar:vertical {width: 8px; background: transparent;} QScrollBar::handle:vertical {background: #d1d5db; border-radius: 4px;}"
+            "QScrollArea {background-color: transparent; border: none;} QScrollBar:vertical {width: 8px; background: transparent;} QScrollBar::handle:vertical {background: #d1d5db; border-radius: 4px;}"
         )
 
         container = QWidget()
-        container.setStyleSheet("background-color: #ffffff;")
+        container.setStyleSheet("background-color: transparent;")
 
         self.grid = QGridLayout(container)
         self.grid.setSpacing(12)
@@ -337,9 +353,9 @@ class MainWindow(QMainWindow, POSLogic):
 
         container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        # load grid with all items
-        self.load_grid_of_items(0)
+        # load grid with all items after layout is calculated
         scroll.setWidget(container)
+        QTimer.singleShot(0, lambda: self.load_grid_of_items(0))
 
         # Bottom section (items + cart)
         # -----------------------------------------------------------------------------------------
@@ -683,13 +699,30 @@ class MainWindow(QMainWindow, POSLogic):
 
             list_buttons.append(button)
 
+        self.current_category = category
+
+        # Calculate columns dynamically based on available scroll width
+        button_width = 250
+        spacing = 12
+        margins = 30
+        if hasattr(self, 'scroll') and self.scroll is not None:
+            scroll_width = self.scroll.viewport().width()
+            if scroll_width < 200:
+                # Fallback before layout is fully processed
+                scroll_width = max(200, self.width() - 680)
+            available_width = scroll_width - margins
+        else:
+            available_width = max(200, self.width() - 680)
+
+        max_cols = max(1, int((available_width + spacing) / (button_width + spacing)))
+
         grid_row = 0
         grid_col = 0
 
         # place buttons
         for idx, item in enumerate(self.list_of_items):
             if item.categoryId == category or category == 0:
-                if grid_col < 4:
+                if grid_col < max_cols:
                     self.grid.addWidget(list_buttons[idx], grid_row, grid_col)
                     grid_col += 1
                 else:
