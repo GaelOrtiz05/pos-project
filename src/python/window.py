@@ -83,15 +83,15 @@ class ImageButton(QPushButton):
         line_height = fm.height()
         total_height = len(lines) * line_height
 
-        text_box_height = 30
+        text_box_height = 40
         text_box_y = rect.height() - text_box_height
 
         gradient = QLinearGradient(0, text_box_y, 0, rect.height())
-        gradient.setColorAt(0, QColor("#d1d5db"))
-        gradient.setColorAt(1, QColor("#6b7280"))
+        gradient.setColorAt(0, QColor("#6387d6"))
+        gradient.setColorAt(1, QColor("#2563eb"))
         painter.fillRect(0, text_box_y, rect.width(), text_box_height, gradient)
 
-        border_pen = QPen(QColor("#374151"), 1)
+        border_pen = QPen(QColor("#F6F6F6"), 1)
         painter.setPen(border_pen)
         painter.drawRect(0, text_box_y, rect.width() - 1, text_box_height - 1)
 
