@@ -13,8 +13,7 @@ class POSLogic:
         self.items = []
         self.combos = []
         self.cart = []
-        self.cart_list = []
-        self.cart_count = 0
+        self.checkout_ids = []
 
     def initialize(self, username):
         self.current_user = self.logic.getUser(username)
@@ -110,15 +109,7 @@ class POSLogic:
             "border-radius: 10px; padding: 6px;"
         )
 
-
-
-
-
-
-
-
-
-
+    #Cart methods
     def confirm_item(self, item, quantity_label_list, id_list):
         return_list = []
         for idx, label in enumerate(quantity_label_list):
@@ -135,19 +126,23 @@ class POSLogic:
         ##########
 
     def add_to_checkout_tables(self, item, ingredient_list = []):
-        self.cart_count += 1
-        self.data.Add_Item_Into_Checkout_Tables(item.id, ingredient_list,self.cart_count)
+        num_items_in_cart = len(self.checkout_ids)
+        print(f"range of cart: {num_items_in_cart}")
+        self.checkout_ids.append(num_items_in_cart+1) 
+        self.data.Add_Item_Into_Checkout_Tables(item.id, ingredient_list,num_items_in_cart+1)
+        print(f"range of cart: {len(self.checkout_ids)}")
+        print(f"cart IDS: {self.checkout_ids}")
         self.add_to_cart(item)
 
-    def remove_from_checkout_tables(checkout_id):
+    def remove_from_checkout_tables(self,checkout_id):
         self.data.Remove_From_Checkout_Tables(checkout_id)
-    
-    
-    
 
-
+    
     def add_to_cart(self, item):
-        existing_items = next((i for i in self.cart if i["itemId"] == item.id and not i["isCombo"]), None)
+        existing_items = next((item_ for item_ in self.cart 
+                               if item_["itemId"] == item.id 
+                               and not item_["isCombo"] 
+                               and not item_["isAdjusted"]), None)
         
         if existing_items:
             existing_items["count"] += 1
@@ -156,10 +151,18 @@ class POSLogic:
                             "name": item.name,
                             "price": item.price,
                             "count": 1,
-                            "isCombo": False})
+                            "isCombo": False,
+                            "isAdjusted": False})
         print(f"Cart after adding: {self.cart}")
         #self.update_cart()
         
+    def get_cart_display_text(self, item):
+        item_count = item["count"]
+
+        if item["isCombo"] and "subtitle" in item:
+            return f"{item['name']} - ${item['price']:.2f} - x{item_count}\n{item['subtitle']}"
+        else:
+            return f"{item['name']} - ${item['price']:.2f} - x{item_count}"
 
     
     def UPDATE_CART(self, cart_list):
@@ -215,6 +218,7 @@ class POSLogic:
                 return
 
         subtitle = ", ".join(comboItem.name for comboItem in combo_items)
+
         self.cart.append({"id": combo.id,
                           "name": combo.name,
                           "subtitle": subtitle,
@@ -260,14 +264,17 @@ class POSLogic:
             total += item["price"] * item["count"]
         return total
 
-    def get_cart_display_text(self, item):
-        item_count = item["count"]
 
-        if item["isCombo"] and "subtitle" in item:
-            return f"{item['name']} - ${item['price']:.2f} - x{item_count}\n{item['subtitle']}"
-        else:
-            return f"{item['name']} - ${item['price']:.2f} - x{item_count}"
-        
+
+
+
+    
+
+
+
+
+
+
     def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
         total_sales = 0
         text = ' \n'
