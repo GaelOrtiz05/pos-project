@@ -12,7 +12,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # shortcuts, inputs, etc.
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QColor, QFont, QFontMetrics, QGuiApplication, QIcon, QKeySequence, QPainter, QPainterPath, QPen, QPixmap, QShortcut
+from PySide6.QtGui import QColor, QFont, QFontMetrics, QGuiApplication, QIcon, QKeySequence, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap, QShortcut
 
 # Easier access to GUI elements
 from PySide6.QtWidgets import (
@@ -74,7 +74,7 @@ class ImageButton(QPushButton):
         else:
             painter.fillRect(rect, QColor("#1e1530"))
 
-        # Draw text with black stroke
+        # Draw text background at bottom
         font = self.font()
         painter.setFont(font)
 
@@ -82,7 +82,20 @@ class ImageButton(QPushButton):
         fm = QFontMetrics(font)
         line_height = fm.height()
         total_height = len(lines) * line_height
-        start_y = (rect.height() - total_height) / 2 + fm.ascent()
+
+        text_box_height = 30
+        text_box_y = rect.height() - text_box_height
+
+        gradient = QLinearGradient(0, text_box_y, 0, rect.height())
+        gradient.setColorAt(0, QColor("#d1d5db"))
+        gradient.setColorAt(1, QColor("#6b7280"))
+        painter.fillRect(0, text_box_y, rect.width(), text_box_height, gradient)
+
+        border_pen = QPen(QColor("#374151"), 1)
+        painter.setPen(border_pen)
+        painter.drawRect(0, text_box_y, rect.width() - 1, text_box_height - 1)
+
+        start_y = text_box_y + (text_box_height - total_height) / 2 + fm.ascent()
 
         for i, line in enumerate(lines):
             text_width = fm.horizontalAdvance(line)
