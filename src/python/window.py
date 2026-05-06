@@ -7,6 +7,7 @@ from functools import partial
 import sys
 
 from pos_logic import POSLogic
+from pos_logic import CheckoutGroup, CheckoutGroupItems,CheckoutModifiers
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 from datetime import datetime
@@ -325,7 +326,7 @@ class MainWindow(QMainWindow, POSLogic):
         for combo in list_of_combos:
             button = self.create_button(f"{combo.name}", "#f3f4f6", 260, 120)
             button.setStyleSheet("QPushButton {background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 18px; font-weight: 600;} QPushButton:hover {background-color: #e5e7eb; color: #0066ff;} QPushButton:pressed {background-color: #dbeafe; padding-top: 10px;}")
-            button.clicked.connect(lambda _, c=combo: self.confirm_combo(c))
+            button.clicked.connect(lambda _, c=combo: self.add_combo_to_cart(c))
             combo_row.addWidget(button)
 
         combo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -676,9 +677,10 @@ class MainWindow(QMainWindow, POSLogic):
         list_buttons = []
         self.list_of_items = self.data.getItems()
         # create buttons
+
         for idx, item in enumerate(self.list_of_items):
             # check if item is available
-            if self.data.Check_Stock(item.id) == True:
+            if self.data.Check_Stock(item.item_id) == True:
                 image_path = item.image
 
                 if image_path and not os.path.isabs(image_path):
@@ -690,8 +692,8 @@ class MainWindow(QMainWindow, POSLogic):
 
                 button.setStyleSheet(
                     "QPushButton {background-color: #f3f4f6; color: #111827; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; font-size: 15px; font-weight: 600;} QPushButton:hover {background-color: #e5e7eb; color: #0066ff;} QPushButton:pressed {background-color: #dbeafe; padding-top: 10px;}")
-                button.clicked.connect(
-                    lambda _, x=item: self.display_item_ingredients_menu(x))
+                button.clicked.connect(lambda _, x=item: self.add_item_to_cart(x))
+                
             else:
                 button = self.create_button(
                     f"{item.name}\n(Unavailable)", "#e5e7eb", 150, 150)
@@ -722,6 +724,7 @@ class MainWindow(QMainWindow, POSLogic):
         grid_col = 0
 
         # place buttons
+        
         for idx, item in enumerate(self.list_of_items):
             if item.categoryId == category or category == 0:
                 if grid_col < max_cols:
@@ -744,33 +747,49 @@ class MainWindow(QMainWindow, POSLogic):
 
     # adds item to the cart display.
     def update_cart(self):
-
         try:
             self.clear_cart()
+            for group in self.cart:
+                group_total = 0
 
-            for index, item in enumerate(self.cart):
-                display = self.get_cart_display_text(item)
+                for item in group.items:
+                    item_total = item.price
+                    modifier_text = ""
 
-                row_widget = QWidget()
-                row_layout = QHBoxLayout(row_widget)
-                row_layout.setContentsMargins(0, 0, 0, 0)
-                row_layout.setSpacing(8)
+                    for modifier in item.modifiers:
+                        if modifier.change == -1:
+                            modifier_text += f"- {modifier.name}"
+                        elif modifier.change == +1:
+                            modifier_text += f"+ {modifier.name}"
+                    group_total += item_total
 
-                label = QLabel(display)
-                label.setMinimumHeight(60)
-                label.setMaximumHeight(100)
-                label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-                label.setFont(self.create_font(18))
-                label.setStyleSheet(
-                    "background-color: #0066ff; color: white; border: 1px solid #374151; border-radius: 10px; padding: 8px;")
+                    display = f"{item.name} - ${item.price} x1\n{modifier_text}"
 
-                remove_button = self.create_button("x", "#2563eb", 40, 40)
-                remove_button.clicked.connect(partial(self.remove_from_checkout_tables, item["checkoutID"]))
+                    row_widget = QWidget()
+                    row_layout = QHBoxLayout(row_widget)
+                    row_layout.setContentsMargins(0, 0, 0, 0)
+                    row_layout.setSpacing(8)
 
-                row_layout.addWidget(label, 1)
-                row_layout.addWidget(remove_button)
+                    label = QLabel(display)
+                    label.setMinimumHeight(80)
+                    label.setMaximumHeight(100)
+                    label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+                    label.setFont(self.create_font(18))
+                    label.setStyleSheet(
+                        "background-color: #0066ff; color: white; border: 1px solid #374151; border-radius: 10px; padding: 8px;")
+                    
+                    edit_button = self.create_button("Edit", "2563eb",60,40)
+                    edit_button.clicked.connect(lambda _, item = item: self.display_item_ingredients_menu(item))
+                    
 
-                self.cart_items_layout.addWidget(row_widget)
+                    remove_button = self.create_button("x", "#2563eb", 40, 40)
+                    remove_button.clicked.connect(lambda _, groupID = group.group_id: self.remove_group_from_checkout(groupID))
+
+                    row_layout.addWidget(label, 1)
+                    row_layout.addWidget(edit_button)
+                    row_layout.addWidget(remove_button)
+
+                    self.cart_items_layout.addWidget(row_widget)
 
             if len(self.cart) == 0:
                 empty_label = QLabel("No items in cart")
@@ -871,9 +890,6 @@ class MainWindow(QMainWindow, POSLogic):
         layout.addWidget(total_sales_label, 2, 0, 1, 2)
         layout.addWidget(back_button, 3, 0, 1, 2)
 
-
-
-
     def display_item_ingredients_menu(self, item):
         item_ingredients_ui = QWidget()
         self.setCentralWidget(item_ingredients_ui)
@@ -896,62 +912,78 @@ class MainWindow(QMainWindow, POSLogic):
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setFont(self.create_font(20, 600))
 
-        card_layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        card_layout.addWidget(title, 0, 0, 1, 4, alignment=Qt.AlignmentFlag.AlignCenter)
         
-        self.list_of_ItemIngredients = self.data.getItemIngredients(item.id)
-        
-        
-        ingredient_label_list = []
-        ingredient_id_list = []
-        minus_button_list = []
-        plus_button_list = []
 
-        current_grid_row = last_grid_row = 1
-        for idx, ingredient in enumerate(self.list_of_ItemIngredients):    
-            ingredient_name = self.create_label(ingredient.name,"", 100, 40)
-            ingredient_name.setStyleSheet("color: white; font-size: 18px;")
-            ingredient_id_list.append(ingredient.id)
+        list_of_ItemIngredients = self.data.getItemIngredients(item.item_id)
+        
+        ingredient_state = {ingredient.id: 0 for ingredient in list_of_ItemIngredients}
 
-            ingredient_label = self.create_label(f"x{1}","", 100, 40)
-            ingredient_label.setStyleSheet("color: white; font-size: 18px;")
-            ingredient_label_list.append(ingredient_label)
+        for modifier in item.modifiers:
+            if modifier.change == -1:
+                ingredient_state[modifier.ingredient_id] -= 1
+            elif modifier.change == +1:
+                ingredient_state[modifier.ingredient_id] += 1
+
+
+        labels = {}
+        def update_modifier(ingredient,change):
+            current = ingredient_state[ingredient.id]
+            new_value = current + change
+            if new_value < 0 or new_value > 2:
+                return
+            ingredient_state[ingredient.id] = new_value
+            labels[ingredient.id].setText(f"x{new_value}")
+
+        row = 1
+
+        for ingredient in list_of_ItemIngredients:
+            if not ingredient.isRemovable:
+                continue
+            name_label = self.create_label(ingredient.name, "", 120, 40)
+            name_label.setStyleSheet("color: white; font-size: 18px;")
+
+            quantity_label = self.create_label(f"x{ingredient_state[ingredient.id]}","",60,40)
+            quantity_label.setStyleSheet("color: white; font-size: 18px;")
+
+            labels[ingredient.id] = quantity_label
 
             minus_button = self.create_button("-", "2563eb", 60, 40)
-            minus_button_list.append(minus_button)
-            minus_button_list[idx].clicked.connect(lambda _, x=idx: 
-                                                   [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) - 1}")] 
-                                                   if int(ingredient_label_list[x].text()[1:])>0 
-                                                   else None)
-
             plus_button = self.create_button("+", "2563eb", 60, 40)
-            plus_button_list.append(plus_button)
-            plus_button_list[idx].clicked.connect(lambda _, x=idx: 
-                                                  [ingredient_label_list[x].setText(f"x{int(ingredient_label_list[x].text()[1:]) + 1}")] 
-                                                  if int(ingredient_label_list[x].text()[1:])<2 
-                                                  else None)
-            
-            if (ingredient.isRemovable):
-                card_layout.addWidget(ingredient_name, 1 + current_grid_row, 0)
-                card_layout.addWidget(ingredient_label, 1 + current_grid_row,1)                
-                card_layout.addWidget(minus_button, 1 + current_grid_row,2)
-                card_layout.addWidget(plus_button, 1 + current_grid_row,3) 
-                current_grid_row +=1
-                last_grid_row = 1 + current_grid_row
-            
-        confirm_button = self.create_button("Confirm", "#f3f4f6", 220, 48)
-        confirm_button.clicked.connect(lambda: self.confirm_item(item,
-                                                                 [int(label.text()[1:]) for label in ingredient_label_list],
-                                                                 ingredient_id_list))
 
-        card_layout.addWidget(confirm_button, last_grid_row, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+            minus_button.clicked.connect(lambda _, i=ingredient: update_modifier(i, -1))
+            plus_button.clicked.connect(lambda _, i=ingredient: update_modifier(i, +1))
+
+            card_layout.addWidget(name_label, row, 0)
+            card_layout.addWidget(quantity_label, row, 1)
+            card_layout.addWidget(minus_button, row, 2)
+            card_layout.addWidget(plus_button,row,3)
+            row += 1
+
+        def confirm_changes():
+            item.modifiers.clear()
+            for ingredient in list_of_ItemIngredients:
+                value = ingredient_state[ingredient.id]
+                if value == 0:
+                    continue
+                if value < 0:
+                    item.modifiers.append(CheckoutModifiers(ingredient.id, ingredient.name, -1))
+                elif value > 0:
+                    item.modifiers.append(CheckoutModifiers(ingredient.id, ingredient.name, +1))
+            self.show_home_screen()
+                                                  
+
+        confirm_button = self.create_button("Confirm", "#f3f4f6", 220, 48)
+        confirm_button.clicked.connect(confirm_changes)
 
         back_button = self.create_button("Back", "#f3f4f6", 220, 48)
         back_button.clicked.connect(self.show_home_screen)
-        card_layout.addWidget(back_button, last_grid_row, 1, alignment=Qt.AlignmentFlag.AlignCenter)
-        
-        background_layout.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
-        background_layout.addStretch()
 
+        card_layout.addWidget(confirm_button, row, 0,alignment=Qt.AlignmentFlag.AlignCenter)
+        card_layout.addWidget(back_button, row, 2,alignment=Qt.AlignmentFlag.AlignCenter)
+
+        background_layout.addWidget(card,alignment=Qt.AlignmentFlag.AlignCenter)
+        background_layout.addStretch()
 
     def show_receipt_popup(self, receipt_text, total):
         popup = QDialog(self)

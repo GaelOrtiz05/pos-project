@@ -25,13 +25,14 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def_readonly("stock", &Ingredient::stock);
 
   py::class_<Item>(handle, "Item")
-      .def_readonly("id", &Item::id)
+      .def_readonly("item_id", &Item::id)
       .def_readonly("name", &Item::name)
       .def_readonly("image", &Item::image)
       .def_readonly("price", &Item::price)
       .def_readonly("inStock", &Item::inStock)
       .def_readonly("categoryId", &Item::categoryId)
-      .def_readonly("categoryName", &Item::categoryName);
+      .def_readonly("categoryName", &Item::categoryName)
+      .def_readonly("modifiers", &Item::modifiers);
 
   py::class_<ItemIngredient>(handle, "ItemIngredient")
       .def_readonly("id", &ItemIngredient::id)
@@ -86,7 +87,7 @@ PYBIND11_MODULE(pos_backend, handle) {
       .def("decrementStock", &Database::Decrement_Ingredient_Stock_Of_Item)
       .def("incrementStock", &Database::Increment_Ingredient_Stock_Of_Item)
       .def("getComboItems", &Database::Get_Vector_ComboItems_by_ComboID)
-      .def("purchase", &Database::Process_Purchase)
+      .def("Process_Purchase", &Database::Process_Purchase)
       .def("getOrders", &Database::Get_Vector_Orders)
       .def("getOrderItemsById", &Database::Get_Vector_OrderItems_By_OrderID)
       .def("get_Checkout_Items", &Database::Get_Vector_Checkout_items)

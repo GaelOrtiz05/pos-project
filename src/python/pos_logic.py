@@ -3,6 +3,30 @@ from PySide6.QtCore import Qt
 
 import pos_backend
 from datetime import datetime, timedelta
+
+class CheckoutGroup:
+    def __init__(self,group_id,group_type,name,price):
+        self.group_id = group_id
+        self.group_type = group_type
+        self.name = name
+        self.price = price
+        self.items = []
+
+class CheckoutGroupItems:
+    def __init__(self,item_id,name,price):
+        self.item_id = item_id
+        self.name = name
+        self.price = price
+        self.modifiers = []
+
+class CheckoutModifiers:
+    def __init__(self,ingredient_id,name,change):
+        self.ingredient_id = ingredient_id
+        self.name = name
+        self.change = change
+
+
+
 class POSLogic:
     def __init__(self):
         self.logic = pos_backend.Login()
@@ -12,15 +36,13 @@ class POSLogic:
         self.current_user = None
         self.items = []
         self.combos = []
-        self.cart = []
-        self.checkout_ids = []
-        self.checkoutID_counter = 0
-
+        
     def initialize(self, username):
         self.current_user = self.logic.getUser(username)
         self.items = self.data.getItems()
         self.combos = self.data.getCombos()
         self.cart = []
+        self.checkout_group_counter = 0
 
     def show_home_screen(self) -> None: ...
     def show_manager_menu(self) -> None: ...
@@ -112,136 +134,92 @@ class POSLogic:
 
 
     #Cart methods
-    def confirm_item(self, item, quantities, id_list):
-        return_list = []
-        for idx, quantity in enumerate(quantities):
-            for i in range(quantity):
-                return_list.append(id_list[idx])
+    
 
-        print(return_list)
-        self.add_to_checkout_tables(item, return_list)
-        self.show_home_screen()
-        #temporary
-        list_ = self.data.get_Checkout_Items()
-        print(f"The items in checkout are: {[item.name for item in list_]}")
-        print(self.checkoutID_counter)
-        ##########
-
-    def add_to_checkout_tables(self, item, ingredient_list = []):
-        self.checkoutID_counter +=1
-
-        self.checkout_ids.append(self.checkoutID_counter) 
-        self.data.Add_Item_Into_Checkout_Tables(item.id, ingredient_list,self.checkoutID_counter)
-        self.add_to_cart(item,self.checkoutID_counter)
-
-    def add_to_cart(self, item, checkout_id = 0):
-
-        existing_items = next((item_ for item_ in self.cart 
-                               if item_["itemID"] == item.id 
-                               and not item_["isCombo"] 
-                               and not item_["isAdjusted"]), None)
+    def add_item_to_cart(self, item):
+        group = CheckoutGroup(group_id=self.checkout_group_counter,
+                              group_type="item",
+                              name = item.name,
+                              price=item.price)
         
-        if existing_items:
-            existing_items["count"] += 1
-        else:
-            self.cart.append({"checkoutID": checkout_id,
-                              "itemID": item.id,
-                            "name": item.name,
-                            "subtitle": "",
-                            "price": item.price,
-                            "count": 1,
-                            "isCombo": False,
-                            "isAdjusted": False})        
-        if hasattr(self, 'cart_items_layout'):
-            self.update_cart()
+        group.items.append(CheckoutGroupItems(item.item_id,item.name,item.price))
 
-    def remove_from_checkout_tables(self,checkout_id):
-        self.data.Remove_From_Checkout_Tables(checkout_id)
-
-        index = next((i for i ,item in enumerate(self.cart) if item["checkoutID"] == checkout_id),None)
-        if index is None: return
-
-        if self.cart[index]["count"] > 1:
-            self.cart[index]["count"] -= 1
-        else:
-            self.cart.pop(index)
-            self.checkout_ids.remove(checkout_id)
-        self.update_cart()
-        print(f"cart list {self.cart}")
-        print(f"checkout id list {self.checkout_ids}")
-
-    def get_cart_display_text(self, item):
-        item_count = item["count"]
-
-        if item["isCombo"] and "subtitle" in item:
-            return f"{item['name']} - ${item['price']:.2f} - x{item_count}\n{item['subtitle']}"
-        else:
-            return f"{item['name']} - ${item['price']:.2f} - x{item_count}"
-
-    def checkout(self):
-        list_of_order_items = []
-        final_total = 0.0
-        receipt_text = ""
-
-        for item in self.cart:
-            order_item = pos_backend.OrderItem()
-            order_item.itemId = item["itemID"]
-            order_item.itemName = item["name"]
-            order_item.itemPrice = item["price"]
-            order_item.count = item["count"]
-
-            list_of_order_items.append(order_item)
-
-            subtotal = item["price"] * item["count"]
-            final_total += subtotal
-            receipt_text += f"{item['name']} x{item['count']} - ${subtotal:.2f}\n"
-
-        self.data.purchase(list_of_order_items, final_total)
-        self.show_receipt_popup(receipt_text, final_total)
-        self.data.Process_Checkout_Tables()
-
-        self.cart = []
+        self.cart.append(group)
+        self.checkout_group_counter += 1
         self.update_cart()
     
-    def confirm_combo(self, combo):
+    def add_combo_to_cart(self,combo):
+        group = CheckoutGroup(group_id=self.checkout_group_counter,
+                              group_type="combo",
+                              name= combo.name,
+                              price= combo.price)
         combo_items = self.data.getComboItems(combo.id)
 
         for comboItem in combo_items:
-            for ingredient in self.data.getItemIngredients(comboItem.id):
-                if ingredient.stock < 1:
-                    print(f"'{combo.name}' cannot be added: '{ingredient.name}' is out of stock.")
-                    return
+            group.items.append(CheckoutGroupItems(comboItem.id, comboItem.name,0.00))
 
-        for item in self.cart:
-            if item["id"] == combo.id and item["isCombo"]:
-                item["count"] += 1
-                self.show_home_screen()
-                return
+        self.cart.append(group)
+        self.checkout_group_counter += 1
 
-        subtitle = ", ".join(comboItem.name for comboItem in combo_items)
+        
+        self.update_cart()
 
-        self.cart.append({"id": combo.id,
-                          "name": combo.name,
-                          "subtitle": subtitle,
-                          "price": combo.price,
-                          "count": 1,
-                          "isCombo": True})
-        self.show_home_screen()
+    def add_modifer(self,group_id, item_id,ingredient,change):
+        group = next(group for group in self.cart if group.group_id == group_id)
+        if not group: return
+        item = next(item for item in group.items if item.item_id == item_id)
+        if not item: return
+        item.modifiers.append(CheckoutModifiers (ingredient.id,ingredient.name,change))
 
+
+    def remove_group_from_checkout(self,group_id):
+        self.cart = [group for group in self.cart if group.group_id != group_id]
+        self.update_cart()
+
+    def checkout(self):
+        total = 0
+        order_items = []
+        receipt_text = ""
+        for group in self.cart:
+            for item in group.items:
+                ingredients = self.data.getItemIngredients(item.item_id)
+                for ingredient in ingredients:
+                    self.data.setIngredientStock(False,ingredient.name,1)
+
+
+        for group in self.cart:
+            for item in group.items:
+            
+                order_item = pos_backend.OrderItem()
+                order_item.itemId = item.item_id
+                order_item.itemName = item.name
+
+                order_item.count = 1
+                order_items.append(order_item)
+                total += item.price
+
+                receipt_text += f"{item.name} x1 - ${total:.2f}\n"
+        self.data.Process_Purchase(order_items,total)
+        self.show_receipt_popup(receipt_text, total)
+        
+        self.cart = []
+        self.update_cart()
+
+        
     def update_ingredient_stock(self, ingredient, stock_input, increase=True): #works with disp_manage_inventory
         stock_input_text = stock_input.text().strip()
 
-        if text == "": #fail safe for empty input
+        if stock_input_text == "": #fail safe for empty input
             self.inventory_feedback.setText("Enter a stock amount.")
             self.inventory_feedback.show()
             return
 
-        if not text.isdigit(): #fail safe for wrong input
+        if not stock_input_text.isdigit(): #fail safe for wrong input
             self.inventory_feedback.setText("Invalid input. Enter a whole number.")
             self.inventory_feedback.show()
             return
 
-        amount = int(text)
+        amount = int(stock_input_text)
 
         if increase and ingredient.stock + amount > 200: # max capacity
             self.inventory_feedback.setText("Inventory Cannot Exceed 200.")
@@ -262,8 +240,9 @@ class POSLogic:
     
     def calculate_cart_total(self):
         total = 0.0
-        for item in self.cart:
-            total += item["price"] * item["count"]
+        for group in self.cart:
+            for item in group.items:
+                total += item.price
         return total
 
 

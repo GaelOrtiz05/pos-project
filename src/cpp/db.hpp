@@ -25,7 +25,8 @@ struct Item {
   double price=0.0;
   bool inStock=true;
   int categoryId=0;
-  std::string categoryName=""; // not in table, fetched in join select
+  std::string categoryName="";
+  std::vector<int> modifiers;
 };
 
 struct ItemIngredient {
