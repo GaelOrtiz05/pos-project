@@ -107,6 +107,7 @@ public:
   std::vector<Item> Get_Vector_Checkout_items();
   //std::vector<Ingredient> Get_Vector_Checkout_Ingredients_By_ItemID(int itemId);
   bool Remove_Item_From_Checkout_Tables(int checkoutID);
+  bool Process_Checkout_Tables();
 };
 
 void database_menu(Database &db);
