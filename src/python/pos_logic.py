@@ -194,7 +194,7 @@ class POSLogic:
                 order_item = pos_backend.OrderItem()
                 order_item.itemId = item.item_id
                 order_item.itemName = item.name
-
+                order_item.itemPrice = item.price
                 order_item.count = 1
                 order_items.append(order_item)
                 total += item.price
