@@ -133,18 +133,17 @@ void Database::Initalize_Menu() {
               (20, 'Coffee'               , 'data/images/coffee.png', 1.99, 4, 1),
               (21, 'Chocolate Shake'      , 'data/images/chocolate_shake.png', 3.99, 4, 1),
               (22, 'Bottled Water'        , 'data/images/bottled_water.png', 0.99, 4, 1),
-              (23, 'Double Cheeseburger'  , 'data/images/double_cheeseburger.png', 7.99, 1, 1),
-              (24, 'Pizza'                , 'data/images/pizza.png', 8.99, 1, 1),
-              (25, 'Tacos'                , 'data/images/tacos.png', 6.99, 1, 1),
-              (26, 'Donut'                , 'data/images/donut.png', 1.99, 3, 1),
-              (27, 'Muffin'               , 'data/images/muffin.png', 2.49, 3, 1),
-              (28, 'Ice Cream Cone'       , 'data/images/ice_cream_cone.png', 2.29, 3, 1),
-              (29, 'Sundae'               , 'data/images/sundae.png', 2.49, 3, 1),
-              (30, 'BLT'                  , 'data/images/blt.png', 6.99, 1, 1),
-              (31, 'Corn Dog'             , 'data/images/corn_dog.png', 4.49, 1, 1),
-              (32, 'Side Salad'           , 'data/images/side_salad.png', 2.49, 2, 1),
-              (33, 'Tea'                  , 'data/images/tea.png', 1.79, 4, 1),
-              (34, 'Sub Sandwich'         , 'data/images/sub_sandwich.png', 7.99, 1, 1);
+              (23, 'Pizza'                , 'data/images/pizza.png', 8.99, 1, 1),
+              (24, 'Tacos'                , 'data/images/tacos.png', 6.99, 1, 1),
+              (25, 'Donut'                , 'data/images/donut.png', 1.99, 3, 1),
+              (26, 'Muffin'               , 'data/images/muffin.png', 2.49, 3, 1),
+              (27, 'Ice Cream Cone'       , 'data/images/ice_cream_cone.png', 2.29, 3, 1),
+              (28, 'Sundae'               , 'data/images/sundae.png', 2.49, 3, 1),
+              (29, 'BLT'                  , 'data/images/blt.png', 6.99, 1, 1),
+              (30, 'Corn Dog'             , 'data/images/corn_dog.png', 4.49, 1, 1),
+              (31, 'Side Salad'           , 'data/images/side_salad.png', 2.49, 2, 1),
+              (32, 'Tea'                  , 'data/images/tea.png', 1.79, 4, 1),
+              (33, 'Sub Sandwich'         , 'data/images/sub_sandwich.png', 7.99, 1, 1);
 
             INSERT INTO ingredients (id, name, stock) VALUES
               (1 , 'Beef Patty'    , 100),
@@ -207,51 +206,41 @@ void Database::Initalize_Menu() {
                (16, 9, 1, 0.0),  -- Ketchup
                (16, 11, 1, 0.0), -- Mustard
 
-            -- Double Cheeseburger
-               (23, 1, 0, 0.0), -- Beef Patty
-               (23, 3, 0, 0.0), -- Bun
-               (23, 7, 0, 0.0), -- Cheese
-               (23, 4, 1, 0.0), -- Lettuce
-               (23, 5, 1, 0.0), -- Tomato
-               (23, 6, 1, 0.0), -- Pickles
-               (23, 8, 1, 0.0), -- Bacon
-
             -- Pizza
-               (24, 14, 0, 0.0), -- Pizza Dough
-               (24, 15, 0, 0.0), -- Tomato Sauce
-               (24, 7, 0, 0.0),  -- Cheese
+               (23, 14, 0, 0.0), -- Pizza Dough
+               (23, 15, 0, 0.0), -- Tomato Sauce
+               (23, 7, 0, 0.0),  -- Cheese
 
             -- Tacos
-               (25, 16, 0, 0.0), -- Tortilla
-               (25, 17, 0, 0.0), -- Ground Beef
-               (25, 4, 1, 0.0),  -- Lettuce
-               (25, 5, 1, 0.0),  -- Tomato
-               (25, 7, 1, 0.0),  -- Cheese
-               (25, 18, 1, 0.0), -- Salsa
+               (24, 16, 0, 0.0), -- Tortilla
+               (24, 17, 0, 0.0), -- Ground Beef
+               (24, 4, 1, 0.0),  -- Lettuce
+               (24, 5, 1, 0.0),  -- Tomato
+               (24, 7, 1, 0.0),  -- Cheese
+               (24, 18, 1, 0.0), -- Salsa
 
             -- BLT
-               (30, 3, 0, 0.0),  -- Bun
-               (30, 8, 0, 0.0),  -- Bacon
-               (30, 4, 0, 0.0),  -- Lettuce
-               (30, 5, 0, 0.0),  -- Tomato
-               (30, 10, 1, 0.0), -- Mayonnaise
+               (29, 3, 0, 0.0),  -- Bun
+               (29, 8, 0, 0.0),  -- Bacon
+               (29, 4, 0, 0.0),  -- Lettuce
+               (29, 5, 0, 0.0),  -- Tomato
+               (29, 10, 1, 0.0), -- Mayonnaise
 
             -- Corn Dog
-               (31, 13, 0, 0.0), -- Hot Dog
-               (31, 11, 1, 0.0), -- Mustard
-               (31, 9, 1, 0.0),  -- Ketchup
+               (30, 13, 0, 0.0), -- Hot Dog
+               (30, 11, 1, 0.0), -- Mustard
+               (30, 9, 1, 0.0),  -- Ketchup
 
             -- Side Salad
-               (32, 4, 0, 0.0), -- Lettuce
-               (32, 5, 1, 0.0), -- Tomato
-               (32, 7, 1, 0.0), -- Cheese
+               (31, 4, 0, 0.0), -- Lettuce
+               (31, 5, 1, 0.0), -- Tomato
 
             -- Sub Sandwich
-               (34, 3, 0, 0.0), -- Bun
-               (34, 7, 0, 0.0), -- Cheese
-               (34, 4, 1, 0.0), -- Lettuce
-               (34, 5, 1, 0.0), -- Tomato
-               (34, 6, 1, 0.0); -- Pickles
+               (33, 3, 0, 0.0), -- Bun
+               (33, 7, 0, 0.0), -- Cheese
+               (33, 4, 1, 0.0), -- Lettuce
+               (33, 5, 1, 0.0), -- Tomato
+               (33, 6, 1, 0.0); -- Pickles
 
             INSERT INTO combos (id, name, price) VALUES
               (1, 'Burger Combo', 9.99),
