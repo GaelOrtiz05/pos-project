@@ -35,7 +35,7 @@ void Database::Setup_Database() {
       item_id                       INTEGER NOT NULL,
       ingredient_id                 INTEGER NOT NULL,
       is_removable                  INTEGER DEFAULT 0,
-      price_change                  REAL NOT NULL,
+      price_change                  REAL NOT NULL DEFAULT 0.0,
       PRIMARY KEY (item_id, ingredient_id),
       FOREIGN KEY (item_id)         REFERENCES items(id),
       FOREIGN KEY (ingredient_id)   REFERENCES ingredients(id)
@@ -72,18 +72,36 @@ void Database::Setup_Database() {
     );
 
     CREATE TABLE IF NOT EXISTS checkout_items (
-      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      checkout_id     INTEGER PRIMARY KEY AUTOINCREMENT,
       item_id         INTEGER NOT NULL,
       item_name       TEXT NOT NULL,
       item_price      DOUBLE NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS checkout_ingredients (
-      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      checkout_id     INTEGER NOT NULL,
       item_id         INTEGER NOT NULL,
       ingredient_id   INTEGER NOT NULL
     );
   )SQL");
+
+  // Migrate old checkout_ingredients schema (id -> checkout_id)
+  SQLite::Statement tableExists(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='checkout_ingredients'");
+  if (tableExists.executeStep()) {
+    SQLite::Statement check(db, "PRAGMA table_info(checkout_ingredients)");
+    bool has_checkout_id = false;
+    while (check.executeStep()) {
+      std::string colName = check.getColumn(1).getText();
+      if (colName == "checkout_id") {
+        has_checkout_id = true;
+        break;
+      }
+    }
+    if (!has_checkout_id) {
+      db.exec("DROP TABLE IF EXISTS checkout_ingredients");
+      db.exec("CREATE TABLE checkout_ingredients (checkout_id INTEGER NOT NULL, item_id INTEGER NOT NULL, ingredient_id INTEGER NOT NULL)");
+    }
+  }
 }
 
 namespace {

@@ -19,13 +19,13 @@ struct Ingredient {
 };
 
 struct Item {
-  int id;
-  std::string name;
-  std::string image;
-  double price;
-  bool inStock;
-  int categoryId;
-  std::string categoryName; // not in table, fetched in join select
+  int id=0;
+  std::string name="";
+  std::string image="";
+  double price=0.0;
+  bool inStock=true;
+  int categoryId=0;
+  std::string categoryName=""; // not in table, fetched in join select
 };
 
 struct ItemIngredient {
@@ -78,14 +78,13 @@ public:
   void Process_Purchase(const std::vector<OrderItem> &items, double total);
 
   // insert
-  void Insert_Into_Category_Table(const std::string &name);
   void Insert_Into_Ingredient_Table(const std::string &name, double price, int stock = 100);
   void Insert_Into_Item_Table(const std::string &name, const std::string &image, double price, int categoryId);
   void Insert_Into_Combo_Table(const std::string &name, double price);
 
   void Combine_Into_IngredientItem_Table(int ingredientId, int itemId, int isRemovable, double priceChange = 0.0);
   void Combine_Into_ComboItem_Table(int comboId, int itemId);
-  void Add_Item_Into_Checkout_Tables(int itemId, const std::vector<int> ingredient_quantities = {});
+  void Add_Item_Into_Checkout_Tables(int itemId, const std::vector<int> ingredient_quantities = {}, int checkout_ID=1);
   std::vector<Order> Get_Vector_Orders();
 
   // update stock
@@ -105,6 +104,9 @@ public:
   std::vector<ItemIngredient> Get_Vector_ItemIngredients_by_ItemID(int itemId);
   std::vector<ComboItem> Get_Vector_ComboItems_by_ComboID(int comboId);
   std::vector<OrderItem> Get_Vector_OrderItems_By_OrderID(int orderId);
+  std::vector<Item> Get_Vector_Checkout_items();
+  //std::vector<Ingredient> Get_Vector_Checkout_Ingredients_By_ItemID(int itemId);
+  bool Remove_Item_From_Checkout_Tables(int checkoutID);
 };
 
 void database_menu(Database &db);

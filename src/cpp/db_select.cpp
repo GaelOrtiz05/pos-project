@@ -207,3 +207,30 @@ std::vector<OrderItem> Database::Get_Vector_OrderItems_By_OrderID(int orderId) {
   }
   return vector_of_orderItems;
 }
+
+std::vector<Item> Database::Get_Vector_Checkout_items() {
+  SQLite::Statement get_items(db, R"SQL(SELECT item_id, item_name FROM checkout_items)SQL");
+
+  std::vector<Item> list_of_items_in_checkout;
+  while (get_items.executeStep()) {
+    Item item;
+    item.id = get_items.getColumn(0).getInt();
+    item.name = get_items.getColumn(1).getString();
+    list_of_items_in_checkout.push_back(item);
+
+  }
+  return list_of_items_in_checkout;
+}
+
+bool Database::Remove_Item_From_Checkout_Tables(int checkoutID) {
+  SQLite::Statement remove_ingredients(db,"DELETE FROM checkout_ingredients WHERE checkout_id = ?");
+  remove_ingredients.bind(1,checkoutID);
+  remove_ingredients.exec(); 
+
+  SQLite::Statement remove_items(db, "DELETE FROM checkout_items WHERE checkout_id = ?");
+  remove_items.bind(1,checkoutID);
+  remove_items.exec();
+  
+  return true;
+}
+
