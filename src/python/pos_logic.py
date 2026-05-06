@@ -179,8 +179,13 @@ class POSLogic:
         for group in self.cart:
             for item in group.items:
                 for mod in item.modifiers:
-                    edit = 1 + mod.change
-                    self.data.setIngredientStock(False,mod.name,edit)
+                    edit = 0 + mod.change
+                    if edit > 1:
+                        self.data.setIngredientStock(False,mod.name,2)
+                    elif edit == 1:
+                        self.data.setIngredientStock(False,mod.name,1)
+                    else:
+                        self.data.setIngredientStock(False,mod.name,0)
 
 
         for group in self.cart:
