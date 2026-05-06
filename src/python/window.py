@@ -9,7 +9,7 @@ import sys
 from pos_logic import POSLogic
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-
+from datetime import datetime
 # shortcuts, inputs, etc.
 from PySide6.QtCore import Qt, QSize, QTimer
 from PySide6.QtGui import QColor, QFont, QFontMetrics, QGuiApplication, QIcon, QKeySequence, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap, QShortcut
@@ -29,6 +29,8 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
+    QDialog,
+    
 )
 
 
@@ -800,13 +802,13 @@ class MainWindow(QMainWindow, POSLogic):
 
         # Add employee Button
         todays_sales = self.create_button("Sale Today", "#2563eb", 350, 100)
-        todays_sales.clicked.connect(lambda: self.disp_sales(1))
+        todays_sales.clicked.connect(lambda: self.display_sales(1))
         layout.addWidget(todays_sales, 2, 0)
         weekly_sales = self.create_button("Sale This Week", "#2563eb", 350, 100)
-        weekly_sales.clicked.connect(lambda: self.disp_sales(2))
+        weekly_sales.clicked.connect(lambda: self.display_sales(2))
         layout.addWidget(weekly_sales, 2, 1)
         all_sales = self.create_button("All Sales", "#2563eb", 350, 100)
-        all_sales.clicked.connect(lambda: self.disp_sales(3))
+        all_sales.clicked.connect(lambda: self.display_sales(3))
         layout.addWidget(all_sales, 3, 0)
 
         back_button = self.create_button("Back", "2563eb", 350, 100)
@@ -862,7 +864,7 @@ class MainWindow(QMainWindow, POSLogic):
             f"Total Sale $:{total:.2f} ", "black", 800, 100
         )
         back_button = self.create_button("Back", "#0066ff", 800, 50)
-        back_button.clicked.connect(self.disp_sales_menu)
+        back_button.clicked.connect(self.display_sales_menu)
         # PLACing lablels
         layout.addWidget(title, 0, 0, 1, 2)
         layout.addWidget(scroll, 1, 0, 1, 2)
@@ -951,7 +953,41 @@ class MainWindow(QMainWindow, POSLogic):
         background_layout.addStretch()
 
 
+    def show_receipt_popup(self, receipt_text, total):
+        popup = QDialog(self)
+        popup.setWindowTitle("Purchase Complete")
+        popup.setFixedSize(400, 500)
+        popup.setStyleSheet("background-color: #f9fafb;")
 
+        layout = QVBoxLayout(popup)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(12)
+
+        current_date = datetime.now().strftime("%m/%d/%Y %I:%M %p")
+
+        title = QLabel("Purchase Complete")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(self.create_font(22, 700))
+        title.setStyleSheet("color: #111827; background-color: transparent;")
+
+        date_label = QLabel(f"Date: {current_date}")
+        date_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        date_label.setStyleSheet("color: #374151; font-size: 16px;")
+
+        items_label = QLabel(f"Items Purchased:\n\n{receipt_text}\nTotal: ${total:.2f}")
+        items_label.setWordWrap(True)
+        items_label.setStyleSheet("background-color: white; color: #111827; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; font-size: 16px;")
+
+        close_button = self.create_button("Close", "#2563eb", 250, 50)
+        close_button.clicked.connect(popup.accept)
+
+        layout.addWidget(title)
+        layout.addWidget(date_label)
+        layout.addWidget(items_label)
+        layout.addStretch()
+        layout.addWidget(close_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        popup.exec()
 
     def display_manage_inventory_menu(self):
         manage_inventory_ui = QWidget()
