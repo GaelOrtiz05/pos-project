@@ -25,8 +25,6 @@ class CheckoutModifiers:
         self.name = name
         self.change = change
 
-
-
 class POSLogic:
     def __init__(self):
         self.logic = pos_backend.Login()
@@ -132,10 +130,7 @@ class POSLogic:
             "border-radius: 10px; padding: 6px;"
         )
 
-
     #Cart methods
-    
-
     def add_item_to_cart(self, item):
         group = CheckoutGroup(group_id=self.checkout_group_counter,
                               group_type="item",
@@ -173,7 +168,6 @@ class POSLogic:
         if not item: return
         item.modifiers.append(CheckoutModifiers (ingredient.id,ingredient.name,change))
 
-
     def remove_group_from_checkout(self,group_id):
         self.cart = [group for group in self.cart if group.group_id != group_id]
         self.update_cart()
@@ -206,8 +200,7 @@ class POSLogic:
         
         self.cart = []
         self.update_cart()
-
-        
+    
     def update_ingredient_stock(self, ingredient, stock_input, increase=True): #works with disp_manage_inventory
         stock_input_text = stock_input.text().strip()
 
@@ -246,8 +239,6 @@ class POSLogic:
             for item in group.items:
                 total += item.price
         return total
-
-
 
     def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
         total_sales = 0
