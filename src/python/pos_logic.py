@@ -152,11 +152,13 @@ class POSLogic:
         group = CheckoutGroup(group_id=self.checkout_group_counter,
                               group_type="combo",
                               name= combo.name,
-                              price= 7.99)
+                              price= combo.price)
         combo_items = self.data.getComboItems(combo.item_id)
-
+        i=0
         for comboItem in combo_items:
-            group.items.append(CheckoutGroupItems(comboItem.id, comboItem.name,0.00))
+            
+            group.items.append(CheckoutGroupItems(comboItem.id, comboItem.name,combo.price if i == 0 else 0.00))
+            i+=1
 
         self.cart.append(group)
         self.checkout_group_counter += 1
@@ -236,7 +238,7 @@ class POSLogic:
         self.inventory_feedback.setText("Inventory Updated.")
         self.inventory_feedback.show()
 
-        self.disp_manage_inventory_menu()
+        self.display_manage_inventory_menu()
     
     def calculate_cart_total(self):
         total = 0.0
