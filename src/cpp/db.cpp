@@ -201,7 +201,7 @@ void Database::Initalize_Menu() {
                (15, 6, 1, 0.0), -- Pickles
 
             -- Hot Dog
-               (30, 13, 0, 0.0), -- Sausage
+               (16, 13, 0, 0.0), -- Sausage
                (16, 3, 0, 0.0),  -- Bun
                (16, 9, 1, 0.0),  -- Ketchup
                (16, 11, 1, 0.0), -- Mustard
