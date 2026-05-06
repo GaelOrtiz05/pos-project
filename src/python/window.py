@@ -759,7 +759,7 @@ class MainWindow(QMainWindow, POSLogic):
                     for modifier in item.modifiers:
                         if modifier.change == -1:
                             modifier_text += f" -{modifier.name} "
-                        elif modifier.change == +1:
+                        elif modifier.change == +2:
                             modifier_text += f" +{modifier.name} "
                     group_total += item_total
 
