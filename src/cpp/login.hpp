@@ -22,21 +22,18 @@ private:
   void Setup_Database() {
 
     LOGIN_DB.exec("CREATE TABLE IF NOT EXISTS users ("
-            "  id       INTEGER PRIMARY KEY AUTOINCREMENT,"
-            "  name     TEXT NOT NULL,"
-            "  password TEXT NOT NULL,"
-            "  role     INTEGER DEFAULT 0"
-            ")");
-
-    // if (User_Exists("admin") == false) {
-    //   initializeAdminPassword();
-    // }
+                  "  id       INTEGER PRIMARY KEY AUTOINCREMENT,"
+                  "  name     TEXT NOT NULL,"
+                  "  password TEXT NOT NULL,"
+                  "  role     INTEGER DEFAULT 0"
+                  ")");
   }
 
 public:
   bool User_Exists(const std::string &name) {
 
-    SQLite::Statement user_count(LOGIN_DB, "SELECT COUNT(*) FROM users WHERE name = ?");
+    SQLite::Statement user_count(LOGIN_DB,
+                                 "SELECT COUNT(*) FROM users WHERE name = ?");
     user_count.bind(1, name);
     user_count.executeStep();
 
@@ -51,11 +48,14 @@ public:
     }
   }
 
-  Login() : LOGIN_DB("data/login.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+  Login()
+      : LOGIN_DB("data/login.db",
+                 SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
     Setup_Database();
   };
 
-  bool Add_User_To_Table(const std::string &name, const std::string &password,const int role = 0) {
+  bool Add_User_To_Table(const std::string &name, const std::string &password,
+                         const int role = 0) {
 
     // 1. check if name is already taken
     if (User_Exists(name) == true) {
@@ -76,9 +76,10 @@ public:
     SQLite::Transaction transaction(LOGIN_DB);
 
     // similiar statement as last time
-    SQLite::Statement insert(LOGIN_DB, "INSERT INTO users (name, password, role) VALUES (?, ?, ?)");
+    SQLite::Statement insert(
+        LOGIN_DB, "INSERT INTO users (name, password, role) VALUES (?, ?, ?)");
     // id is handeld by AUTOINCREMENT
-    
+
     // binds name
     insert.bind(1, name);
     // binds password
@@ -96,9 +97,11 @@ public:
     return true;
   }
 
-  bool Remove_User_From_Table(const std::string &name, const int role_of_requestor) {
+  bool Remove_User_From_Table(const std::string &name,
+                              const int role_of_requestor) {
 
-    SQLite::Statement role_query(LOGIN_DB, "SELECT role FROM users WHERE name = ?");
+    SQLite::Statement role_query(LOGIN_DB,
+                                 "SELECT role FROM users WHERE name = ?");
     role_query.bind(1, name);
 
     if (!role_query.executeStep()) {
@@ -120,8 +123,9 @@ public:
 
     SQLite::Transaction transaction(LOGIN_DB);
 
-    SQLite::Statement delete_query(LOGIN_DB, "DELETE FROM users WHERE name = ?");
-  
+    SQLite::Statement delete_query(LOGIN_DB,
+                                   "DELETE FROM users WHERE name = ?");
+
     delete_query.bind(1, name);
 
     // .exec() returns amount of rows changed
@@ -146,7 +150,8 @@ public:
       return false;
     }
 
-    SQLite::Statement role_query(LOGIN_DB, "SELECT role FROM users WHERE name = ?");
+    SQLite::Statement role_query(LOGIN_DB,
+                                 "SELECT role FROM users WHERE name = ?");
 
     role_query.bind(1, name);
 
@@ -170,10 +175,12 @@ public:
     }
   }
 
-  bool Process_Login_User(const std::string &name, const std::string &password) {
+  bool Process_Login_User(const std::string &name,
+                          const std::string &password) {
 
     // match name to password
-    SQLite::Statement select_password(LOGIN_DB, "SELECT password FROM users WHERE name = ?");
+    SQLite::Statement select_password(
+        LOGIN_DB, "SELECT password FROM users WHERE name = ?");
 
     select_password.bind(1, name);
 
@@ -198,7 +205,8 @@ public:
 
   User Get_User(const std::string &name) {
 
-    SQLite::Statement select_user(LOGIN_DB, "SELECT * FROM users WHERE name = ?");
+    SQLite::Statement select_user(LOGIN_DB,
+                                  "SELECT * FROM users WHERE name = ?");
 
     select_user.bind(1, name);
 
@@ -220,7 +228,8 @@ public:
   std::vector<User> Get_Vector_Users() {
 
     SQLite::Statement select_user(
-        LOGIN_DB, "SELECT name FROM users where id >=0 ORDER BY role DESC, name ASC");
+        LOGIN_DB,
+        "SELECT name FROM users where id >=0 ORDER BY role DESC, name ASC");
 
     std::vector<User> vector_of_users;
 
@@ -310,7 +319,7 @@ inline void Login_Menu(Login &login) {
   while (running) {
     Print_Headers();
     std::cin >> menu_selection;
-    
+
     switch (menu_selection) {
     case 1:
       Add_User(login);

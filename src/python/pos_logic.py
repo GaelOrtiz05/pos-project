@@ -77,7 +77,7 @@ class POSLogic:
         if login_success == True:
             self.initialize(username)
             if self.current_user.isAdmin:
-                self.show_manager_menu()
+                self.show_home_screen()
             else:
                 self.show_home_screen()
         else:
