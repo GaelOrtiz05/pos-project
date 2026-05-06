@@ -110,6 +110,7 @@ class POSLogic:
             "border-radius: 10px; padding: 6px;"
         )
 
+
     #Cart methods
     def confirm_item(self, item, quantities, id_list):
         return_list = []
@@ -169,7 +170,6 @@ class POSLogic:
         print(f"cart list {self.cart}")
         print(f"checkout id list {self.checkout_ids}")
 
-
     def get_cart_display_text(self, item):
         item_count = item["count"]
 
@@ -177,14 +177,6 @@ class POSLogic:
             return f"{item['name']} - ${item['price']:.2f} - x{item_count}\n{item['subtitle']}"
         else:
             return f"{item['name']} - ${item['price']:.2f} - x{item_count}"
-
-    
-    def UPDATE_CART(self, cart_list):
-        checkout_list = self.data.get_Checkout_Items()
-
-        print("test")
-
-        
 
     def checkout(self):
         list_of_order_items = []
@@ -203,8 +195,6 @@ class POSLogic:
         self.cart = []
         self.update_cart()
     
-
-
     def confirm_combo(self, combo):
         combo_items = self.data.getComboItems(combo.id)
 
@@ -261,6 +251,7 @@ class POSLogic:
         self.inventory_feedback.show()
 
         self.disp_manage_inventory_menu()
+    
     def calculate_cart_total(self):
         total = 0.0
         for item in self.cart:
