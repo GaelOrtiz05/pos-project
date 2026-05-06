@@ -116,7 +116,7 @@ void Database::Initalize_Menu() {
               (3,  'Cheese Burger'        , 'data/images/roblox_burger.png', 6.49, 1, 1),
               (4,  'French Fries'         , 'data/images/french_fries.png', 1.49, 2, 1),
               (5,  'Onion Rings'          , 'data/images/onion_rings.png', 1.69, 2, 1),
-              (6,  'Chocolate Cake Slice' , 'data/images/chocolate_cake_slice.png', 0.99, 3, 1),
+              (6,  'Miniature Chocolate Cake' , 'data/images/chocolate_cake_slice.png', 0.99, 3, 1),
               (7,  'Apple Pie'            , 'data/images/apple_pie.png', 1.89, 3, 1),
               (8,  'Soda'                 , 'data/images/cola.png', 1.49, 4, 1),
               (9,  'Orange Soda'          , 'data/images/orange_soda.png', 1.49, 4, 1),
@@ -158,7 +158,7 @@ void Database::Initalize_Menu() {
               (10, 'Mayonnaise'    , 100),
               (11, 'Mustard'       , 100),
               (12, 'Nugget'        , 100),
-              (13, 'Hot Dog'       , 100),
+              (13, 'Sausage'       , 100),
               (14, 'Pizza Dough'   , 100),
               (15, 'Tomato Sauce'  , 100),
               (16, 'Tortilla'      , 100),
@@ -201,7 +201,7 @@ void Database::Initalize_Menu() {
                (15, 6, 1, 0.0), -- Pickles
 
             -- Hot Dog
-               (16, 13, 0, 0.0), -- Hot Dog
+               (30, 13, 0, 0.0), -- Sausage
                (16, 3, 0, 0.0),  -- Bun
                (16, 9, 1, 0.0),  -- Ketchup
                (16, 11, 1, 0.0), -- Mustard
@@ -227,7 +227,7 @@ void Database::Initalize_Menu() {
                (29, 10, 1, 0.0), -- Mayonnaise
 
             -- Corn Dog
-               (30, 13, 0, 0.0), -- Hot Dog
+               (30, 13, 0, 0.0), -- Sausage
                (30, 11, 1, 0.0), -- Mustard
                (30, 9, 1, 0.0),  -- Ketchup
 
