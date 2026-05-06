@@ -153,7 +153,7 @@ class POSLogic:
                               group_type="combo",
                               name= combo.name,
                               price= combo.price)
-        combo_items = self.data.getComboItems(combo.id)
+        combo_items = self.data.getComboItems(combo.item_id)
 
         for comboItem in combo_items:
             group.items.append(CheckoutGroupItems(comboItem.id, comboItem.name,0.00))
