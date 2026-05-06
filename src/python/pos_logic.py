@@ -67,7 +67,7 @@ class POSLogic:
             error_label.setFixedSize(300,50)
             error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             layout.addWidget(error_label,error_row,0,1,2)
-            error_label.setStyleSheet("background-color: black;font-size: 20px;border-radius: 10px; color: red;")
+            error_label.setStyleSheet("background-color: #2563eb ;font-size: 20px;border-radius: 10px; color: white;")
 
     def manager_event_handler(self):
         if self.current_user.isAdmin:
@@ -181,17 +181,24 @@ class POSLogic:
     def checkout(self):
         list_of_order_items = []
         final_total = 0.0
+        receipt_text = ""
+
         for item in self.cart:
-                order_item = pos_backend.OrderItem()
-                order_item.itemId = item["itemID"]
-                order_item.itemName = item["name"]
-                order_item.itemPrice = item["price"]
-                order_item.count = item['count']
-                print(f"item count: {item['count']}")
-                list_of_order_items.append(order_item)
-                final_total += item["price"] * item["count"]
+            order_item = pos_backend.OrderItem()
+            order_item.itemId = item["itemID"]
+            order_item.itemName = item["name"]
+            order_item.itemPrice = item["price"]
+            order_item.count = item["count"]
+
+            list_of_order_items.append(order_item)
+
+            subtotal = item["price"] * item["count"]
+            final_total += subtotal
+            receipt_text += f"{item['name']} x{item['count']} - ${subtotal:.2f}\n"
 
         self.data.purchase(list_of_order_items, final_total)
+        self.show_receipt_popup(receipt_text, final_total)
+
         self.cart = []
         self.update_cart()
     
@@ -260,19 +267,10 @@ class POSLogic:
 
 
 
-
-
-    
-
-
-
-
-
-
     def get_sales(self,choice): #reading sales data (choice will determine if we read every sale, monthly or weekly.)
         total_sales = 0
-        text = ' \n'
-        orders = self.data.getOrders() # reading orders
+        order_into_text = ' \n'
+        list_of_orders = self.data.getOrders() # reading orders
         current_time = datetime.now() #getting current time from sys
 
         for order in list_of_orders:
@@ -295,7 +293,6 @@ class POSLogic:
 
         list_of_order_info = [order_into_text,total_sales]
         return list_of_order_info
-
     #Closes the program.
     def close_program(self):
             QApplication.quit()  
