@@ -555,7 +555,7 @@ class MainWindow(QMainWindow, POSLogic):
     def confirm_remove_employee(self, name):
         confirm_ui = QWidget()
         self.setCentralWidget(confirm_ui)
-        confirm_ui.setStyleSheet("background-color: black;")
+        confirm_ui.setStyleSheet("background-color: #f3f4f6;")
 
         outer_layout = QVBoxLayout(confirm_ui)
         outer_layout.setContentsMargins(0, 0, 0, 0)
@@ -563,24 +563,24 @@ class MainWindow(QMainWindow, POSLogic):
 
         card = QWidget()
         card.setFixedSize(650, 260)
-        card.setStyleSheet("background-color: #1f1f1f; border-radius: 14px;")
+        card.setStyleSheet("background-color: white; border-radius: 14px;")
         card_layout = QGridLayout(card)
         card_layout.setContentsMargins(20, 20, 20, 20)
         card_layout.setHorizontalSpacing(16)
         card_layout.setVerticalSpacing(16)
 
-        title = self.create_label(f"Remove {name}?", "", 360, 44)
+        title = self.create_label(f"Remove {name}?", "black", 360, 44)
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setFont(self.create_font(20, 600))
         card_layout.addWidget(title, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        confirm_button = self.create_button("Confirm", "green", 220, 48)
+        confirm_button = self.create_button("Confirm", "#2563eb", 220, 48)
         confirm_button.clicked.connect(lambda: self.view_remove_employee_handler(name))
         card_layout.addWidget(
             confirm_button, 1, 0, alignment=Qt.AlignmentFlag.AlignCenter
         )
 
-        back_button = self.create_button("Back", "red", 220, 48)
+        back_button = self.create_button("Back", "#2563eb", 220, 48)
         back_button.clicked.connect(self.show_view_employees_screen)
         card_layout.addWidget(back_button, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
 
