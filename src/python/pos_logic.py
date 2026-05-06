@@ -178,9 +178,9 @@ class POSLogic:
         receipt_text = ""
         for group in self.cart:
             for item in group.items:
-                ingredients = self.data.getItemIngredients(item.item_id)
-                for ingredient in ingredients:
-                    self.data.setIngredientStock(False,ingredient.name,1)
+                for mod in item.modifiers:
+                    edit = 1 + mod.change
+                    self.data.setIngredientStock(False,mod.name,edit)
 
 
         for group in self.cart:

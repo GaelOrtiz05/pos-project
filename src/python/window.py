@@ -964,8 +964,8 @@ class MainWindow(QMainWindow, POSLogic):
             item.modifiers.clear()
             for ingredient in list_of_ItemIngredients:
                 value = ingredient_state[ingredient.id]
-                if value < 0:
-                    continue
+                if value == 1:
+                    item.modifers.append(CheckoutModifiers(ingredient.id,ingredient.name, 1))
                 if value == 0:
                     item.modifiers.append(CheckoutModifiers(ingredient.id, ingredient.name, -1))
                 elif value > 1:
