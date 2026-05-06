@@ -276,13 +276,13 @@ class MainWindow(QMainWindow, POSLogic):
         all_items_button = self.create_button("All", "#2563eb", 150, 50)
         all_items_button.clicked.connect(lambda: self.load_grid_of_items(0))
 
-        entrees_button = self.create_button("Entre", "#2563eb", 150, 50)
+        entrees_button = self.create_button("Entrées", "#2563eb", 150, 50)
         entrees_button.clicked.connect(lambda: self.load_grid_of_items(1))
 
         sides_button = self.create_button("Sides", "#2563eb", 150, 50)
         sides_button.clicked.connect(lambda: self.load_grid_of_items(2))
 
-        desserts_button = self.create_button("Dessert", "#2563eb", 150, 50)
+        desserts_button = self.create_button("Desserts", "#2563eb", 150, 50)
         desserts_button.clicked.connect(lambda: self.load_grid_of_items(3))
 
         drinks_button = self.create_button("Drinks", "#2563eb", 150, 50)
@@ -373,7 +373,7 @@ class MainWindow(QMainWindow, POSLogic):
         self.cart_layout.setContentsMargins(14, 14, 14, 14)
         self.cart_layout.setSpacing(12)
 
-        cart_widget.setFixedWidth(600)
+        cart_widget.setFixedWidth(500)
         cart_widget.setStyleSheet(
             "background-color: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;")
 
@@ -685,7 +685,7 @@ class MainWindow(QMainWindow, POSLogic):
                     image_path = os.path.join(BASE_DIR, image_path)
 
                 button = self.create_button(
-                    f"{item.name}", "#f3f4f6", 250, 250, image_path
+                    f"{item.name}", "#f3f4f6", 210, 210, image_path
                 )  # clicable
 
                 button.setStyleSheet(
@@ -704,17 +704,17 @@ class MainWindow(QMainWindow, POSLogic):
         self.current_category = category
 
         # Calculate columns dynamically based on available scroll width
-        button_width = 250
+        button_width = 210
         spacing = 12
         margins = 30
         if hasattr(self, 'scroll') and self.scroll is not None:
             scroll_width = self.scroll.viewport().width()
             if scroll_width < 200:
                 # Fallback before layout is fully processed
-                scroll_width = max(200, self.width() - 680)
+                scroll_width = max(200, self.width() - 580)
             available_width = scroll_width - margins
         else:
-            available_width = max(200, self.width() - 680)
+            available_width = max(200, self.width() - 580)
 
         max_cols = max(1, int((available_width + spacing) / (button_width + spacing)))
 

@@ -122,21 +122,23 @@ void Database::Inc_Dec_Ingredient_Stock(bool increase_isTRUE,
 }
 
 void Database::Add_Item_Into_Checkout_Tables(
-    int itemID, const std::vector<int> ingredient_id_list) {
+    int itemID, const std::vector<int> ingredient_id_list, int checkout_ID) {
   SQLite::Statement insert(
-      db, "INSERT INTO checkout_items(item_id, item_name, item_price) "
-          "SELECT id, name, price FROM items WHERE id = ?");
-  insert.bind(1, itemID);
+      db, "INSERT INTO checkout_items(checkout_id, item_id, item_name, item_price) "
+          "SELECT ?, id, name, price FROM items WHERE id = ?");
+  insert.bind(1, checkout_ID);
+  insert.bind(2, itemID);
   insert.exec();
   std::cout << "Item id: " << itemID << std::endl;
 
   SQLite::Statement insert_ingredient(
-      db, "INSERT INTO checkout_ingredients(item_id, ingredient_id) "
-          "VALUES (?,?)");
+      db, "INSERT INTO checkout_ingredients(checkout_id, item_id, ingredient_id) "
+          "VALUES (?,?,?)");
   for (const auto &ingredientID : ingredient_id_list) {
     std::cout << "Ingredient id: " << ingredientID << std::endl;
-    insert_ingredient.bind(1, itemID);
-    insert_ingredient.bind(2, ingredientID);
+    insert_ingredient.bind(1, checkout_ID);
+    insert_ingredient.bind(2, itemID);
+    insert_ingredient.bind(3, ingredientID);
     insert_ingredient.exec();
     insert_ingredient.reset();
   }
