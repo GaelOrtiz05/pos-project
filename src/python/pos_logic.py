@@ -152,7 +152,7 @@ class POSLogic:
         group = CheckoutGroup(group_id=self.checkout_group_counter,
                               group_type="combo",
                               name= combo.name,
-                              price= combo.price)
+                              price= 7.99)
         combo_items = self.data.getComboItems(combo.item_id)
 
         for comboItem in combo_items:
@@ -198,7 +198,7 @@ class POSLogic:
                 order_items.append(order_item)
                 total += item.price
 
-                receipt_text += f"{item.name} x1 - ${total:.2f}\n"
+                receipt_text += f"{item.name} x1 - ${item.price:.2f}\n"
         self.data.Process_Purchase(order_items,total)
         self.show_receipt_popup(receipt_text, total)
         
