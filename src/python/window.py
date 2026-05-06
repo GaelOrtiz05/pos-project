@@ -758,9 +758,9 @@ class MainWindow(QMainWindow, POSLogic):
 
                     for modifier in item.modifiers:
                         if modifier.change == -1:
-                            modifier_text += f"- {modifier.name}"
+                            modifier_text += f" -{modifier.name} "
                         elif modifier.change == +1:
-                            modifier_text += f"+ {modifier.name}"
+                            modifier_text += f" +{modifier.name} "
                     group_total += item_total
 
                     display = f"{item.name} - ${item.price} x1\n{modifier_text}"
@@ -917,7 +917,7 @@ class MainWindow(QMainWindow, POSLogic):
 
         list_of_ItemIngredients = self.data.getItemIngredients(item.item_id)
         
-        ingredient_state = {ingredient.id: 0 for ingredient in list_of_ItemIngredients}
+        ingredient_state = {ingredient.id: 1 for ingredient in list_of_ItemIngredients}
 
         for modifier in item.modifiers:
             if modifier.change == -1:
@@ -964,11 +964,11 @@ class MainWindow(QMainWindow, POSLogic):
             item.modifiers.clear()
             for ingredient in list_of_ItemIngredients:
                 value = ingredient_state[ingredient.id]
-                if value == 0:
-                    continue
                 if value < 0:
+                    continue
+                if value == 0:
                     item.modifiers.append(CheckoutModifiers(ingredient.id, ingredient.name, -1))
-                elif value > 0:
+                elif value > 1:
                     item.modifiers.append(CheckoutModifiers(ingredient.id, ingredient.name, +1))
             self.show_home_screen()
                                                   
