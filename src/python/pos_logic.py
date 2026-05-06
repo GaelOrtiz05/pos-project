@@ -198,6 +198,7 @@ class POSLogic:
 
         self.data.purchase(list_of_order_items, final_total)
         self.show_receipt_popup(receipt_text, final_total)
+        self.data.Process_Checkout_Tables()
 
         self.cart = []
         self.update_cart()

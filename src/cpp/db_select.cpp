@@ -210,7 +210,6 @@ std::vector<OrderItem> Database::Get_Vector_OrderItems_By_OrderID(int orderId) {
 
 std::vector<Item> Database::Get_Vector_Checkout_items() {
   SQLite::Statement get_items(db, R"SQL(SELECT item_id, item_name FROM checkout_items)SQL");
-
   std::vector<Item> list_of_items_in_checkout;
   while (get_items.executeStep()) {
     Item item;
@@ -232,5 +231,24 @@ bool Database::Remove_Item_From_Checkout_Tables(int checkoutID) {
   remove_items.exec();
   
   return true;
+}
+
+bool Database::Process_Checkout_Tables() {
+  SQLite::Transaction tx(db);
+  SQLite::Statement get_ingredient_IDs(db, "SELECT ingredient_id FROM checkout_ingredients" );
+  SQLite::Statement update_stock(db, "UPDATE ingredients SET stock = stock-1 WHERE id = ?");
+
+
+  while (get_ingredient_IDs.executeStep()) {
+    int ID  = get_ingredient_IDs.getColumn(0).getInt();
+    update_stock.bind(1,ID);
+    update_stock.exec();
+    update_stock.reset();
+  }
+  db.exec(R"SQL(DELETE FROM checkout_ingredients;)SQL");
+  db.exec(R"SQL(DELETE FROM checkout_items;)SQL");
+  tx.commit();
+  return true;
+
 }
 
